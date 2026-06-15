@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>SNHU Dashboard - Admin</title>
+  <!-- Fonts & Chart.js -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f8f9fa;
+    }
+    header {
+      background-color: #0c1e3e; /* Navy header */
+      color: #fff;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ffc107; /* Gold accent */
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+    nav ul li a {
+      color: #ffc107;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+    .dashboard-content {
+      padding: 40px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .dashboard-content h1 {
+      color: #0c1e3e;
+      margin-bottom: 20px;
+    }
+    /* Cards Layout */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .card {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card h3 {
+      margin-top: 0;
+      color: #0c1e3e;
+    }
+    .card p {
+      color: #555;
+      margin-bottom: 8px;
+    }
+    /* Chart Section */
+    .chart-section {
+      background-color: #ffffff;
+      padding: 40px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+    }
+    .chart-section h3 {
+      color: #0c1e3e;
+      margin-bottom: 20px;
+    }
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    .chart-box {
+      text-align: center;
+    }
+    .chart-box canvas {
+      max-width: 100%;
+      height: 250px !important;
+    }
+    .chart-caption {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #0c1e3e;
+    }
+    /* Footer */
+    footer {
+      background: #0c1e3e;
+      color: #ffc107;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+    }
+    /* Notification Section (AI Alerts) */
+    .notification {
+      background: #ffe8e8;
+      border: 1px solid #ff6b6b;
+      color: #a33;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    /* Admin-only sections can be managed by role-checks on the backend */
+    .admin-only {
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">SNHU Dashboard (Admin)</div>
+    <nav>
+      <ul>
+        <li><a href="staff-dashboard.html">Dashboard</a></li>
+        <li><a href="data-entry.html">Data Input</a></li>
+        <li><a href="office.html">Office</a></li>
+        <li><a href="staff-Report.html">Reports</a></li>
+        <li><a href="settings-staff.html">Settings</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="dashboard-content">
+    <h1>Welcome, Admin!</h1>
+
+    <!-- Cards Section -->
+    <div class="cards">
+      <!-- AI Bin Notifications -->
+      <div class="card admin-only">
+        <h3>AI Bin Notifications</h3>
+        <div id="binNotifications">
+          <p>No current alerts. All bins below threshold.</p>
+        </div>
+      </div>
+
+      <!-- Current Waste Level -->
+      <div class="card">
+        <h3>Current Waste Level</h3>
+        <p>Weight: 15.2 lbs</p>
+        <p>Humidity: 62%</p>
+        <p>pH Level: 6.5</p>
+        <p>Fullness: 85%</p>
+      </div>
+
+      <!-- Bin Management -->
+      <div class="card admin-only">
+        <h3>Bin Management</h3>
+        <p>Bin #1 - Fullness: 85%</p>
+        <p>Bin #2 - Fullness: 60%</p>
+        <p>Bin #3 - Fullness: 20%</p>
+        <p style="font-size: 0.9em; color: #666;">
+          *Click on a bin for detailed stats or empty schedule.
+        </p>
+        <button style="background: #ffc107; border: none; padding: 10px; border-radius: 6px;">
+          Manage Bins
+        </button>
+      </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="chart-section">
+      <h3>Admin Dashboard Metrics</h3>
+      <div class="charts-row">
+        <div class="chart-box">
+          <canvas id="wasteChart"></canvas>
+          <div class="chart-caption">Waste Trend (Last 7 Days) - Weight in lbs</div>
+        </div>
+        <div class="chart-box">
+          <canvas id="sensorChart"></canvas>
+          <div class="chart-caption">Sensor Readings - Humidity, pH, Fullness</div>
+        </div>
+        <div class="chart-box">
+          <canvas id="energyChart"></canvas>
+          <div class="chart-caption">Energy Consumption - Distribution (%)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    🔄 Data auto-refreshes every 2 hours | SNHU Food Waster Tracker (Admin)
+  </footer>
+
+  <script>
+    // Placeholder: AI BIN NOTIFICATION LOGIC
+    const binData = [
+      { binId: 1, fullness: 85, location: "Student Center" },
+      { binId: 2, fullness: 60, location: "Cafeteria" },
+      { binId: 3, fullness: 20, location: "Library" },
+    ];
+
+    function checkBinLevels() {
+      const container = document.getElementById('binNotifications');
+      container.innerHTML = '';
+      let hasAlert = false;
+      binData.forEach(bin => {
+        if (bin.fullness >= 80) {
+          hasAlert = true;
+          const alertDiv = document.createElement('div');
+          alertDiv.classList.add('notification');
+          alertDiv.textContent = `ALERT: Bin #${bin.binId} at ${bin.location} is ${bin.fullness}% full. Please schedule emptying.`;
+          container.appendChild(alertDiv);
+        }
+      });
+      if (!hasAlert) {
+        container.innerHTML = `<p>No current alerts. All bins below threshold.</p>`;
+      }
+    }
+
+    // Chart Initialization
+    const ctxWaste = document.getElementById('wasteChart').getContext('2d');
+    new Chart(ctxWaste, {
+      type: 'line',
+      data: {
+        labels: ['Mar 20', 'Mar 21', 'Mar 22', 'Mar 23', 'Mar 24', 'Mar 25', 'Mar 26'],
+        datasets: [{
+          label: 'Weight (lbs)',
+          data: [10.2, 11.5, 12.8, 13.0, 14.1, 14.8, 15.2],
+          backgroundColor: 'rgba(255, 193, 7, 0.2)',
+          borderColor: '#ffc107',
+          borderWidth: 2,
+          tension: 0.3
+        }]
+      },
+      options: {
+        scales: { y: { beginAtZero: true } },
+        plugins: {
+          legend: { labels: { color: '#0c1e3e' } }
+        }
+      }
+    });
+
+    const ctxSensor = document.getElementById('sensorChart').getContext('2d');
+    new Chart(ctxSensor, {
+      type: 'bar',
+      data: {
+        labels: ['Humidity', 'pH', 'Fullness'],
+        datasets: [{
+          label: 'Sensor Value',
+          data: [62, 6.5, 85],
+          backgroundColor: ['#17a2b8', '#28a745', '#ffc107'],
+          borderColor: ['#138496', '#218838', '#e0a800'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: { y: { beginAtZero: true } },
+        plugins: {
+          legend: { labels: { color: '#0c1e3e' } }
+        }
+      }
+    });
+
+    const ctxEnergy = document.getElementById('energyChart').getContext('2d');
+    new Chart(ctxEnergy, {
+      type: 'pie',
+      data: {
+        labels: ['Cooling', 'Lighting', 'Other'],
+        datasets: [{
+          data: [40, 35, 25],
+          backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
+          borderColor: ['#218838', '#c82333', '#e0a800'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { labels: { color: '#0c1e3e' } }
+        }
+      }
+    });
+
+    window.onload = () => {
+      checkBinLevels();
+    };
+  </script>
+</body>
+</html>

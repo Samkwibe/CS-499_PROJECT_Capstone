@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rsync -av --exclude=node_modules --exclude=.git /Users/samuelraymond/Documents/GitHub/MunchiesSNHU-Food_waste_Trucker/public/ /Users/samuelraymond/Documents/GitHub/CS-499-Computer-Science-Capstone/public/)",
+      "Bash(rsync -av --exclude=node_modules --exclude=.git /Users/samuelraymond/Documents/GitHub/MunchiesSNHU-Food_waste_Trucker/public/js/chatbot.js /Users/samuelraymond/Documents/GitHub/CS-499-Computer-Science-Capstone/public/js/chatbot.js)",
+      "Bash(rsync -av --exclude=node_modules --exclude=.git /Users/samuelraymond/Documents/GitHub/MunchiesSNHU-Food_waste_Trucker/snhu-foodwaste-backend/controllers/chatController.js /Users/samuelraymond/Documents/GitHub/CS-499-Computer-Science-Capstone/snhu-foodwaste-backend/controllers/chatController.js)",
+      "Bash(rsync -av /Users/samuelraymond/Documents/GitHub/MunchiesSNHU-Food_waste_Trucker/snhu-foodwaste-backend/controllers/chatController.js /Users/samuelraymond/Documents/GitHub/CS-499-Computer-Science-Capstone/snhu-foodwaste-backend/controllers/chatController.js)",
+      "Bash(npm list *)",
+      "Bash(rsync -av --exclude=node_modules --exclude=.git --exclude=.env /Users/samuelraymond/Documents/GitHub/MunchiesSNHU-Food_waste_Trucker/snhu-foodwaste-backend/controllers/chatController.js /Users/samuelraymond/Documents/GitHub/CS-499-Computer-Science-Capstone/snhu-foodwaste-backend/controllers/chatController.js)",
+      "Bash(rsync -av /Users/samuelraymond/Documents/GitHub/MunchiesSNHU-Food_waste_Trucker/public/js/chatbot.js /Users/samuelraymond/Documents/GitHub/CS-499-Computer-Science-Capstone/public/js/chatbot.js)",
+      "Bash(curl -s -X POST http://localhost:5050/api/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"sraymo377@gmail.com\",\"password\":\"password123\"}')"
+    ]
+  }
+}

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings - MunchiesSNHU Staff</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="dashboard-shell role-staff">
+  <header class="topbar">
+    <div class="brand-lockup">
+      <img src="assets/images/snhu-logo.png" alt="SNHU" class="topbar-logo" />
+      <div class="brand-label">
+        <span class="brand-label-top">MunchiesSNHU</span>
+        <span class="brand-label-main">Settings</span>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="staff-dashboard.html">Dashboard</a></li>
+        <li><a href="data-entry.html">Data Input</a></li>
+        <li><a href="staff-import.html">Bulk Import</a></li>
+        <li><a href="staff-report.html">Reports</a></li>
+        <li><a href="settings-staff.html">Settings</a></li>
+        <li><a href="login.html" data-logout>Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page-wrap">
+    <section class="hero-panel">
+      <div>
+        <div class="eyebrow">Account Management</div>
+        <h1>Staff Settings</h1>
+        <p>Manage your profile, notification preferences, bin thresholds, and display options.</p>
+      </div>
+      <div class="status-card">
+        <span class="metric-label">Logged in as</span>
+        <strong id="settingsName">—</strong>
+        <p id="settingsRole">Role: staff</p>
+      </div>
+    </section>
+
+    <div class="settings-layout">
+
+      <!-- Profile -->
+      <section class="section-card settings-card">
+        <div class="settings-card-header">
+          <i class="fas fa-circle-user"></i>
+          <h2>Profile</h2>
+        </div>
+        <div class="form-group">
+          <label for="staffName">Full Name</label>
+          <input type="text" id="staffName" placeholder="Your full name" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="staffEmail">Email Address</label>
+          <input type="email" id="staffEmail" placeholder="your@email.edu" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="staffPassword">New Password</label>
+          <input type="password" id="staffPassword" placeholder="Leave blank to keep current" autocomplete="new-password" />
+        </div>
+        <div id="profileStatus" class="settings-toast" role="alert" aria-live="polite"></div>
+        <button class="btn-save" type="button" onclick="saveSection('profileStatus')">
+          <i class="fas fa-floppy-disk"></i> Save Profile
+        </button>
+      </section>
+
+      <!-- Notifications -->
+      <section class="section-card settings-card">
+        <div class="settings-card-header">
+          <i class="fas fa-bell"></i>
+          <h2>Notifications</h2>
+        </div>
+        <label class="toggle-row">
+          <input type="checkbox" id="emailNotif" class="toggle-input" />
+          <span class="toggle-track"></span>
+          <span class="toggle-label">Email Notifications</span>
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="smsNotif" class="toggle-input" />
+          <span class="toggle-track"></span>
+          <span class="toggle-label">SMS Notifications</span>
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="alertNotif" class="toggle-input" checked />
+          <span class="toggle-track"></span>
+          <span class="toggle-label">High Priority Alerts</span>
+        </label>
+        <p class="settings-hint">High Priority Alerts fire immediately when a bin reaches critical capacity or a sensor anomaly is detected.</p>
+        <div id="notifStatus" class="settings-toast" role="alert" aria-live="polite"></div>
+        <button class="btn-save" type="button" onclick="saveSection('notifStatus')">
+          <i class="fas fa-floppy-disk"></i> Save Notifications
+        </button>
+      </section>
+
+      <!-- Bin Management (full width) -->
+      <section class="section-card settings-card settings-card-wide">
+        <div class="settings-card-header">
+          <i class="fas fa-trash-can-arrow-up"></i>
+          <h2>Bin Management</h2>
+        </div>
+        <p class="settings-hint">Set the fullness alert threshold for each campus bin. A high-priority notification fires when a bin exceeds its configured level.</p>
+        <div class="bin-settings-grid">
+          <div class="bin-setting">
+            <div class="bin-label"><i class="fas fa-building"></i> Student Center</div>
+            <div class="form-group">
+              <label for="bin1Threshold">Alert Threshold (%)</label>
+              <input type="number" id="bin1Threshold" min="1" max="100" placeholder="85" />
+            </div>
+            <div class="form-group">
+              <label for="bin1Notes">Special Instructions</label>
+              <textarea id="bin1Notes" rows="2" placeholder="e.g. Pickup before 8 AM on weekdays"></textarea>
+            </div>
+          </div>
+          <div class="bin-setting">
+            <div class="bin-label"><i class="fas fa-utensils"></i> Dining Hall</div>
+            <div class="form-group">
+              <label for="bin2Threshold">Alert Threshold (%)</label>
+              <input type="number" id="bin2Threshold" min="1" max="100" placeholder="80" />
+            </div>
+            <div class="form-group">
+              <label for="bin2Notes">Special Instructions</label>
+              <textarea id="bin2Notes" rows="2" placeholder="e.g. High volume Mondays and Fridays"></textarea>
+            </div>
+          </div>
+          <div class="bin-setting">
+            <div class="bin-label"><i class="fas fa-book-open"></i> Library</div>
+            <div class="form-group">
+              <label for="bin3Threshold">Alert Threshold (%)</label>
+              <input type="number" id="bin3Threshold" min="1" max="100" placeholder="90" />
+            </div>
+            <div class="form-group">
+              <label for="bin3Notes">Special Instructions</label>
+              <textarea id="bin3Notes" rows="2" placeholder="e.g. Low traffic — check weekly"></textarea>
+            </div>
+          </div>
+          <div class="bin-setting">
+            <div class="bin-label"><i class="fas fa-house"></i> Dormitories</div>
+            <div class="form-group">
+              <label for="bin4Threshold">Alert Threshold (%)</label>
+              <input type="number" id="bin4Threshold" min="1" max="100" placeholder="75" />
+            </div>
+            <div class="form-group">
+              <label for="bin4Notes">Special Instructions</label>
+              <textarea id="bin4Notes" rows="2" placeholder="e.g. Check after weekend move-in days"></textarea>
+            </div>
+          </div>
+        </div>
+        <div id="binStatus" class="settings-toast" role="alert" aria-live="polite"></div>
+        <button class="btn-save" type="button" onclick="saveSection('binStatus')">
+          <i class="fas fa-floppy-disk"></i> Save Bin Settings
+        </button>
+      </section>
+
+      <!-- Display -->
+      <section class="section-card settings-card">
+        <div class="settings-card-header">
+          <i class="fas fa-palette"></i>
+          <h2>Display</h2>
+        </div>
+        <label class="toggle-row">
+          <input type="checkbox" id="darkModeToggle" class="toggle-input" onchange="applyTheme(this.checked)" />
+          <span class="toggle-track"></span>
+          <span class="toggle-label">Dark Mode</span>
+        </label>
+        <p class="settings-hint">Your theme preference is saved locally and applies across all dashboard pages on this device.</p>
+        <div id="displayStatus" class="settings-toast" role="alert" aria-live="polite"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>
+    const user = window.MunchiesAuth.requireAuth(['staff', 'admin']);
+    window.MunchiesAuth.setupLogoutLinks();
+
+    if (user) {
+      document.getElementById('settingsName').textContent = user.name || '—';
+      document.getElementById('settingsRole').textContent = `Role: ${user.role}`;
+      const nameEl = document.getElementById('staffName');
+      const emailEl = document.getElementById('staffEmail');
+      if (nameEl) nameEl.value = user.name || '';
+      if (emailEl) emailEl.value = user.email || '';
+    }
+
+    const savedTheme = localStorage.getItem('munchies-theme');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark');
+      document.getElementById('darkModeToggle').checked = true;
+    }
+
+    function applyTheme(dark) {
+      document.body.classList.toggle('dark', dark);
+      localStorage.setItem('munchies-theme', dark ? 'dark' : 'light');
+      showToast('displayStatus', 'Theme preference saved.', 'success');
+    }
+
+    function showToast(id, message, type) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = message;
+      el.className = `settings-toast is-${type}`;
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.className = 'settings-toast'; }, 3000);
+    }
+
+    function saveSection(statusId) {
+      showToast(statusId, 'Settings saved.', 'success');
+    }
+  </script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sustainability — MunchiesSNHU</title>
+  <meta name="description" content="SNHU's commitment to campus sustainability — food waste reduction goals, composting impact, and how MunchiesSNHU makes progress measurable." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <script>(function(){var t=localStorage.getItem('munchies-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})()</script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #082241; --navy2: #0f3f70; --gold: #f3d014; --blue: #0f5fa3;
+      --green: #15803d; --green-light: #dcfce7;
+      --text: #172033; --muted: #657085; --border: #d9e1ec; --surface: #f5f7fb;
+    }
+    body { font-family: 'Inter', Arial, sans-serif; color: var(--text); background: #fff; overflow-x: hidden; }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.7rem 2rem;
+      background: rgba(8,34,65,0.97); backdrop-filter: blur(16px);
+      box-shadow: 0 2px 24px rgba(8,34,65,0.25);
+    }
+    .brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+    .brand img { height: 30px; width: auto; }
+    .brand-label { display: flex; flex-direction: column; line-height: 1.2; }
+    .brand-label span:first-child { font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.1em; }
+    .brand-label span:last-child  { font-size: 0.9rem; font-weight: 800; color: var(--gold); }
+    .topnav { display: flex; gap: 0.25rem; list-style: none; align-items: center; }
+    .topnav a { display: block; padding: 0.45rem 0.85rem; border-radius: 8px; color: rgba(255,255,255,0.75); font-size: 0.83rem; font-weight: 600; text-decoration: none; transition: color 0.15s, background 0.15s; }
+    .topnav a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .topnav a.active { color: var(--gold); }
+    .topnav .btn-cta { background: var(--gold); color: var(--navy) !important; border-radius: 999px; font-weight: 800; padding: 0.45rem 1rem; }
+    .topnav .btn-cta:hover { opacity: 0.9; background: var(--gold); }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #052010 0%, #0c3b1e 45%, #0f4a28 100%);
+      color: #fff; padding: 5.5rem 2rem 4.5rem;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; overflow: hidden;
+    }
+    .hero-bg video {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; opacity: 0.22; pointer-events: none;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(circle at 75% 45%, rgba(21,128,61,0.25), transparent 55%),
+                  radial-gradient(circle at 15% 70%, rgba(243,208,20,0.12), transparent 45%);
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; text-align: center; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(21,128,61,0.2); border: 1px solid rgba(21,128,61,0.4);
+      color: #4ade80; font-size: 0.73rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      padding: 0.3rem 0.9rem; border-radius: 999px; margin-bottom: 1.3rem;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900; line-height: 1.12; margin-bottom: 1.1rem; }
+    .hero h1 span { color: var(--gold); }
+    .hero p { font-size: 1.05rem; color: rgba(255,255,255,0.78); line-height: 1.75; max-width: 620px; margin: 0 auto 2rem; }
+    .hero-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--gold); color: var(--navy); border: 0; border-radius: 999px;
+      padding: 0.85rem 1.8rem; font: 800 0.95rem 'Inter',sans-serif; cursor: pointer;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem;
+      box-shadow: 0 8px 24px rgba(243,208,20,0.35); transition: opacity 0.15s, transform 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.35);
+      border-radius: 999px; padding: 0.85rem 1.8rem; font: 700 0.95rem 'Inter',sans-serif;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+
+    /* ── Stats strip ── */
+    .stats-strip { display: grid; grid-template-columns: repeat(4,1fr); background: var(--navy); color: #fff; }
+    .stat-item { padding: 1.6rem 1rem; text-align: center; border-right: 1px solid rgba(255,255,255,0.1); }
+    .stat-item:last-child { border-right: 0; }
+    .stat-num { display: block; font-size: 2rem; font-weight: 900; color: var(--gold); line-height: 1; }
+    .stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.62); font-weight: 600; margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.07em; }
+
+    /* ── Sections ── */
+    .section { padding: 4.5rem 2rem; }
+    .section.alt { background: var(--surface); }
+    .section.green-dark {
+      background: linear-gradient(135deg, var(--navy) 0%, #0c3b1e 100%);
+      color: #fff;
+    }
+    .inner { max-width: 1100px; margin: 0 auto; }
+    .tag { display: inline-block; background: rgba(8,34,65,0.07); color: var(--navy); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; padding: 0.28rem 0.75rem; border-radius: 999px; margin-bottom: 0.75rem; }
+    .tag.green { background: rgba(21,128,61,0.1); color: var(--green); }
+    .tag.light { background: rgba(243,208,20,0.15); color: var(--gold); border: 1px solid rgba(243,208,20,0.3); }
+    .sec-title { font-size: clamp(1.55rem, 3vw, 2.1rem); font-weight: 900; color: var(--navy); line-height: 1.2; margin-bottom: 0.75rem; }
+    .sec-title.white { color: #fff; }
+    .sec-sub { font-size: 1rem; color: var(--muted); line-height: 1.7; max-width: 600px; margin-bottom: 2.5rem; }
+    .sec-sub.white { color: rgba(255,255,255,0.75); }
+    .center { text-align: center; }
+    .center .sec-sub { margin-left: auto; margin-right: auto; }
+
+    /* ── Impact split ── */
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; align-items: center; }
+    .split-img { width: 100%; border-radius: 22px; height: 400px; object-fit: cover; box-shadow: 0 28px 64px rgba(8,34,65,0.18); }
+
+    /* ── Fact cards ── */
+    .fact-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
+    .fact-card { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 1.6rem 1.4rem; transition: box-shadow 0.2s, transform 0.2s; }
+    .fact-card:hover { box-shadow: 0 16px 40px rgba(8,34,65,0.1); transform: translateY(-3px); }
+    .fact-ic { width: 2.8rem; height: 2.8rem; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1rem; margin-bottom: 1rem; }
+    .fact-ic.green { background: linear-gradient(135deg,#166534,#15803d); color: #fff; }
+    .fact-ic.navy  { background: linear-gradient(135deg,var(--navy),var(--navy2)); color: var(--gold); }
+    .fact-card h4 { font-size: 0.92rem; font-weight: 800; color: var(--navy); margin-bottom: 0.4rem; }
+    .fact-card p  { font-size: 0.8rem; color: var(--muted); line-height: 1.65; }
+    .fact-number { font-size: 1.5rem; font-weight: 900; color: var(--green); display: block; margin-bottom: 0.15rem; }
+
+    /* ── Goal progress ── */
+    .goal-banner { background: #fff; border: 1px solid var(--border); border-radius: 22px; padding: 2rem 2.2rem; }
+    .goal-row { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    .goal-label { flex: 1; min-width: 180px; }
+    .goal-label h4 { font-size: 1rem; font-weight: 900; color: var(--navy); margin-bottom: 0.2rem; }
+    .goal-label p  { font-size: 0.8rem; color: var(--muted); }
+    .goal-track { flex: 3; min-width: 220px; }
+    .goal-bar-wrap { height: 14px; background: var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 0.4rem; }
+    .goal-bar-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, #15803d, #4ade80);
+      transition: width 1.2s cubic-bezier(0.34,1.56,0.64,1);
+      width: 0%;
+    }
+    .goal-pct-row { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted); font-weight: 700; }
+    .goal-pct-row .pct-current { color: var(--green); font-weight: 900; }
+    .goal-pct-row .pct-goal { color: var(--navy); }
+
+    /* ── Tip cards ── */
+    .tips-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
+    .tip-card {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px; padding: 1.2rem 1.3rem;
+      display: flex; gap: 0.9rem; align-items: flex-start;
+    }
+    .tip-ic {
+      width: 2.2rem; height: 2.2rem; border-radius: 10px; flex-shrink: 0;
+      background: rgba(243,208,20,0.18); display: flex; align-items: center;
+      justify-content: center; color: var(--gold); font-size: 0.85rem;
+    }
+    .tip-card h4 { font-size: 0.85rem; font-weight: 800; color: #fff; margin-bottom: 0.2rem; }
+    .tip-card p  { font-size: 0.78rem; color: rgba(255,255,255,0.65); line-height: 1.55; }
+
+    /* ── Platform callout ── */
+    .platform-callout {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+      border-radius: 24px; padding: 3rem 2.5rem; color: #fff;
+      display: flex; gap: 3rem; align-items: center; flex-wrap: wrap;
+    }
+    .platform-callout-left { flex: 1; min-width: 240px; }
+    .platform-callout h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 0.65rem; }
+    .platform-callout h2 span { color: var(--gold); }
+    .platform-callout p { font-size: 0.9rem; color: rgba(255,255,255,0.75); line-height: 1.7; }
+    .platform-feature-list { flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 0.65rem; }
+    .pf-item { display: flex; gap: 0.75rem; align-items: flex-start; }
+    .pf-dot { width: 1.6rem; height: 1.6rem; border-radius: 8px; background: rgba(243,208,20,0.18); display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 0.72rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .pf-item h5 { font-size: 0.85rem; font-weight: 800; color: #fff; margin-bottom: 0.15rem; }
+    .pf-item p  { font-size: 0.76rem; color: rgba(255,255,255,0.62); line-height: 1.5; }
+
+    /* ── CTA ── */
+    .cta-section { background: var(--navy); color: #fff; text-align: center; padding: 4rem 2rem; }
+    .cta-section h2 { font-size: 1.9rem; font-weight: 900; margin-bottom: 0.75rem; }
+    .cta-section h2 span { color: var(--gold); }
+    .cta-section p  { color: rgba(255,255,255,0.7); margin-bottom: 2rem; font-size: 0.95rem; }
+    .cta-btns { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── Footer ── */
+    footer { background: #060f1a; color: rgba(255,255,255,0.55); padding: 3.5rem 2rem 1.5rem; }
+    .foot-inner { max-width: 1100px; margin: 0 auto; }
+    .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2.5rem; margin-bottom: 2.5rem; }
+    .foot-brand img { height: 28px; margin-bottom: 0.75rem; }
+    .foot-brand p { font-size: 0.8rem; line-height: 1.7; }
+    .foot-col h4 { font-size: 0.78rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
+    .foot-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .foot-col a { font-size: 0.8rem; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.15s; }
+    .foot-col a:hover { color: var(--gold); }
+    .foot-bottom { border-top: 1px solid rgba(255,255,255,0.07); padding-top: 1.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; font-size: 0.75rem; }
+    .foot-bottom a { color: var(--gold); text-decoration: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .stats-strip { grid-template-columns: repeat(2,1fr); }
+      .split        { grid-template-columns: 1fr; }
+      .split-img    { height: 240px; }
+      .fact-grid    { grid-template-columns: 1fr 1fr; }
+      .tips-grid    { grid-template-columns: 1fr; }
+      .foot-grid    { grid-template-columns: 1fr 1fr; }
+      .topnav       { display: none; }
+    }
+    @media (max-width: 580px) {
+      .fact-grid { grid-template-columns: 1fr; }
+      .foot-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <a href="index.html" class="brand">
+      <img src="assets/images/snhu-logo.png" alt="SNHU" />
+      <div class="brand-label">
+        <span>MunchiesSNHU</span>
+        <span>Food Waste Tracker</span>
+      </div>
+    </a>
+    <ul class="topnav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="sustainability.html" class="active">Sustainability</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="login.html">Login</a></li>
+      <li><button class="theme-toggle" onclick="toggleTheme()" title="Switch to dark mode" aria-label="Toggle theme"><i class="fas fa-moon"></i></button></li>
+      <li><a href="signup.html" class="btn-cta">Get Started</a></li>
+    </ul>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="assets/videos/SNHU SSB.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow"><i class="fas fa-leaf"></i> SNHU Campus Sustainability</div>
+      <h1>Food waste is a <span>solvable problem.</span></h1>
+      <p>About one-third of all food produced globally is wasted. At SNHU, we're tackling our share — one pound at a time — through measurement, composting, and community-driven action.</p>
+      <div class="hero-actions">
+        <a href="signup.html" class="btn-primary"><i class="fas fa-seedling"></i> Join the Effort</a>
+        <a href="#why-it-matters" class="btn-outline"><i class="fas fa-arrow-down"></i> Learn the Facts</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats strip -->
+  <div class="stats-strip">
+    <div class="stat-item">
+      <span class="stat-num">30–40%</span>
+      <span class="stat-label">of U.S. food supply is wasted</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">0.25lb</span>
+      <span class="stat-label">CO₂ saved per lb composted</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">50%</span>
+      <span class="stat-label">SNHU diversion rate goal</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">25×</span>
+      <span class="stat-label">methane's warming power vs CO₂</span>
+    </div>
+  </div>
+
+  <!-- Why it matters -->
+  <section class="section" id="why-it-matters">
+    <div class="inner">
+      <div class="split">
+        <div>
+          <div class="tag green">The Problem</div>
+          <h2 class="sec-title">Food waste is one of the biggest — and most preventable — drivers of climate change</h2>
+          <p class="sec-sub" style="margin-bottom:1.5rem;">When food ends up in a landfill instead of a compost bin, it decomposes without oxygen and produces methane — a greenhouse gas 25 times more potent than CO₂. On a campus that feeds thousands of students daily, that adds up fast.</p>
+          <div style="display:flex;flex-direction:column;gap:1rem;">
+            <div style="display:flex;gap:0.85rem;align-items:flex-start;">
+              <div style="width:2.2rem;height:2.2rem;border-radius:10px;background:linear-gradient(135deg,#166534,#15803d);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.85rem;flex-shrink:0;"><i class="fas fa-industry"></i></div>
+              <div>
+                <h4 style="font-size:0.9rem;font-weight:800;color:var(--navy);margin-bottom:0.2rem;">8–10% of Global Emissions</h4>
+                <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;">Food systems — including waste — account for roughly 8–10% of global greenhouse gas emissions, making it one of the most impactful areas to target.</p>
+              </div>
+            </div>
+            <div style="display:flex;gap:0.85rem;align-items:flex-start;">
+              <div style="width:2.2rem;height:2.2rem;border-radius:10px;background:linear-gradient(135deg,#166534,#15803d);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.85rem;flex-shrink:0;"><i class="fas fa-droplet"></i></div>
+              <div>
+                <h4 style="font-size:0.9rem;font-weight:800;color:var(--navy);margin-bottom:0.2rem;">Hidden Resource Cost</h4>
+                <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;">Every pound of food wasted also wastes the water, land, energy, and labor that went into producing it — often for decades before it reaches a plate.</p>
+              </div>
+            </div>
+            <div style="display:flex;gap:0.85rem;align-items:flex-start;">
+              <div style="width:2.2rem;height:2.2rem;border-radius:10px;background:linear-gradient(135deg,#166534,#15803d);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.85rem;flex-shrink:0;"><i class="fas fa-recycle"></i></div>
+              <div>
+                <h4 style="font-size:0.9rem;font-weight:800;color:var(--navy);margin-bottom:0.2rem;">Composting Is the Fix</h4>
+                <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;">Composting diverts food from landfills, eliminates methane production, and creates nutrient-rich soil — turning waste into a resource instead of a liability.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <img src="assets/images/SNHU_DiningCenter.jpg" alt="SNHU campus dining" class="split-img" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Impact facts -->
+  <section class="section alt">
+    <div class="inner">
+      <div class="center">
+        <div class="tag green">Environmental Impact</div>
+        <h2 class="sec-title">The numbers behind composting</h2>
+        <p class="sec-sub">Small changes in how campus food is handled create measurable reductions in carbon emissions and waste.</p>
+      </div>
+      <div class="fact-grid">
+        <div class="fact-card">
+          <div class="fact-ic green"><i class="fas fa-cloud"></i></div>
+          <span class="fact-number">0.25 lbs CO₂</span>
+          <h4>Saved per pound composted</h4>
+          <p>Composting just one pound of food prevents roughly 0.25 lbs of CO₂-equivalent emissions that would have been released in a landfill.</p>
+        </div>
+        <div class="fact-card">
+          <div class="fact-ic navy"><i class="fas fa-car"></i></div>
+          <span class="fact-number">1.04 miles</span>
+          <h4>Driving offset per pound</h4>
+          <p>The emissions avoided by composting a single pound of food are equivalent to taking your car off the road for roughly a mile.</p>
+        </div>
+        <div class="fact-card">
+          <div class="fact-ic green"><i class="fas fa-tree"></i></div>
+          <span class="fact-number">48 lbs CO₂</span>
+          <h4>Absorbed by one tree per year</h4>
+          <p>Composting 192 lbs — about a semester's worth — offsets what a single tree absorbs in a full year of growing.</p>
+        </div>
+        <div class="fact-card">
+          <div class="fact-ic navy"><i class="fas fa-seedling"></i></div>
+          <span class="fact-number">Richer soil</span>
+          <h4>Composted material returns to earth</h4>
+          <p>Compost adds organic matter back to soil, improving structure, water retention, and plant nutrition — closing the loop naturally.</p>
+        </div>
+        <div class="fact-card">
+          <div class="fact-ic green"><i class="fas fa-bolt"></i></div>
+          <span class="fact-number">20–30%</span>
+          <h4>Less energy than landfilling</h4>
+          <p>Composting food waste uses significantly less energy than landfilling or incineration, and produces a useful end product rather than emissions.</p>
+        </div>
+        <div class="fact-card">
+          <div class="fact-ic navy"><i class="fas fa-graduation-cap"></i></div>
+          <span class="fact-number">Campus impact</span>
+          <h4>Students make a real difference</h4>
+          <p>When students are informed about waste levels and composting rates, participation increases. Visibility creates behavior change.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SNHU Goal progress -->
+  <section class="section">
+    <div class="inner">
+      <div class="split" style="gap:3rem;">
+        <div>
+          <div class="tag">SNHU Goal</div>
+          <h2 class="sec-title">50% compost diversion rate — tracked in real time</h2>
+          <p class="sec-sub">SNHU's sustainability initiative targets a 50% food waste diversion rate — meaning at least half of all campus food waste is composted rather than landfilled. MunchiesSNHU tracks this goal live.</p>
+
+          <div class="goal-banner" style="margin-bottom:1.5rem;">
+            <div class="goal-row">
+              <div class="goal-label">
+                <h4>Current Diversion Rate</h4>
+                <p>Published entries · Live from database</p>
+              </div>
+              <div class="goal-track">
+                <div class="goal-bar-wrap">
+                  <div class="goal-bar-fill" id="goalBar" style="width:0%"></div>
+                </div>
+                <div class="goal-pct-row">
+                  <span class="pct-current" id="goalPctLabel">Loading…</span>
+                  <span class="pct-goal">Goal: 50%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p style="font-size:0.82rem;color:var(--muted);line-height:1.65;">The diversion rate is calculated live from logged campus data: <strong>lbs composted ÷ total lbs logged × 100</strong>. Staff track this daily; students can see it on their dashboard.</p>
+        </div>
+        <div>
+          <div class="tag">What We Track</div>
+          <h2 class="sec-title">More than just weight</h2>
+          <p class="sec-sub">Every waste entry captures a full picture of campus conditions — not just how much was discarded, but how it's decomposing.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-top:0.5rem;">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1rem;">
+              <div style="font-size:0.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.3rem;">Weight (lbs)</div>
+              <div style="font-size:0.82rem;color:var(--text);line-height:1.55;">Total and composted weight per collection</div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1rem;">
+              <div style="font-size:0.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.3rem;">Bin Fullness (%)</div>
+              <div style="font-size:0.82rem;color:var(--text);line-height:1.55;">Triggers pickup alerts when above 80%</div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1rem;">
+              <div style="font-size:0.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.3rem;">pH Level</div>
+              <div style="font-size:0.82rem;color:var(--text);line-height:1.55;">6–8 = healthy decomposition range</div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1rem;">
+              <div style="font-size:0.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.3rem;">Temperature &amp; Humidity</div>
+              <div style="font-size:0.82rem;color:var(--text);line-height:1.55;">Environmental readings from each location</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tips for reducing waste -->
+  <section class="section green-dark">
+    <div class="inner">
+      <div class="center">
+        <div class="tag light"><i class="fas fa-lightbulb"></i> Sustainability Tips</div>
+        <h2 class="sec-title white">Practical ways to reduce campus food waste</h2>
+        <p class="sec-sub white" style="margin-bottom:2rem;">Small operational changes at the dining hall level create the biggest measurable reductions in waste.</p>
+      </div>
+      <div class="tips-grid">
+        <div class="tip-card">
+          <div class="tip-ic"><i class="fas fa-bowl-food"></i></div>
+          <div>
+            <h4>Right-size portions at serving stations</h4>
+            <p>Track which stations generate the most plate waste and adjust standard portion sizes accordingly. Smaller starting portions reduce throw-away without reducing satisfaction.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-ic"><i class="fas fa-calendar-check"></i></div>
+          <div>
+            <h4>Schedule pickups based on bin fullness</h4>
+            <p>Use bin fullness data from MunchiesSNHU to schedule compost pickups proactively — not on a fixed calendar — to prevent overflow and contamination.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-ic"><i class="fas fa-chart-bar"></i></div>
+          <div>
+            <h4>Review weekly trends before ordering</h4>
+            <p>Check the week-over-week waste data before placing supply orders. High-waste food types from last week should trigger smaller orders this week.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-ic"><i class="fas fa-trophy"></i></div>
+          <div>
+            <h4>Promote the leaderboard to students</h4>
+            <p>When students can see how their dining location ranks on the campus leaderboard, it drives engagement. Post the rankings visibly in dining halls.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-ic"><i class="fas fa-seedling"></i></div>
+          <div>
+            <h4>Label compost bins clearly</h4>
+            <p>Contamination is the #1 reason compost gets rejected. Clear, visual labels at every bin — including examples of what goes in — dramatically improve compost quality.</p>
+          </div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-ic"><i class="fas fa-users"></i></div>
+          <div>
+            <h4>Run waste reduction campaigns at peak times</h4>
+            <p>Waste spikes at the beginning and end of semesters. Targeted awareness campaigns during move-in and finals week can capture the highest-impact windows.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Platform callout -->
+  <section class="section alt">
+    <div class="inner">
+      <div class="platform-callout">
+        <div class="platform-callout-left">
+          <div class="tag light" style="margin-bottom:0.8rem;"><i class="fas fa-robot"></i> MunchiesSNHU</div>
+          <h2>Sustainability goals need <span>data to drive them</span></h2>
+          <p>MunchiesSNHU gives SNHU the real-time measurement layer that turns sustainability intentions into trackable outcomes. Staff log data; the platform makes sense of it for everyone.</p>
+        </div>
+        <div class="platform-feature-list">
+          <div class="pf-item">
+            <div class="pf-dot"><i class="fas fa-chart-line"></i></div>
+            <div>
+              <h5>Live diversion rate dashboard</h5>
+              <p>The 50% goal is tracked automatically — no manual calculation needed.</p>
+            </div>
+          </div>
+          <div class="pf-item">
+            <div class="pf-dot"><i class="fas fa-robot"></i></div>
+            <div>
+              <h5>MunchiesAI assistant</h5>
+              <p>Ask plain-English questions about the data and get grounded, actionable answers.</p>
+            </div>
+          </div>
+          <div class="pf-item">
+            <div class="pf-dot"><i class="fas fa-file-import"></i></div>
+            <div>
+              <h5>Bulk data entry &amp; CSV import</h5>
+              <p>Upload a week of data in seconds — with row validation before anything is saved.</p>
+            </div>
+          </div>
+          <div class="pf-item">
+            <div class="pf-dot"><i class="fas fa-trophy"></i></div>
+            <div>
+              <h5>Student leaderboard &amp; pledge goals</h5>
+              <p>Turn campus sustainability into a visible, community effort students can rally around.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Ready to make sustainability <span>measurable?</span></h2>
+    <p>Create an account to join the campus effort — staff dashboards for data collection, student dashboards for impact visibility.</p>
+    <div class="cta-btns">
+      <a href="signup.html" class="btn-primary"><i class="fas fa-user-plus"></i> Create an Account</a>
+      <a href="login.html" class="btn-outline"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="foot-inner">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <img src="assets/images/snhu-logo.png" alt="SNHU" />
+          <p>MunchiesSNHU is Southern New Hampshire University's campus food waste tracking and sustainability platform — built to make composting measurable and impactful.</p>
+        </div>
+        <div class="foot-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="sustainability.html">Sustainability</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Dashboards</h4>
+          <ul>
+            <li><a href="login.html">Staff Login</a></li>
+            <li><a href="login.html">Student Login</a></li>
+            <li><a href="signup.html">Create Account</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="mailto:sustainability@snhu.edu">sustainability@snhu.edu</a></li>
+            <li><a href="contact.html">Send a Message</a></li>
+            <li style="color:rgba(255,255,255,0.4);font-size:0.78rem;">2500 N River Rd<br>Manchester, NH 03106</li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2025 MunchiesSNHU &mdash; Southern New Hampshire University</span>
+        <span><a href="about.html">About</a> &nbsp;&middot;&nbsp; <a href="contact.html">Contact</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Load live diversion rate for the goal bar
+    (async () => {
+      try {
+        const res = await fetch('/api/waste');
+        if (!res.ok) return;
+        const entries = await res.json();
+        if (!entries.length) {
+          document.getElementById('goalPctLabel').textContent = 'No data yet';
+          return;
+        }
+        const total = entries.reduce((s, e) => s + (e.weight || 0), 0);
+        const comp  = entries.reduce((s, e) => s + Math.min(e.compostWeight || 0, e.weight || 0), 0);
+        const rate  = total > 0 ? Math.round((comp / total) * 100) : 0;
+
+        document.getElementById('goalPctLabel').textContent = rate + '% current';
+        const fill = Math.min(rate, 100);
+        // animate after a short delay so the CSS transition is visible
+        setTimeout(() => {
+          document.getElementById('goalBar').style.width = fill + '%';
+        }, 400);
+      } catch { /* keep placeholder */ }
+    })();
+  </script>
+  <script src="js/theme.js"></script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

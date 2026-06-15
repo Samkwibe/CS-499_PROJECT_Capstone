@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Services — MunchiesSNHU</title>
+  <meta name="description" content="Everything MunchiesSNHU offers — waste tracking, AI insights, bulk import, dashboards, reports, leaderboards, and more." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <script>(function(){var t=localStorage.getItem('munchies-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})()</script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #082241; --navy2: #0f3f70; --gold: #f3d014; --blue: #0f5fa3;
+      --text: #172033; --muted: #657085; --border: #d9e1ec; --surface: #f5f7fb;
+    }
+    body { font-family: 'Inter', Arial, sans-serif; color: var(--text); background: #fff; overflow-x: hidden; }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.7rem 2rem;
+      background: rgba(8,34,65,0.97); backdrop-filter: blur(16px);
+      box-shadow: 0 2px 24px rgba(8,34,65,0.25);
+    }
+    .brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+    .brand img { height: 30px; width: auto; }
+    .brand-label { display: flex; flex-direction: column; line-height: 1.2; }
+    .brand-label span:first-child { font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.1em; }
+    .brand-label span:last-child  { font-size: 0.9rem; font-weight: 800; color: var(--gold); }
+    .topnav { display: flex; gap: 0.25rem; list-style: none; align-items: center; }
+    .topnav a { display: block; padding: 0.45rem 0.85rem; border-radius: 8px; color: rgba(255,255,255,0.75); font-size: 0.83rem; font-weight: 600; text-decoration: none; transition: color 0.15s, background 0.15s; }
+    .topnav a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .topnav a.active { color: var(--gold); }
+    .topnav .btn-cta { background: var(--gold); color: var(--navy) !important; border-radius: 999px; font-weight: 800; padding: 0.45rem 1rem; }
+    .topnav .btn-cta:hover { opacity: 0.9; }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 60%, #1a5fa0 100%);
+      color: #fff; padding: 5.5rem 2rem 4.5rem; text-align: center;
+    }
+    .hero-video { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+    .hero-video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.22; pointer-events: none; }
+    .hero::before {
+      content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: radial-gradient(circle at 70% 40%, rgba(243,208,20,0.1), transparent 55%),
+                  radial-gradient(circle at 20% 70%, rgba(15,95,163,0.25), transparent 45%);
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 760px; margin: 0 auto; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(243,208,20,0.15); border: 1px solid rgba(243,208,20,0.3);
+      color: var(--gold); font-size: 0.73rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      padding: 0.3rem 0.9rem; border-radius: 999px; margin-bottom: 1.3rem;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900; line-height: 1.12; margin-bottom: 1.1rem; }
+    .hero h1 span { color: var(--gold); }
+    .hero p { font-size: 1.05rem; color: rgba(255,255,255,0.78); line-height: 1.75; margin-bottom: 2rem; }
+    .hero-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { background: var(--gold); color: var(--navy); border: 0; border-radius: 999px; padding: 0.85rem 1.8rem; font: 800 0.95rem 'Inter',sans-serif; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem; box-shadow: 0 8px 24px rgba(243,208,20,0.35); transition: opacity 0.15s, transform 0.15s; }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.35); border-radius: 999px; padding: 0.85rem 1.8rem; font: 700 0.95rem 'Inter',sans-serif; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem; transition: border-color 0.15s, background 0.15s; }
+    .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+
+    /* ── Stats strip ── */
+    .stats-strip { display: grid; grid-template-columns: repeat(4,1fr); background: var(--navy); color: #fff; }
+    .stat-item { padding: 1.6rem 1rem; text-align: center; border-right: 1px solid rgba(255,255,255,0.1); }
+    .stat-item:last-child { border-right: 0; }
+    .stat-num { display: block; font-size: 2rem; font-weight: 900; color: var(--gold); line-height: 1; }
+    .stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.62); font-weight: 600; margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.07em; }
+
+    /* ── Sections ── */
+    .section { padding: 4.5rem 2rem; }
+    .section.alt { background: var(--surface); }
+    .section.dark { background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); color: #fff; }
+    .inner { max-width: 1100px; margin: 0 auto; }
+    .tag { display: inline-block; background: rgba(8,34,65,0.07); color: var(--navy); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; padding: 0.28rem 0.75rem; border-radius: 999px; margin-bottom: 0.75rem; }
+    .tag.gold { background: rgba(243,208,20,0.15); color: #a07c00; border: 1px solid rgba(243,208,20,0.3); }
+    .tag.light { background: rgba(243,208,20,0.15); color: var(--gold); border: 1px solid rgba(243,208,20,0.3); }
+    .sec-title { font-size: clamp(1.55rem, 3vw, 2.1rem); font-weight: 900; color: var(--navy); line-height: 1.2; margin-bottom: 0.75rem; }
+    .sec-title.white { color: #fff; }
+    .sec-sub { font-size: 1rem; color: var(--muted); line-height: 1.7; max-width: 600px; margin-bottom: 2.5rem; }
+    .sec-sub.white { color: rgba(255,255,255,0.72); }
+    .center { text-align: center; }
+    .center .sec-sub { margin-left: auto; margin-right: auto; }
+
+    /* ── Role tabs ── */
+    .role-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .role-tab { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.1rem; border-radius: 999px; font: 700 0.84rem 'Inter',sans-serif; cursor: pointer; border: 2px solid var(--border); background: #fff; color: var(--muted); transition: all 0.18s; }
+    .role-tab.active, .role-tab:hover { background: var(--navy); color: var(--gold); border-color: var(--navy); }
+
+    /* ── Service cards ── */
+    .svc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
+    .svc-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 20px;
+      padding: 1.8rem 1.5rem; transition: box-shadow 0.2s, transform 0.2s;
+      display: flex; flex-direction: column;
+    }
+    .svc-card:hover { box-shadow: 0 18px 44px rgba(8,34,65,0.11); transform: translateY(-3px); }
+    .svc-card.featured { border-color: var(--gold); border-width: 2px; }
+    .svc-ic {
+      width: 3rem; height: 3rem; border-radius: 14px; display: flex; align-items: center;
+      justify-content: center; font-size: 1.1rem; margin-bottom: 1.1rem; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy), var(--navy2));
+      color: var(--gold);
+    }
+    .svc-ic.green { background: linear-gradient(135deg,#166534,#15803d); color: #fff; }
+    .svc-card h3 { font-size: 1rem; font-weight: 900; color: var(--navy); margin-bottom: 0.5rem; }
+    .svc-card p  { font-size: 0.82rem; color: var(--muted); line-height: 1.68; flex: 1; }
+    .svc-badge { display: inline-block; margin-top: 1rem; padding: 0.22rem 0.65rem; border-radius: 999px; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+    .svc-badge.staff   { background: rgba(8,34,65,0.08);  color: var(--navy); }
+    .svc-badge.student { background: rgba(15,95,163,0.1); color: var(--blue); }
+    .svc-badge.ai      { background: rgba(243,208,20,0.18); color: #7a5c00; }
+    .svc-badge.both    { background: rgba(21,128,61,0.1);  color: #166534; }
+
+    /* ── Feature split ── */
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; align-items: center; }
+    .split-ic-list { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1.5rem; }
+    .split-ic-item { display: flex; gap: 0.85rem; align-items: flex-start; }
+    .split-ic {
+      width: 2.2rem; height: 2.2rem; border-radius: 10px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy), var(--navy2));
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); font-size: 0.85rem;
+    }
+    .split-ic-item h4 { font-size: 0.9rem; font-weight: 800; color: var(--navy); margin-bottom: 0.18rem; }
+    .split-ic-item p  { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+    .feature-mock {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 22px;
+      padding: 1.5rem; box-shadow: 0 28px 64px rgba(8,34,65,0.14);
+    }
+    .mock-header { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 1.2rem; }
+    .mock-header-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; }
+    .mock-title { font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .mock-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 0.65rem; }
+    .mock-stat { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 0.85rem; }
+    .mock-stat-num { font-size: 1.4rem; font-weight: 900; color: var(--navy); }
+    .mock-stat-lbl { font-size: 0.65rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.15rem; }
+    .mock-bar-wrap { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 0.55rem; }
+    .mock-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--navy), var(--blue)); }
+    .mock-ai-row {
+      display: flex; gap: 0.6rem; align-items: flex-start;
+      background: linear-gradient(135deg, var(--navy), var(--navy2));
+      border-radius: 12px; padding: 0.9rem 1rem; margin-top: 0.65rem;
+    }
+    .mock-ai-icon { width: 1.8rem; height: 1.8rem; border-radius: 8px; background: rgba(243,208,20,0.2); display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 0.75rem; flex-shrink: 0; }
+    .mock-ai-text { font-size: 0.72rem; color: rgba(255,255,255,0.8); line-height: 1.55; }
+    .mock-ai-text strong { color: #fff; }
+
+    /* ── Dark cards (AI section) ── */
+    .ai-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.1rem; }
+    .ai-card {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px; padding: 1.6rem 1.4rem;
+    }
+    .ai-card-ic { width: 2.8rem; height: 2.8rem; border-radius: 12px; background: rgba(243,208,20,0.18); display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 1rem; margin-bottom: 1rem; }
+    .ai-card h4 { font-size: 0.92rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem; }
+    .ai-card p  { font-size: 0.8rem; color: rgba(255,255,255,0.65); line-height: 1.65; }
+
+    /* ── Access table ── */
+    .access-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    .access-table th { background: var(--navy); color: var(--gold); padding: 0.75rem 1rem; text-align: left; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.07em; }
+    .access-table th:first-child { border-radius: 14px 0 0 0; }
+    .access-table th:last-child  { border-radius: 0 14px 0 0; text-align: center; }
+    .access-table td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); color: var(--text); }
+    .access-table td:not(:first-child) { text-align: center; }
+    .access-table tbody tr:last-child td { border-bottom: none; }
+    .access-table tbody tr:hover td { background: var(--surface); }
+    .check { color: #15803d; font-size: 1rem; }
+    .dash  { color: var(--border); }
+
+    /* ── CTA ── */
+    .cta-banner { background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); border-radius: 28px; padding: 3.5rem 3rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
+    .cta-banner h2 { font-size: 1.9rem; font-weight: 900; color: #fff; margin-bottom: 0.5rem; }
+    .cta-banner h2 span { color: var(--gold); }
+    .cta-banner p  { color: rgba(255,255,255,0.7); font-size: 0.92rem; }
+    .cta-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; flex-shrink: 0; }
+
+    /* ── Footer ── */
+    footer { background: #060f1a; color: rgba(255,255,255,0.55); padding: 3.5rem 2rem 1.5rem; }
+    .foot-inner { max-width: 1100px; margin: 0 auto; }
+    .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2.5rem; margin-bottom: 2.5rem; }
+    .foot-brand img { height: 28px; margin-bottom: 0.75rem; }
+    .foot-brand p { font-size: 0.8rem; line-height: 1.7; }
+    .foot-col h4 { font-size: 0.78rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
+    .foot-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .foot-col a { font-size: 0.8rem; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.15s; }
+    .foot-col a:hover { color: var(--gold); }
+    .foot-bottom { border-top: 1px solid rgba(255,255,255,0.07); padding-top: 1.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; font-size: 0.75rem; }
+    .foot-bottom a { color: var(--gold); text-decoration: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .stats-strip { grid-template-columns: repeat(2,1fr); }
+      .svc-grid    { grid-template-columns: 1fr 1fr; }
+      .ai-grid     { grid-template-columns: 1fr 1fr; }
+      .split       { grid-template-columns: 1fr; }
+      .foot-grid   { grid-template-columns: 1fr 1fr; }
+      .topnav      { display: none; }
+      .cta-banner  { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 580px) {
+      .svc-grid  { grid-template-columns: 1fr; }
+      .ai-grid   { grid-template-columns: 1fr; }
+      .foot-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <a href="index.html" class="brand">
+      <img src="assets/images/snhu-logo.png" alt="SNHU" />
+      <div class="brand-label">
+        <span>MunchiesSNHU</span>
+        <span>Food Waste Tracker</span>
+      </div>
+    </a>
+    <ul class="topnav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="sustainability.html">Sustainability</a></li>
+      <li><a href="services.html" class="active">Services</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="login.html">Login</a></li>
+      <li><button class="theme-toggle" onclick="toggleTheme()" title="Switch to dark mode" aria-label="Toggle theme"><i class="fas fa-moon"></i></button></li>
+      <li><a href="signup.html" class="btn-cta">Get Started</a></li>
+    </ul>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-video">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="assets/videos/SNHU SSB.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="hero-content">
+      <div class="hero-eyebrow"><i class="fas fa-layer-group"></i> Platform Services</div>
+      <h1>Every tool your campus needs to <span>track, reduce, and improve.</span></h1>
+      <p>MunchiesSNHU brings together data collection, AI-powered analysis, bulk import, reporting, and student engagement — all in one platform built for SNHU.</p>
+      <div class="hero-actions">
+        <a href="signup.html" class="btn-primary"><i class="fas fa-user-plus"></i> Get Started Free</a>
+        <a href="login.html"  class="btn-outline"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats strip -->
+  <div class="stats-strip">
+    <div class="stat-item">
+      <span class="stat-num">10+</span>
+      <span class="stat-label">Platform features</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">2</span>
+      <span class="stat-label">Role-based dashboards</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">AI</span>
+      <span class="stat-label">Powered by Claude &amp; Llama</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">Free</span>
+      <span class="stat-label">For all SNHU community</span>
+    </div>
+  </div>
+
+  <!-- All services -->
+  <section class="section">
+    <div class="inner">
+      <div class="tag">Full Platform</div>
+      <h2 class="sec-title">Everything built in — nothing to add on</h2>
+      <p class="sec-sub">Every feature below is included for all SNHU staff and students at no cost.</p>
+
+      <div class="svc-grid">
+
+        <div class="svc-card">
+          <div class="svc-ic"><i class="fas fa-scale-balanced"></i></div>
+          <h3>Waste Entry &amp; Logging</h3>
+          <p>Staff log food waste entries by weight, food type, location, and date — plus full sensor readings including pH, temperature, humidity, gas levels, and bin fullness.</p>
+          <span class="svc-badge staff">Staff</span>
+        </div>
+
+        <div class="svc-card featured">
+          <div class="svc-ic"><i class="fas fa-robot"></i></div>
+          <h3>MunchiesAI Assistant</h3>
+          <p>An AI chatbot with live database access. Ask anything — "What's our diversion rate?" or "Which bin needs pickup?" — and get grounded, data-driven answers in seconds.</p>
+          <span class="svc-badge ai">AI-Powered</span>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-ic"><i class="fas fa-chart-line"></i></div>
+          <h3>Live Staff Dashboard</h3>
+          <p>Real-time charts for daily waste vs. compost, diversion rate trends, week-over-week deltas, location heatmap, and critical bin alerts — all updating without a refresh.</p>
+          <span class="svc-badge staff">Staff</span>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-ic"><i class="fas fa-file-import"></i></div>
+          <h3>Bulk CSV Import</h3>
+          <p>Upload an entire week of waste data at once with drag-and-drop. Each row is validated before anything is saved — a preview table shows valid and error rows before import.</p>
+          <span class="svc-badge staff">Staff</span>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-ic"><i class="fas fa-chart-pie"></i></div>
+          <h3>Student Dashboard</h3>
+          <p>Students see real-time campus sustainability stats — composting progress, diversion rate toward the 50% goal, location leaderboard rankings, and weekly sustainability tips.</p>
+          <span class="svc-badge student">Student</span>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-ic"><i class="fas fa-file-arrow-down"></i></div>
+          <h3>Reports &amp; CSV Export</h3>
+          <p>Filter waste data by date range, location, or published status — then export to CSV or print a formatted report ready for sustainability meetings and audits.</p>
+          <span class="svc-badge staff">Staff</span>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-ic"><i class="fas fa-trophy"></i></div>
+          <h3>Campus Leaderboard</h3>
+          <p>Campus locations are ranked by compost diversion rate. Students can see live standings and rally their dining area toward the 50% goal — turning sustainability into a shared effort.</p>
+          <span class="svc-badge student">Student</span>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-ic"><i class="fas fa-gauge-high"></i></div>
+          <h3>Sensor &amp; Bin Monitoring</h3>
+          <p>Track pH, temperature, humidity, methane gas, and bin fullness per entry. The staff dashboard flags any bin above 80% fullness with a live alert banner.</p>
+          <span class="svc-badge both">Staff &amp; Students</span>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-ic"><i class="fas fa-bullseye"></i></div>
+          <h3>Pledge Goals</h3>
+          <p>Students can set a personal sustainability pledge goal and track their progress over time — adding a personal stake to campus-wide composting efforts.</p>
+          <span class="svc-badge student">Student</span>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-ic green"><i class="fas fa-map-location-dot"></i></div>
+          <h3>Location Heatmap</h3>
+          <p>Visualise which buildings and dining areas generate the most waste — ranked by total volume and diversion rate so staff can prioritize resources and attention.</p>
+          <span class="svc-badge staff">Staff</span>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-ic green"><i class="fas fa-lightbulb"></i></div>
+          <h3>Sustainability Tips Feed</h3>
+          <p>A rotating feed of curated composting and waste reduction tips surfaces directly on the student dashboard — keeping sustainability top-of-mind without extra effort.</p>
+          <span class="svc-badge student">Student</span>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-ic green"><i class="fas fa-shield-halved"></i></div>
+          <h3>Role-Based Access Control</h3>
+          <p>Staff and students see only what's relevant to them. JWT authentication, per-role route protection, and separate dashboards keep data secure and views clean.</p>
+          <span class="svc-badge both">All Users</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- AI deep-dive -->
+  <section class="section dark">
+    <div class="inner">
+      <div class="center">
+        <div class="tag light"><i class="fas fa-robot"></i> MunchiesAI</div>
+        <h2 class="sec-title white">The AI assistant that knows your campus data</h2>
+        <p class="sec-sub white">MunchiesAI doesn't give generic advice. Every response is grounded in live numbers pulled from the database the moment you ask.</p>
+      </div>
+      <div class="ai-grid">
+        <div class="ai-card">
+          <div class="ai-card-ic"><i class="fas fa-database"></i></div>
+          <h4>Live Data Context</h4>
+          <p>Before every response, MunchiesAI reads your actual campus numbers — total waste, compost, diversion rate, top locations, and week-over-week trends.</p>
+        </div>
+        <div class="ai-card">
+          <div class="ai-card-ic"><i class="fas fa-arrow-trend-up"></i></div>
+          <h4>Week-over-Week Analysis</h4>
+          <p>Automatically compares this week against last week and tells you whether waste is improving, worsening, or flat — and what to focus on next.</p>
+        </div>
+        <div class="ai-card">
+          <div class="ai-card-ic"><i class="fas fa-map-pin"></i></div>
+          <h4>Location Intelligence</h4>
+          <p>Knows which locations generate the most waste and which have the best or worst diversion rates — so it can give location-specific recommendations.</p>
+        </div>
+        <div class="ai-card">
+          <div class="ai-card-ic"><i class="fas fa-comments"></i></div>
+          <h4>Plain English Questions</h4>
+          <p>No dashboards to dig through. Just ask: "What is our diversion rate?", "Which bin needs pickup?", or "Give me 3 tips to reduce waste this week."</p>
+        </div>
+        <div class="ai-card">
+          <div class="ai-card-ic"><i class="fas fa-server"></i></div>
+          <h4>Dual AI Provider</h4>
+          <p>Powered by Claude (Anthropic) with automatic fallback to Llama 3 via Groq — so MunchiesAI stays available even during provider outages.</p>
+        </div>
+        <div class="ai-card">
+          <div class="ai-card-ic"><i class="fas fa-lock"></i></div>
+          <h4>Auth-Protected</h4>
+          <p>MunchiesAI is only accessible to signed-in users. Rate-limited to 40 messages per 15 minutes to keep usage fair across the campus community.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bulk import highlight -->
+  <section class="section alt">
+    <div class="inner">
+      <div class="split">
+        <div>
+          <div class="tag">Bulk CSV Import</div>
+          <h2 class="sec-title">Upload a week of data in seconds</h2>
+          <p class="sec-sub">Instead of entering entries one by one, staff can prepare a CSV file off-system and upload the whole batch at once.</p>
+          <div class="split-ic-list">
+            <div class="split-ic-item">
+              <div class="split-ic"><i class="fas fa-cloud-arrow-up"></i></div>
+              <div>
+                <h4>Drag-and-drop upload</h4>
+                <p>Drop a .csv file or click to browse. The importer reads it instantly in the browser — no server round-trip until you approve.</p>
+              </div>
+            </div>
+            <div class="split-ic-item">
+              <div class="split-ic"><i class="fas fa-table-list"></i></div>
+              <div>
+                <h4>Row-by-row validation preview</h4>
+                <p>Every row is checked for required fields and valid formats before import. A colour-coded preview table shows exactly which rows will succeed or be skipped.</p>
+              </div>
+            </div>
+            <div class="split-ic-item">
+              <div class="split-ic"><i class="fas fa-file-arrow-down"></i></div>
+              <div>
+                <h4>Blank template download</h4>
+                <p>Download a pre-formatted CSV template with example rows and column headers — so the format is always correct the first time.</p>
+              </div>
+            </div>
+            <div class="split-ic-item">
+              <div class="split-ic"><i class="fas fa-gauge"></i></div>
+              <div>
+                <h4>Live progress bar</h4>
+                <p>Rows are submitted one by one with a real-time progress bar — so you always know how far along the import is and how many succeeded.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="feature-mock">
+          <div class="mock-header">
+            <div class="mock-header-dot" style="background:#4ade80;"></div>
+            <div class="mock-header-dot" style="background:#f3d014;margin-left:0.3rem;"></div>
+            <div class="mock-header-dot" style="background:#f87171;margin-left:0.3rem;"></div>
+            <span class="mock-title" style="margin-left:0.5rem;">Bulk CSV Import</span>
+          </div>
+          <div style="border:2.5px dashed var(--gold);border-radius:14px;padding:1.4rem;text-align:center;background:rgba(243,208,20,0.04);margin-bottom:0.9rem;">
+            <div style="font-size:2rem;color:var(--gold);margin-bottom:0.4rem;"><i class="fas fa-cloud-arrow-up"></i></div>
+            <div style="font-size:0.85rem;font-weight:800;color:var(--navy);">waste-data-week-42.csv</div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:0.2rem;">48 rows · 2 errors detected</div>
+          </div>
+          <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:0.65rem 0.9rem;margin-bottom:0.65rem;">
+            <div style="font-size:0.75rem;font-weight:800;color:#15803d;">46 valid rows ready to import</div>
+          </div>
+          <div style="background:#fff1f2;border:1px solid #fca5a5;border-radius:10px;padding:0.65rem 0.9rem;margin-bottom:0.9rem;">
+            <div style="font-size:0.75rem;font-weight:800;color:#b91c1c;">2 rows will be skipped — missing required fields</div>
+          </div>
+          <div style="height:8px;background:var(--border);border-radius:999px;overflow:hidden;margin-bottom:0.5rem;">
+            <div style="width:72%;height:100%;background:linear-gradient(90deg,var(--navy),var(--blue));border-radius:999px;"></div>
+          </div>
+          <div style="font-size:0.72rem;color:var(--muted);font-weight:600;">Importing row 33 of 46…</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Access comparison -->
+  <section class="section">
+    <div class="inner">
+      <div class="center">
+        <div class="tag">Role Access</div>
+        <h2 class="sec-title">What each role can do</h2>
+        <p class="sec-sub">Both roles are free. Access is determined automatically at account creation.</p>
+      </div>
+      <div style="overflow-x:auto;border:1px solid var(--border);border-radius:16px;">
+        <table class="access-table">
+          <thead>
+            <tr>
+              <th style="width:55%">Feature</th>
+              <th>Staff</th>
+              <th>Student</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Log waste entries (weight, food type, location, date)</td><td><i class="fas fa-check check"></i></td><td><i class="fas fa-minus dash"></i></td></tr>
+            <tr><td>Bulk CSV import with validation preview</td><td><i class="fas fa-check check"></i></td><td><i class="fas fa-minus dash"></i></td></tr>
+            <tr><td>Staff dashboard — live charts, heatmap, week deltas</td><td><i class="fas fa-check check"></i></td><td><i class="fas fa-minus dash"></i></td></tr>
+            <tr><td>Critical bin fullness alerts</td><td><i class="fas fa-check check"></i></td><td><i class="fas fa-minus dash"></i></td></tr>
+            <tr><td>Reports — filter, export CSV, print</td><td><i class="fas fa-check check"></i></td><td><i class="fas fa-minus dash"></i></td></tr>
+            <tr><td>Edit and publish waste entries</td><td><i class="fas fa-check check"></i></td><td><i class="fas fa-minus dash"></i></td></tr>
+            <tr><td>Student dashboard — campus waste &amp; composting stats</td><td><i class="fas fa-minus dash"></i></td><td><i class="fas fa-check check"></i></td></tr>
+            <tr><td>Campus leaderboard rankings</td><td><i class="fas fa-minus dash"></i></td><td><i class="fas fa-check check"></i></td></tr>
+            <tr><td>Personal pledge goal tracking</td><td><i class="fas fa-minus dash"></i></td><td><i class="fas fa-check check"></i></td></tr>
+            <tr><td>Sustainability tips feed</td><td><i class="fas fa-minus dash"></i></td><td><i class="fas fa-check check"></i></td></tr>
+            <tr><td>MunchiesAI chatbot</td><td><i class="fas fa-check check"></i></td><td><i class="fas fa-check check"></i></td></tr>
+            <tr><td>Dark mode</td><td><i class="fas fa-check check"></i></td><td><i class="fas fa-check check"></i></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section alt">
+    <div class="inner">
+      <div class="cta-banner">
+        <div>
+          <h2>Ready to put these tools to <span>work on campus?</span></h2>
+          <p>Create your account in seconds — staff and student dashboards are waiting.</p>
+        </div>
+        <div class="cta-btns">
+          <a href="signup.html" class="btn-primary"><i class="fas fa-user-plus"></i> Create Account</a>
+          <a href="about.html"  class="btn-outline" style="border-color:rgba(255,255,255,0.3)"><i class="fas fa-circle-info"></i> Learn More</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="foot-inner">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <img src="assets/images/snhu-logo.png" alt="SNHU" />
+          <p>MunchiesSNHU is Southern New Hampshire University's campus food waste tracking and sustainability platform — built to make composting measurable and impactful.</p>
+        </div>
+        <div class="foot-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="sustainability.html">Sustainability</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Dashboards</h4>
+          <ul>
+            <li><a href="login.html">Staff Login</a></li>
+            <li><a href="login.html">Student Login</a></li>
+            <li><a href="signup.html">Create Account</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="mailto:sustainability@snhu.edu">sustainability@snhu.edu</a></li>
+            <li><a href="contact.html">Send a Message</a></li>
+            <li style="color:rgba(255,255,255,0.4);font-size:0.78rem;">2500 N River Rd<br>Manchester, NH 03106</li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2025 MunchiesSNHU &mdash; Southern New Hampshire University</span>
+        <span><a href="about.html">About</a> &nbsp;&middot;&nbsp; <a href="contact.html">Contact</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/theme.js"></script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

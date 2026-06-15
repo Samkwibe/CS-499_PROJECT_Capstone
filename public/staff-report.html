@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Reports - SNHU Food Waste Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/chartTheme.js"></script>
+</head>
+<body class="dashboard-shell role-staff">
+  <header class="topbar">
+    <div class="brand-lockup">
+      <img src="assets/images/snhu-logo.png" alt="SNHU" class="topbar-logo" />
+      <div class="brand-label">
+        <span class="brand-label-top">MunchiesSNHU</span>
+        <span class="brand-label-main">Reports</span>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="staff-dashboard.html">Dashboard</a></li>
+        <li><a href="data-entry.html">Data Input</a></li>
+        <li><a href="staff-import.html">Bulk Import</a></li>
+        <li><a href="staff-report.html">Reports</a></li>
+        <li><a href="settings-staff.html">Settings</a></li>
+        <li><a href="login.html" data-logout>Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page-wrap">
+    <section class="hero-panel">
+      <div>
+        <div class="eyebrow">Staff Reporting</div>
+        <h1>Operational Reports</h1>
+        <p>Summaries, trends, and detailed logs generated from the food waste collection.</p>
+      </div>
+      <div class="status-card">
+        <span class="metric-label">Report Status</span>
+        <strong>Live</strong>
+        <p>Charts and tables update from current food waste records.</p>
+      </div>
+    </section>
+
+    <section class="metric-grid" aria-label="Report metrics">
+      <article class="metric-card">
+        <div class="metric-icon"><i class="fas fa-weight-hanging"></i></div>
+        <span class="metric-label">Total Waste</span>
+        <div class="metric-value" id="reportWaste">--</div>
+      </article>
+      <article class="metric-card">
+        <div class="metric-icon"><i class="fas fa-seedling"></i></div>
+        <span class="metric-label">Total Compost</span>
+        <div class="metric-value" id="reportCompost">--</div>
+      </article>
+      <article class="metric-card">
+        <div class="metric-icon"><i class="fas fa-chart-pie"></i></div>
+        <span class="metric-label">Diversion Rate</span>
+        <div class="metric-value" id="reportDiversion">--</div>
+      </article>
+      <article class="metric-card">
+        <div class="metric-icon"><i class="fas fa-flask"></i></div>
+        <span class="metric-label">Avg. pH</span>
+        <div class="metric-value" id="reportPh">--</div>
+      </article>
+    </section>
+
+    <section class="analytics-row">
+      <article class="section-card chart-card">
+        <div class="chart-card-header">
+          <h2>Daily Waste vs Compost</h2>
+          <span class="chart-subtitle">Side-by-side daily totals</span>
+        </div>
+        <div class="chart-panel chart-panel-line">
+          <canvas id="wasteTrendChart" aria-label="Daily waste and compost chart"></canvas>
+        </div>
+      </article>
+      <aside class="section-card">
+        <div class="chart-card-header">
+          <h2>Top Pickup Risks</h2>
+          <span class="chart-subtitle">Highest priority</span>
+        </div>
+        <div id="reportPriorityList" class="priority-list compact">
+          <div class="empty-state">Loading priority data...</div>
+        </div>
+      </aside>
+    </section>
+
+    <div class="report-toolbar" aria-label="Filter and export">
+      <span class="report-toolbar-label"><i class="fas fa-filter"></i> Filter</span>
+      <input type="text" class="filter-input filter-search" id="reportSearch"
+        placeholder="Search food type, location…" oninput="applyReportFilter()" autocomplete="off" />
+      <input type="date" class="filter-input filter-date" id="reportDateFrom"
+        title="Start date" onchange="applyReportFilter()" />
+      <span style="font-size:0.78rem;color:var(--text-muted);font-weight:700;">to</span>
+      <input type="date" class="filter-input filter-date" id="reportDateTo"
+        title="End date" onchange="applyReportFilter()" />
+      <select class="filter-input filter-select" id="reportStatus" onchange="applyReportFilter()">
+        <option value="">All status</option>
+        <option value="published">Published</option>
+        <option value="draft">Draft</option>
+      </select>
+      <div class="report-toolbar-gap"></div>
+      <span class="filter-count" id="reportFilterCount"></span>
+      <button class="btn-export" onclick="exportReportCSV()">
+        <i class="fas fa-download"></i> Export CSV
+      </button>
+      <button class="btn-export" onclick="window.print()" style="background:var(--snhu-blue);">
+        <i class="fas fa-print"></i> Print
+      </button>
+    </div>
+
+    <section class="section-card table-card">
+      <h2>Detailed Waste Log</h2>
+      <div class="table-wrap">
+        <table class="professional-table">
+          <thead>
+            <tr>
+              <th>Food Type</th>
+              <th>Weight</th>
+              <th>Date</th>
+              <th>Location</th>
+              <th>Temp</th>
+              <th>Humidity</th>
+              <th>pH</th>
+              <th>Gas</th>
+              <th>Fullness</th>
+              <th>Compost</th>
+              <th>Published</th>
+            </tr>
+          </thead>
+          <tbody id="reportRows">
+            <tr><td colspan="11">Loading detailed waste records...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Protect the reports page so only staff/admin users can view operational data.
+    window.MunchiesAuth.requireAuth(['staff', 'admin']);
+    // Enable the shared logout behavior for the navigation link.
+    window.MunchiesAuth.setupLogoutLinks();
+
+    // Format numbers as pounds so report values are easy to read.
+    const formatPounds = value => `${Number(value || 0).toFixed(1)} lbs`;
+    // Format numbers as whole percentages for dashboard-style metrics.
+    const formatPercent = value => `${Math.round(value || 0)}%`;
+    // Format database date strings into local browser dates for the table.
+    const formatDate = value => value ? new Date(value).toLocaleDateString() : '';
+
+    // fetchJson() sends an authenticated request and returns parsed JSON.
+    async function fetchJson(url) {
+      // Include the saved login headers with the request.
+      const response = await fetch(url, { headers: window.MunchiesAuth.getAuthHeaders() });
+      // Convert the response body from JSON text into a JavaScript object.
+      const data = await response.json();
+      // Throw an error when the server sends a non-success HTTP status.
+      if (!response.ok) throw new Error(data.message || 'Unable to load report data');
+      // Return the parsed API data to the caller.
+      return data;
+    }
+
+    let reportTrendChart;
+    let allReportEntries = [];
+
+    // renderSummary() fills the KPI cards and daily trend chart from report data.
+    function renderSummary(summary) {
+      document.getElementById('reportWaste').textContent = formatPounds(summary.totalWaste);
+      document.getElementById('reportCompost').textContent = formatPounds(summary.totalCompost);
+      document.getElementById('reportDiversion').textContent = formatPercent(summary.compostDiversionRate);
+      document.getElementById('reportPh').textContent = Number(summary.averagePH || 0).toFixed(1);
+
+      const labels = (summary.dailyTrend || []).map(item => item._id);
+      const wasteValues = (summary.dailyTrend || []).map(item => item.totalWaste || 0);
+      const compostValues = (summary.dailyTrend || []).map(item => item.totalCompost || 0);
+      const canvas = document.getElementById('wasteTrendChart');
+
+      if (reportTrendChart) {
+        window.MunchiesCharts.updateDualBarChart(reportTrendChart, labels, wasteValues, compostValues);
+        return;
+      }
+
+      reportTrendChart = window.MunchiesCharts.buildDualBarChart(
+        canvas,
+        labels,
+        wasteValues,
+        compostValues
+      );
+    }
+
+    // renderPriority() displays the highest-risk pickup recommendations.
+    function renderPriority(entries) {
+      // Get the container where priority cards should be placed.
+      const container = document.getElementById('reportPriorityList');
+      // Show a clear empty state when no priority data exists.
+      if (!entries.length) {
+        container.innerHTML = '<div class="empty-state">No priority risks available yet.</div>';
+        return;
+      }
+
+      // Show the top four priority entries so the report stays concise.
+      container.innerHTML = entries.slice(0, 4).map(entry => `
+        <div class="priority-item">
+          <div>
+            <strong>${entry.location || 'Unknown location'}</strong>
+            <div>${entry.foodType || 'Food waste'} - ${formatPounds(entry.weight)}</div>
+          </div>
+          <span class="badge badge-${String(entry.priorityLevel).toLowerCase()}">${entry.priorityLevel}</span>
+        </div>
+      `).join('');
+    }
+
+    // renderEntries() fills the detailed report table with every waste record.
+    function renderEntries(entries) {
+      // Get the table body that will hold the generated rows.
+      const rows = document.getElementById('reportRows');
+      // If there are no entries, explain that instead of showing an empty table.
+      if (!entries.length) {
+        rows.innerHTML = '<tr><td colspan="11">No waste entries have been logged yet.</td></tr>';
+        return;
+      }
+
+      // Build one table row per database record.
+      rows.innerHTML = entries.map(entry => `
+        <tr>
+          <td>${entry.foodType || ''}</td>
+          <td>${formatPounds(entry.weight)}</td>
+          <td>${formatDate(entry.date)}</td>
+          <td>${entry.location || ''}</td>
+          <td>${entry.temperature ?? ''}</td>
+          <td>${entry.humidity ?? ''}%</td>
+          <td>${entry.pH ?? ''}</td>
+          <td>${entry.gas ?? ''}</td>
+          <td>${entry.binFullness ?? ''}%</td>
+          <td>${formatPounds(entry.compostWeight)}</td>
+          <td>${entry.published ? 'Yes' : 'No'}</td>
+        </tr>
+      `).join('');
+    }
+
+    // loadReports() loads all report data needed for the page.
+    async function loadReports() {
+      try {
+        // Promise.all runs the three API requests at the same time for faster loading.
+        const [summary, priorities, entries] = await Promise.all([
+          fetchJson('/api/waste/reports/summary'),
+          fetchJson('/api/waste/priority'),
+          fetchJson('/api/waste/all')
+        ]);
+
+        // Render each part of the page after all data has loaded.
+        allReportEntries = entries;
+        renderSummary(summary);
+        renderPriority(priorities);
+        applyReportFilter();
+      } catch (error) {
+        // Display the error in the table if any report request fails.
+        document.getElementById('reportRows').innerHTML = `<tr><td colspan="11">${error.message}</td></tr>`;
+      }
+    }
+
+    function applyReportFilter() {
+      const q = (document.getElementById('reportSearch')?.value || '').trim().toLowerCase();
+      const from = document.getElementById('reportDateFrom')?.value;
+      const to = document.getElementById('reportDateTo')?.value;
+      const status = document.getElementById('reportStatus')?.value;
+
+      const filtered = allReportEntries.filter(e => {
+        if (q && !(
+          (e.foodType || '').toLowerCase().includes(q) ||
+          (e.location || '').toLowerCase().includes(q)
+        )) return false;
+        if (from || to) {
+          const d = e.date ? new Date(e.date) : null;
+          if (!d) return false;
+          if (from && d < new Date(from)) return false;
+          if (to && d > new Date(to + 'T23:59:59')) return false;
+        }
+        if (status === 'published' && !e.published) return false;
+        if (status === 'draft' && e.published) return false;
+        return true;
+      });
+
+      const countEl = document.getElementById('reportFilterCount');
+      if (countEl) {
+        const isFiltered = q || from || to || status;
+        countEl.textContent = isFiltered ? `${filtered.length} of ${allReportEntries.length} entries` : '';
+      }
+      renderEntries(filtered);
+    }
+
+    function exportReportCSV() {
+      const q = (document.getElementById('reportSearch')?.value || '').trim().toLowerCase();
+      const from = document.getElementById('reportDateFrom')?.value;
+      const to = document.getElementById('reportDateTo')?.value;
+      const status = document.getElementById('reportStatus')?.value;
+
+      const data = allReportEntries.filter(e => {
+        if (q && !((e.foodType || '').toLowerCase().includes(q) || (e.location || '').toLowerCase().includes(q))) return false;
+        if (from || to) {
+          const d = e.date ? new Date(e.date) : null;
+          if (!d) return false;
+          if (from && d < new Date(from)) return false;
+          if (to && d > new Date(to + 'T23:59:59')) return false;
+        }
+        if (status === 'published' && !e.published) return false;
+        if (status === 'draft' && e.published) return false;
+        return true;
+      });
+
+      const headers = ['Food Type','Weight (lbs)','Date','Location','Temp (°F)','Humidity (%)','pH','Gas (ppm)','Bin Fullness (%)','Compost (lbs)','Published'];
+      const rows = data.map(e => [
+        e.foodType || '',
+        Number(e.weight || 0).toFixed(1),
+        e.date ? new Date(e.date).toLocaleDateString() : '',
+        e.location || '',
+        e.temperature ?? '',
+        e.humidity ?? '',
+        e.pH ?? '',
+        e.gas ?? '',
+        e.binFullness ?? '',
+        Number(e.compostWeight || 0).toFixed(1),
+        e.published ? 'Yes' : 'No'
+      ]);
+
+      const csv = [headers, ...rows]
+        .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `waste-report-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Load the reports immediately when the page opens.
+    loadReports();
+  </script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

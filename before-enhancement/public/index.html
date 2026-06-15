@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SNHU Food Waster | Home</title>
+  <meta name="description" content="Track and reduce food waste across SNHU campus with our innovative platform">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #082241;
+      --secondary: #F3D014;
+      --accent: #4CAF50;
+      --text: #333333;
+      --text-light: #f8f9fa;
+      --bg: #ffffff;
+      --card-bg: #f8f9fa;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    [data-theme="dark"] {
+      --primary: #121212;
+      --secondary: #FFD700;
+      --accent: #81C784;
+      --text: #f8f9fa;
+      --text-light: #f8f9fa;
+      --bg: #121212;
+      --card-bg: #1E1E1E;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    * {
+      box-sizing: border-box; margin: 0; padding: 0;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: var(--transition);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    /* BACKGROUND VIDEO */
+    #background-video {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+    .overlay {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.3);
+      z-index: -1;
+    }
+    /* HEADER */
+    header {
+      background-color: var(--primary);
+      color: var(--text-light);
+      padding: 1rem 2rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: var(--transition);
+    }
+    .logo {
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .logo img {
+      height: 80px; /* Larger logo */
+      width: auto;
+    }
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+      margin: 0; padding: 0;
+    }
+    nav ul li a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-weight: 500;
+      position: relative;
+      transition: var(--transition);
+    }
+    nav ul li a:hover {
+      color: var(--secondary);
+    }
+    .auth-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+    .btn {
+      padding: 0.5rem 1.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-primary {
+      background-color: var(--secondary);
+      color: var(--primary);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(243, 208, 20, 0.3);
+    }
+    .btn-outline {
+      background-color: transparent;
+      color: var(--text-light);
+      border: 2px solid var(--text-light);
+    }
+    .btn-outline:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin-left: 1rem;
+    }
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+    }
+    .hero-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .hero-text { max-width: 600px; }
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--text-light);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 2rem;
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    /* SECTION EXAMPLES */
+    .section {
+      padding: 6rem 2rem;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+      color: var(--text);
+      position: relative;
+    }
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background-color: var(--secondary);
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .feature-card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      text-align: center;
+    }
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .feature-icon {
+      font-size: 3rem;
+      color: var(--secondary);
+      margin-bottom: 1.5rem;
+    }
+    /* FOOTER */
+    footer {
+      background-color: var(--primary);
+      color: var(--text-light);
+      padding: 4rem 2rem 2rem;
+    }
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+      gap: 2rem;
+    }
+    .footer-logo {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .footer-logo img {
+      height: 40px;
+    }
+    .footer-logo-text {
+      font-size: 1.2rem; font-weight: 700; color: var(--secondary);
+    }
+    .footer-links ul {
+      list-style: none;
+    }
+    .footer-links a {
+      color: var(--text-light);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .footer-links a:hover {
+      color: var(--secondary);
+    }
+    .footer-social {
+      display: flex; gap: 1rem; margin-top: 1rem;
+    }
+    .footer-social a {
+      color: var(--text-light);
+      font-size: 1.2rem;
+      transition: var(--transition);
+    }
+    .footer-social a:hover {
+      color: var(--secondary);
+      transform: translateY(-3px);
+    }
+    .footer-bottom {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    /* Chatbot */
+    .chatbot-toggle {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background-color: var(--secondary);
+      color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 1000;
+      transition: var(--transition);
+      border: none;
+    }
+    .chatbot-toggle:hover {
+      transform: scale(1.1);
+    }
+    .chatbot-container {
+      position: fixed; bottom: 8rem; right: 2rem;
+      width: 350px; max-height: 500px;
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .chatbot-header {
+      background-color: var(--primary);
+      color: var(--text-light);
+      padding: 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .chatbot-title {
+      font-weight: 600; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .chatbot-close {
+      background: none; border: none; color: var(--text-light);
+      font-size: 1.2rem; cursor: pointer;
+    }
+    .chatbot-messages {
+      flex: 1; padding: 1rem; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 0.8rem;
+    }
+    .message {
+      max-width: 80%; padding: 0.8rem 1rem;
+      border-radius: 12px; animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .user-message {
+      background-color: var(--secondary);
+      color: var(--primary);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .bot-message {
+      background-color: var(--primary);
+      color: var(--text-light);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .chatbot-input {
+      display: flex; padding: 0.8rem; border-top: 1px solid rgba(0,0,0,0.1);
+    }
+    .chatbot-input input {
+      flex: 1; padding: 0.8rem; border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 25px; outline: none; background-color: var(--bg);
+      color: var(--text);
+    }
+    .chatbot-send {
+      background-color: var(--secondary);
+      color: var(--primary);
+      border: none; border-radius: 50%;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      margin-left: 0.5rem; cursor: pointer; transition: var(--transition);
+    }
+    .chatbot-send:hover {
+      transform: scale(1.1);
+    }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-title { font-size: 2.5rem; }
+      .hero-subtitle { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND VIDEO & OVERLAY -->
+  <video id="background-video" autoplay muted loop playsinline>
+    <source src="assets/videos/SNHU-FOOD.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <div class="overlay"></div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <img src="assets/images/snhu-logo.png" alt="SNHU Logo">
+      <span class="logo-text">SNHU Food Waster</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="auth-buttons">
+      <!-- When user clicks "Login", go to login.html -->
+      <button class="btn btn-outline" onclick="window.location='login.html'">Login</button>
+      <!-- When user clicks "Sign Up", go to signup.html -->
+      <button class="btn btn-primary" onclick="window.location='signup.html'">Sign Up</button>
+      <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">Reduce Food Waste, Save Our Planet</h1>
+        <p class="hero-subtitle">
+          Join SNHU's initiative to track, analyze, and reduce food waste across campus.
+          Together we can make a difference!
+        </p>
+        <div class="hero-buttons">
+          <button class="btn btn-primary">
+            <i class="fas fa-play"></i> Watch Video
+          </button>
+          <!-- "View Dashboard" -> go to login page as well -->
+          <button class="btn btn-outline" onclick="window.location='login.html'">
+            <i class="fas fa-chart-line"></i> View Dashboard=
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section">
+    <h2 class="section-title">Our Powerful Features</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+        <h3 class="feature-title">Real-time Analytics</h3>
+        <p class="feature-text">Track food waste in real-time with interactive dashboards and data visualizations.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-robot"></i></div>
+        <h3 class="feature-title">AI Assistant</h3>
+        <p class="feature-text">Get personalized recommendations from our AI-powered assistant to reduce waste.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+        <h3 class="feature-title">Mobile Friendly</h3>
+        <p class="feature-text">Report waste and access data from anywhere with our responsive interface.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-about">
+        <div class="footer-logo">
+          <img src="assets/images/snhu-logo.png" alt="SNHU Logo">
+          <span class="footer-logo-text">SNHU Food Waster</span>
+        </div>
+        <p class="footer-about">
+          A sustainable initiative by Southern New Hampshire University 
+          to reduce food waste and promote environmental responsibility.
+        </p>
+        <div class="footer-social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="#">Sustainability Guide</a></li>
+          <li><a href="#">Waste Reduction Tips</a></li>
+          <li><a href="#">Research Papers</a></li>
+          <li><a href="#">Volunteer Opportunities</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h3>Contact Us</h3>
+        <ul>
+          <li><i class="fas fa-envelope"></i> foodwaster@snhu.edu</li>
+          <li><i class="fas fa-phone"></i> (603) 645-9600</li>
+          <li><i class="fas fa-map-marker-alt"></i> 2500 N River Rd, Manchester, NH</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 SNHU Food Waster Initiative. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- CHATBOT -->
+  <button class="chatbot-toggle" id="chatbotToggle">
+    <i class="fas fa-robot"></i>
+  </button>
+  <div class="chatbot-container" id="chatbotContainer">
+    <div class="chatbot-header">
+      <div class="chatbot-title">
+        <i class="fas fa-robot"></i> MunchieBot
+      </div>
+      <button class="chatbot-close" id="chatbotClose"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="chatbot-messages" id="chatbotMessages">
+      <div class="message bot-message">
+        Hello! I'm MunchieBot 🤖 How can I help you reduce food waste today?
+      </div>
+    </div>
+    <div class="chatbot-input">
+      <input type="text" id="chatbotInput" placeholder="Ask me about food waste...">
+      <button class="chatbot-send" id="chatbotSend">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+  <!-- VIEW AS STUDENT / STAFF BUTTONS -->
+<div style="position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); z-index: 999; display: flex; gap: 1rem;">
+  <button class="btn btn-primary" onclick="window.location.href='student-dashboard.html'">View as Student</button>
+  <button class="btn btn-outline" onclick="window.location.href='staff-dashboard.html'">View as Staff Sustainability</button>
+</div>
+
+
+  <script>
+    /************ THEME TOGGLE ************/
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    themeToggle.addEventListener('click', () => {
+      const isDark = body.getAttribute('data-theme') === 'dark';
+      body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      themeToggle.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    });
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    body.setAttribute('data-theme', savedTheme);
+    themeToggle.innerHTML = savedTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
+    /************ CHATBOT ************/
+    const chatbotToggle = document.getElementById('chatbotToggle');
+    const chatbotContainer = document.getElementById('chatbotContainer');
+    const chatbotClose = document.getElementById('chatbotClose');
+    const chatbotMessages = document.getElementById('chatbotMessages');
+    const chatbotInput = document.getElementById('chatbotInput');
+    const chatbotSend = document.getElementById('chatbotSend');
+
+    chatbotToggle.addEventListener('click', () => {
+      chatbotContainer.style.display = 
+        (chatbotContainer.style.display === 'flex') ? 'none' : 'flex';
+      chatbotContainer.style.flexDirection = 'column';
+    });
+    chatbotClose.addEventListener('click', () => {
+      chatbotContainer.style.display = 'none';
+    });
+    chatbotSend.addEventListener('click', sendMessage);
+    chatbotInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    function sendMessage() {
+      const text = chatbotInput.value.trim();
+      if (!text) return;
+
+      const userMsg = document.createElement('div');
+      userMsg.classList.add('message', 'user-message');
+      userMsg.textContent = `👤 ${text}`;
+      chatbotMessages.appendChild(userMsg);
+
+      const botMsg = document.createElement('div');
+      botMsg.classList.add('message', 'bot-message');
+      setTimeout(() => {
+        botMsg.textContent = `🤖 ${getAIResponse(text)}`;
+        chatbotMessages.appendChild(botMsg);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+      }, 600);
+
+      chatbotInput.value = '';
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    function getAIResponse(msg) {
+      const lower = msg.toLowerCase();
+      if (lower.includes("waste")) return "We track & reduce waste daily! ♻️";
+      if (lower.includes("report")) return "Reports are available under the 'Reports' tab. 📄";
+      if (lower.includes("sustain")) return "Sustainability is at the heart of our mission! 🌱";
+      return "I'm still learning! Could you rephrase that?";
+    }
+  </script>
+</body>
+</html>

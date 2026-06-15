@@ -1,0 +1,6 @@
+before-enhancement
+snhu-foodwaste-backend/coverage
+snhu-foodwaste-backend/node_modules
+**/.env
+**/.DS_Store
+.git

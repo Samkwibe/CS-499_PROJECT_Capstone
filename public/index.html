@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MunchiesSNHU — Campus Food Waste Tracker</title>
+  <meta name="description" content="SNHU's campus food waste tracking platform. Track, analyze, and reduce food waste across campus with AI-powered insights." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <script>(function(){var t=localStorage.getItem('munchies-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})()</script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #082241; --navy2: #0f3f70; --gold: #f3d014; --blue: #0f5fa3;
+      --text: #172033; --muted: #657085; --border: #d9e1ec; --surface: #f5f7fb;
+    }
+    body { font-family: 'Inter', Arial, sans-serif; color: var(--text); background: #fff; overflow-x: hidden; }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 2rem;
+      background: rgba(8,34,65,0.97); backdrop-filter: blur(16px);
+      box-shadow: 0 2px 24px rgba(8,34,65,0.3);
+    }
+    .brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; }
+    .brand img { height: 32px; width: auto; }
+    .brand-label { display: flex; flex-direction: column; line-height: 1.15; }
+    .brand-label span:first-child { font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.48); text-transform: uppercase; letter-spacing: 0.1em; }
+    .brand-label span:last-child  { font-size: 0.88rem; font-weight: 800; color: var(--gold); }
+    .topnav { display: flex; gap: 0.15rem; list-style: none; align-items: center; }
+    .topnav a { display: block; padding: 0.42rem 0.82rem; border-radius: 8px; color: rgba(255,255,255,0.72); font-size: 0.83rem; font-weight: 600; text-decoration: none; transition: all 0.15s; }
+    .topnav a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .topnav .cta { background: var(--gold); color: var(--navy) !important; border-radius: 999px; font-weight: 800; padding: 0.42rem 1.1rem; }
+    .topnav .cta:hover { opacity: 0.9; background: var(--gold); }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center;
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, var(--navy) 0%, #0a2d55 55%, #0f4a82 100%);
+    }
+    .hero-bg {
+      position: absolute; inset: 0; overflow: hidden;
+    }
+    .hero-bg video {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; opacity: 0.22; pointer-events: none;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 65% 50%, rgba(243,208,20,0.1), transparent 55%),
+                  radial-gradient(circle at 10% 80%, rgba(15,95,163,0.3), transparent 45%);
+    }
+    .hero-inner {
+      position: relative; z-index: 1; max-width: 1140px;
+      margin: 0 auto; padding: 8rem 2rem 5rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(243,208,20,0.15); border: 1px solid rgba(243,208,20,0.3);
+      color: var(--gold); font-size: 0.73rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      padding: 0.3rem 0.9rem; border-radius: 999px; margin-bottom: 1.3rem;
+    }
+    .hero h1 { font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 900; color: #fff; line-height: 1.12; margin-bottom: 1.2rem; }
+    .hero h1 span { color: var(--gold); }
+    .hero p { font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.75; margin-bottom: 2rem; }
+    .hero-btns { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+    .btn-gold { background: var(--gold); color: var(--navy); border: 0; border-radius: 999px; padding: 0.85rem 1.8rem; font: 800 0.92rem 'Inter',sans-serif; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem; box-shadow: 0 8px 24px rgba(243,208,20,0.32); transition: all 0.18s; }
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(243,208,20,0.4); }
+    .btn-ghost { background: rgba(255,255,255,0.08); color: #fff; border: 1.5px solid rgba(255,255,255,0.3); border-radius: 999px; padding: 0.85rem 1.8rem; font: 700 0.92rem 'Inter',sans-serif; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem; transition: all 0.18s; }
+    .btn-ghost:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.55); }
+
+    /* Hero right — floating card */
+    .hero-card {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 24px; padding: 1.8rem; backdrop-filter: blur(12px);
+    }
+    .hero-card-title { font-size: 0.75rem; font-weight: 800; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.2rem; }
+    .hero-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .hero-metric {
+      background: rgba(255,255,255,0.06); border-radius: 14px; padding: 1rem 0.9rem;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .hero-metric-num { display: block; font-size: 1.7rem; font-weight: 900; color: var(--gold); line-height: 1; }
+    .hero-metric-label { font-size: 0.72rem; color: rgba(255,255,255,0.55); font-weight: 600; margin-top: 0.25rem; }
+    .hero-metric-change { font-size: 0.68rem; font-weight: 800; margin-top: 0.3rem; }
+    .up { color: #4ade80; } .down { color: #f87171; }
+    .hero-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 1rem 0; }
+    .hero-ai-strip {
+      display: flex; align-items: center; gap: 0.65rem;
+      background: rgba(243,208,20,0.1); border: 1px solid rgba(243,208,20,0.22);
+      border-radius: 12px; padding: 0.75rem 1rem;
+    }
+    .hero-ai-icon { width: 2rem; height: 2rem; border-radius: 8px; background: rgba(243,208,20,0.18); display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 0.85rem; flex-shrink: 0; }
+    .hero-ai-strip p { font-size: 0.75rem; color: rgba(255,255,255,0.7); line-height: 1.5; }
+    .hero-ai-strip strong { color: #fff; }
+
+    /* ── Stats strip ── */
+    .stats-strip { display: grid; grid-template-columns: repeat(4,1fr); background: var(--navy); }
+    .stat-cell { padding: 1.5rem 1rem; text-align: center; border-right: 1px solid rgba(255,255,255,0.08); }
+    .stat-cell:last-child { border-right: 0; }
+    .stat-num { display: block; font-size: 2rem; font-weight: 900; color: var(--gold); }
+    .stat-lbl { font-size: 0.74rem; color: rgba(255,255,255,0.55); font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; margin-top: 0.25rem; }
+
+    /* ── Sections ── */
+    .section { padding: 5rem 2rem; }
+    .section.alt { background: var(--surface); }
+    .inner { max-width: 1140px; margin: 0 auto; }
+    .tag { display: inline-block; background: rgba(8,34,65,0.07); color: var(--navy); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; padding: 0.28rem 0.75rem; border-radius: 999px; margin-bottom: 0.7rem; }
+    .sec-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 900; color: var(--navy); line-height: 1.2; margin-bottom: 0.7rem; }
+    .sec-sub { font-size: 1rem; color: var(--muted); line-height: 1.7; max-width: 560px; margin-bottom: 2.8rem; }
+    .center { text-align: center; }
+    .center .sec-sub { margin-left: auto; margin-right: auto; }
+
+    /* ── Role cards ── */
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .role-card {
+      border-radius: 22px; padding: 2.2rem 2rem; border: 2px solid var(--border);
+      position: relative; overflow: hidden; transition: all 0.22s;
+    }
+    .role-card:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(8,34,65,0.12); }
+    .role-card.staff { background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); border-color: var(--navy); color: #fff; }
+    .role-card.student { background: #fff; }
+    .role-icon { width: 3.2rem; height: 3.2rem; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 1.2rem; }
+    .role-card.staff  .role-icon { background: rgba(243,208,20,0.18); color: var(--gold); }
+    .role-card.student .role-icon { background: rgba(8,34,65,0.08); color: var(--navy); }
+    .role-card h3 { font-size: 1.15rem; font-weight: 900; margin-bottom: 0.5rem; }
+    .role-card.staff  h3 { color: #fff; }
+    .role-card.student h3 { color: var(--navy); }
+    .role-card p  { font-size: 0.85rem; line-height: 1.7; margin-bottom: 1.4rem; }
+    .role-card.staff  p { color: rgba(255,255,255,0.7); }
+    .role-card.student p { color: var(--muted); }
+    .role-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.8rem; }
+    .role-list li { display: flex; align-items: center; gap: 0.55rem; font-size: 0.82rem; font-weight: 600; }
+    .role-card.staff  .role-list li { color: rgba(255,255,255,0.85); }
+    .role-card.student .role-list li { color: var(--text); }
+    .role-list li i { font-size: 0.7rem; }
+    .role-card.staff  .role-list li i { color: var(--gold); }
+    .role-card.student .role-list li i { color: var(--blue); }
+    .role-btn { display: inline-flex; align-items: center; gap: 0.45rem; border-radius: 999px; padding: 0.7rem 1.4rem; font: 800 0.85rem 'Inter',sans-serif; text-decoration: none; cursor: pointer; border: 0; transition: all 0.18s; }
+    .role-card.staff  .role-btn { background: var(--gold); color: var(--navy); }
+    .role-card.student .role-btn { background: var(--navy); color: #fff; }
+    .role-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* ── Features ── */
+    .feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; }
+    .feat-card { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 1.6rem 1.4rem; transition: all 0.2s; }
+    .feat-card:hover { box-shadow: 0 16px 40px rgba(8,34,65,0.1); transform: translateY(-3px); }
+    .feat-ic { width: 2.8rem; height: 2.8rem; border-radius: 12px; background: linear-gradient(135deg,var(--navy),var(--navy2)); display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 1rem; margin-bottom: 1rem; }
+    .feat-card h4 { font-size: 0.92rem; font-weight: 800; color: var(--navy); margin-bottom: 0.4rem; }
+    .feat-card p  { font-size: 0.8rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── Impact ── */
+    .impact-split { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; align-items: center; }
+    .impact-img { width: 100%; border-radius: 22px; height: 400px; object-fit: cover; box-shadow: 0 28px 64px rgba(8,34,65,0.18); }
+    .impact-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+    .impact-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem; }
+    .impact-stat-num { display: block; font-size: 1.6rem; font-weight: 900; color: var(--navy); }
+    .impact-stat-lbl { font-size: 0.73rem; color: var(--muted); font-weight: 700; margin-top: 0.2rem; }
+
+    /* ── CTA banner ── */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+      border-radius: 28px; padding: 3.5rem 3rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .cta-banner h2 { font-size: 1.9rem; font-weight: 900; color: #fff; margin-bottom: 0.5rem; }
+    .cta-banner h2 span { color: var(--gold); }
+    .cta-banner p  { color: rgba(255,255,255,0.7); font-size: 0.92rem; }
+    .cta-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; flex-shrink: 0; }
+
+    /* ── Footer ── */
+    footer { background: #060f1a; color: rgba(255,255,255,0.55); padding: 3.5rem 2rem 1.5rem; }
+    .foot-inner { max-width: 1140px; margin: 0 auto; }
+    .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2.5rem; margin-bottom: 2.5rem; }
+    .foot-brand img { height: 28px; margin-bottom: 0.75rem; }
+    .foot-brand p { font-size: 0.8rem; line-height: 1.7; }
+    .foot-col h4 { font-size: 0.78rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
+    .foot-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .foot-col a { font-size: 0.8rem; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.15s; }
+    .foot-col a:hover { color: var(--gold); }
+    .foot-bottom { border-top: 1px solid rgba(255,255,255,0.07); padding-top: 1.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; font-size: 0.75rem; }
+    .foot-bottom a { color: var(--gold); text-decoration: none; }
+
+    @keyframes mchat-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    @media (max-width: 900px) {
+      .hero-inner   { grid-template-columns: 1fr; padding-top: 6rem; }
+      .hero-card    { display: none; }
+      .stats-strip  { grid-template-columns: repeat(2,1fr); }
+      .role-grid    { grid-template-columns: 1fr; }
+      .feat-grid    { grid-template-columns: 1fr 1fr; }
+      .impact-split { grid-template-columns: 1fr; }
+      .foot-grid    { grid-template-columns: 1fr 1fr; }
+      .topnav       { display: none; }
+    }
+    @media (max-width: 580px) {
+      .feat-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <a href="index.html" class="brand">
+      <img src="assets/images/snhu-logo.png" alt="SNHU" />
+      <div class="brand-label">
+        <span>MunchiesSNHU</span>
+        <span>Food Waste Tracker</span>
+      </div>
+    </a>
+    <ul class="topnav">
+      <li><a href="index.html" style="color:var(--gold)">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="sustainability.html">Sustainability</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="login.html">Login</a></li>
+      <li><button class="theme-toggle" onclick="toggleTheme()" title="Switch to dark mode" aria-label="Toggle theme"><i class="fas fa-moon"></i></button></li>
+      <li><a href="signup.html" class="cta">Get Started</a></li>
+    </ul>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="assets/videos/SNHU-FOOD.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      <div>
+        <div class="hero-eyebrow"><i class="fas fa-leaf"></i> SNHU Campus Sustainability</div>
+        <h1>Campus food waste,<br><span>made measurable.</span></h1>
+        <p>MunchiesSNHU gives staff and students real-time visibility into campus food waste — with AI-powered insights, composting tracking, and dashboards built for action.</p>
+        <div class="hero-btns">
+          <a href="signup.html" class="btn-gold"><i class="fas fa-user-plus"></i> Create Account</a>
+          <a href="login.html"  class="btn-ghost"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-title">Live Campus Snapshot <span id="hm-live-dot" style="display:inline-block;width:0.45rem;height:0.45rem;border-radius:50%;background:#4ade80;margin-left:0.4rem;vertical-align:middle;animation:mchat-pulse 2s infinite;opacity:0;" title="Live data"></span></div>
+        <div class="hero-metrics">
+          <div class="hero-metric">
+            <span class="hero-metric-num" id="hm-divRate">—</span>
+            <div class="hero-metric-label">Diversion Rate</div>
+            <div class="hero-metric-change" id="hm-divChange" style="color:rgba(255,255,255,0.35);">Loading…</div>
+          </div>
+          <div class="hero-metric">
+            <span class="hero-metric-num" id="hm-composted">—</span>
+            <div class="hero-metric-label">lbs Composted</div>
+            <div class="hero-metric-change up" id="hm-compostLabel" style="color:rgba(255,255,255,0.35);">Total logged</div>
+          </div>
+          <div class="hero-metric">
+            <span class="hero-metric-num" id="hm-locations">—</span>
+            <div class="hero-metric-label">Active Locations</div>
+            <div class="hero-metric-change" style="color:rgba(255,255,255,0.45);">Tracked live</div>
+          </div>
+          <div class="hero-metric">
+            <span class="hero-metric-num" id="hm-binFull">—</span>
+            <div class="hero-metric-label">Avg Bin Fullness</div>
+            <div class="hero-metric-change" id="hm-binLabel" style="color:rgba(255,255,255,0.35);">Live sensor avg</div>
+          </div>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-ai-strip">
+          <div class="hero-ai-icon"><i class="fas fa-robot"></i></div>
+          <p id="hm-ai-tip"><strong>MunchiesAI</strong> — Sign in to get live, data-grounded sustainability insights for your campus.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats-strip">
+    <div class="stat-cell"><span class="stat-num">50%</span><div class="stat-lbl">Campus Diversion Goal</div></div>
+    <div class="stat-cell"><span class="stat-num">0.25lb</span><div class="stat-lbl">CO₂ Saved per lb Composted</div></div>
+    <div class="stat-cell"><span class="stat-num">Real-time</span><div class="stat-lbl">Live Waste Data</div></div>
+    <div class="stat-cell"><span class="stat-num">AI</span><div class="stat-lbl">Powered by Claude &amp; Llama</div></div>
+  </div>
+
+  <!-- Who is it for -->
+  <section class="section">
+    <div class="inner">
+      <div class="tag">Built for Everyone</div>
+      <h2 class="sec-title">One platform. Two dashboards.</h2>
+      <p class="sec-sub">Whether you're collecting data or acting on it, MunchiesSNHU has a role-based experience designed for you.</p>
+      <div class="role-grid">
+        <div class="role-card staff">
+          <div class="role-icon"><i class="fas fa-user-tie"></i></div>
+          <h3>For Staff</h3>
+          <p>Collect, manage, and analyze food waste data from across all campus locations. Identify trends, flag pickups, and generate reports.</p>
+          <ul class="role-list">
+            <li><i class="fas fa-check"></i> Log waste entries with sensor readings</li>
+            <li><i class="fas fa-check"></i> Bulk upload via CSV template</li>
+            <li><i class="fas fa-check"></i> View heatmap and best/worst weeks</li>
+            <li><i class="fas fa-check"></i> Export filtered CSV reports</li>
+            <li><i class="fas fa-check"></i> Print-ready report pages</li>
+          </ul>
+          <a href="login.html" class="role-btn"><i class="fas fa-arrow-right-to-bracket"></i> Staff Login</a>
+        </div>
+        <div class="role-card student">
+          <div class="role-icon"><i class="fas fa-graduation-cap"></i></div>
+          <h3>For Students</h3>
+          <p>See your campus sustainability impact, follow progress toward the composting goal, and engage with the community leaderboard.</p>
+          <ul class="role-list">
+            <li><i class="fas fa-check"></i> View real-time campus waste stats</li>
+            <li><i class="fas fa-check"></i> Track personal sustainability impact</li>
+            <li><i class="fas fa-check"></i> Set and track a pledge goal</li>
+            <li><i class="fas fa-check"></i> Location leaderboard rankings</li>
+            <li><i class="fas fa-check"></i> Weekly sustainability tips</li>
+          </ul>
+          <a href="login.html" class="role-btn"><i class="fas fa-arrow-right-to-bracket"></i> Student Login</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section alt">
+    <div class="inner">
+      <div class="center">
+        <div class="tag">Platform Features</div>
+        <h2 class="sec-title">Everything you need to reduce waste</h2>
+        <p class="sec-sub">From data collection to AI-powered insights, the full toolkit is built in.</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-ic"><i class="fas fa-chart-line"></i></div>
+          <h4>Live Dashboards</h4>
+          <p>Real-time charts for daily waste vs. compost, diversion rates, and week-over-week deltas across every campus location.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-ic"><i class="fas fa-robot"></i></div>
+          <h4>MunchiesAI Assistant</h4>
+          <p>Ask questions in plain English. The AI reads live campus data and responds with grounded, actionable insights — not generic advice.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-ic"><i class="fas fa-file-import"></i></div>
+          <h4>Bulk CSV Import</h4>
+          <p>Upload entire weeks of waste data at once with drag-and-drop. Row validation and preview before anything hits the database.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-ic"><i class="fas fa-map-location-dot"></i></div>
+          <h4>Location Heatmap</h4>
+          <p>See which buildings and dining areas generate the most waste — ranked by volume and diversion rate to prioritize resources.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-ic"><i class="fas fa-trophy"></i></div>
+          <h4>Campus Leaderboard</h4>
+          <p>Locations compete on diversion rate. Students can see rankings and rally their dining hall toward the 50% composting goal.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-ic"><i class="fas fa-file-arrow-down"></i></div>
+          <h4>Reports &amp; Export</h4>
+          <p>Filter by date, location, or status — then export to CSV or print a formatted report for sustainability meetings and audits.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Impact -->
+  <section class="section">
+    <div class="inner">
+      <div class="impact-split">
+        <img src="assets/images/sustainability1.jpg" alt="Campus sustainability" class="impact-img" />
+        <div>
+          <div class="tag">Environmental Impact</div>
+          <h2 class="sec-title">Every pound composted counts</h2>
+          <p class="sec-sub">Composting food waste instead of sending it to landfill prevents methane emissions, enriches soil, and directly reduces SNHU's carbon footprint.</p>
+          <div class="impact-stats">
+            <div class="impact-stat">
+              <span class="impact-stat-num">0.25</span>
+              <div class="impact-stat-lbl">lbs CO₂ saved per lb composted</div>
+            </div>
+            <div class="impact-stat">
+              <span class="impact-stat-num">48lbs</span>
+              <div class="impact-stat-lbl">CO₂ absorbed by one tree per year</div>
+            </div>
+            <div class="impact-stat">
+              <span class="impact-stat-num">1.04</span>
+              <div class="impact-stat-lbl">driving miles offset per lb composted</div>
+            </div>
+            <div class="impact-stat">
+              <span class="impact-stat-num">50%</span>
+              <div class="impact-stat-lbl">diversion rate SNHU is working toward</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section alt">
+    <div class="inner">
+      <div class="cta-banner">
+        <div>
+          <h2>Ready to join the <span>sustainability effort?</span></h2>
+          <p>Create your account in seconds. Staff and student dashboards are waiting.</p>
+        </div>
+        <div class="cta-btns">
+          <a href="signup.html" class="btn-gold"><i class="fas fa-user-plus"></i> Create Account</a>
+          <a href="about.html"  class="btn-ghost" style="border-color:rgba(255,255,255,0.3)"><i class="fas fa-circle-info"></i> Learn More</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="foot-inner">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <img src="assets/images/snhu-logo.png" alt="SNHU" />
+          <p>MunchiesSNHU is Southern New Hampshire University's campus food waste tracking and sustainability platform — built to make composting measurable and impactful.</p>
+        </div>
+        <div class="foot-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="about.html">About</a></li>
+            <li><a href="sustainability.html">Sustainability</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Dashboards</h4>
+          <ul>
+            <li><a href="login.html">Staff Login</a></li>
+            <li><a href="login.html">Student Login</a></li>
+            <li><a href="signup.html">Create Account</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="mailto:sustainability@snhu.edu">sustainability@snhu.edu</a></li>
+            <li><a href="contact.html">Send a Message</a></li>
+            <li style="color:rgba(255,255,255,0.4);font-size:0.78rem;">2500 N River Rd<br>Manchester, NH 03106</li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2025 MunchiesSNHU &mdash; Southern New Hampshire University</span>
+        <span><a href="about.html">About</a> &nbsp;&middot;&nbsp; <a href="contact.html">Contact</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Load live published stats from the public API endpoint
+    (async () => {
+      try {
+        const res = await fetch('/api/waste');
+        if (!res.ok) return;
+        const entries = await res.json();
+        if (!entries.length) return;
+
+        const total      = entries.reduce((s, e) => s + (e.weight || 0), 0);
+        const totalComp  = entries.reduce((s, e) => s + Math.min(e.compostWeight || 0, e.weight || 0), 0);
+        const divRate    = total > 0 ? Math.round((totalComp / total) * 100) : 0;
+        const locations  = new Set(entries.map(e => e.location).filter(Boolean)).size;
+        const avgBin     = entries.length
+          ? Math.round(entries.reduce((s, e) => s + (e.binFullness || 0), 0) / entries.length)
+          : 0;
+
+        const now = Date.now();
+        const weekMs = 7 * 24 * 60 * 60 * 1000;
+        const thisWeek  = entries.filter(e => now - new Date(e.createdAt).getTime() < weekMs);
+        const lastWeek  = entries.filter(e => {
+          const age = now - new Date(e.createdAt).getTime();
+          return age >= weekMs && age < 2 * weekMs;
+        });
+        const twWaste = thisWeek.reduce((s, e) => s + (e.weight || 0), 0);
+        const lwWaste = lastWeek.reduce((s, e) => s + (e.weight || 0), 0);
+        const twComp  = thisWeek.reduce((s, e) => s + (e.compostWeight || 0), 0);
+        const pct     = lwWaste > 0 ? Math.round(((twWaste - lwWaste) / lwWaste) * 100) : null;
+
+        // Update hero card
+        document.getElementById('hm-divRate').textContent   = divRate + '%';
+        document.getElementById('hm-composted').textContent = totalComp.toFixed(0);
+        document.getElementById('hm-locations').textContent = locations || '—';
+        document.getElementById('hm-binFull').textContent   = avgBin + '%';
+
+        if (pct !== null) {
+          const el  = document.getElementById('hm-divChange');
+          const dir = pct < 0 ? 'up' : 'down';
+          el.className = 'hero-metric-change ' + dir;
+          el.innerHTML = `<i class="fas fa-arrow-${pct < 0 ? 'down' : 'up'}"></i> ${Math.abs(pct)}% waste vs last week`;
+        }
+
+        if (avgBin >= 80) {
+          document.getElementById('hm-binLabel').className = 'hero-metric-change down';
+          document.getElementById('hm-binLabel').innerHTML = '<i class="fas fa-triangle-exclamation"></i> Pickup needed';
+        } else {
+          document.getElementById('hm-binLabel').className = 'hero-metric-change up';
+          document.getElementById('hm-binLabel').textContent = 'Within normal range';
+        }
+
+        // AI tip — find top waste location this week
+        const byLoc = {};
+        thisWeek.forEach(e => {
+          byLoc[e.location] = (byLoc[e.location] || 0) + (e.weight || 0);
+        });
+        const topLoc = Object.entries(byLoc).sort((a, b) => b[1] - a[1])[0];
+        if (topLoc) {
+          document.getElementById('hm-ai-tip').innerHTML =
+            `<strong>MunchiesAI insight:</strong> ${topLoc[0]} leads in waste this week (${topLoc[1].toFixed(1)} lbs). Sign in to explore full AI-powered analysis.`;
+        } else {
+          document.getElementById('hm-ai-tip').innerHTML =
+            `<strong>MunchiesAI ready:</strong> Sign in to get live, data-grounded sustainability insights and composting recommendations.`;
+        }
+
+        // Show live dot
+        document.getElementById('hm-live-dot').style.opacity = '1';
+
+        // Animate the stats strip if it's showing static numbers (fine as-is)
+      } catch { /* silently fail — keep placeholder dashes */ }
+    })();
+  </script>
+  <script src="js/theme.js"></script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

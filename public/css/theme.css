@@ -1,0 +1,177 @@
+/* ── Theme toggle button (topbar) ── */
+.theme-toggle {
+  background: rgba(255,255,255,0.08);
+  border: 1.5px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.75);
+  border-radius: 8px;
+  padding: 0.36rem 0.62rem;
+  cursor: pointer;
+  font-size: 0.82rem;
+  line-height: 1;
+  font-family: inherit;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.theme-toggle:hover {
+  background: rgba(255,255,255,0.16);
+  color: #f3d014;
+  border-color: rgba(243,208,20,0.45);
+}
+
+/* ── Smooth transitions — only after first paint ── */
+body.theme-ready,
+body.theme-ready .section,
+body.theme-ready .section.alt,
+body.theme-ready .feat-card,
+body.theme-ready .role-card.student,
+body.theme-ready .impact-stat,
+body.theme-ready .fact-card,
+body.theme-ready .svc-card,
+body.theme-ready .ai-card,
+body.theme-ready .goal-banner,
+body.theme-ready .info-card,
+body.theme-ready .form-card,
+body.theme-ready .faq-item,
+body.theme-ready .faq-q,
+body.theme-ready .feature-mock,
+body.theme-ready .mock-stat,
+body.theme-ready .tip-card,
+body.theme-ready .mission-split,
+body.theme-ready .step,
+body.theme-ready .field input,
+body.theme-ready .field select,
+body.theme-ready .field textarea {
+  transition: background 0.28s ease, color 0.22s ease, border-color 0.28s ease, box-shadow 0.22s ease;
+}
+
+/* ══════════════════════════════════════════════════════
+   DARK THEME
+═══════════════════════════════════════════════════════ */
+
+/* Override shared CSS vars */
+[data-theme="dark"] {
+  --text:    #e2eaf5;
+  --muted:   #7a8fa8;
+  --border:  #243450;
+  --surface: #131f2e;
+}
+
+/* Page background */
+[data-theme="dark"] body { background: #0e1521; color: #e2eaf5; }
+
+/* ── Sections ── */
+[data-theme="dark"] .section     { background: #0e1521; }
+[data-theme="dark"] .section.alt { background: #131f2e; }
+
+/* ── Headings that use --navy (hardcoded) ── */
+[data-theme="dark"] .sec-title,
+[data-theme="dark"] h2:not(.cta-banner h2):not(.cta-strip h2):not(.cta-section h2):not(.ai-banner h2):not(.platform-callout h2),
+[data-theme="dark"] h3,
+[data-theme="dark"] h4 { color: #e2eaf5; }
+
+/* ── Tag pills ── */
+[data-theme="dark"] .tag { background: rgba(255,255,255,0.07); color: #a8c0d8; }
+[data-theme="dark"] .tag.gold { background: rgba(243,208,20,0.12); color: #c8a800; }
+
+/* ── White cards (homepage) ── */
+[data-theme="dark"] .feat-card  { background: #1a2840; border-color: #243450; }
+[data-theme="dark"] .impact-stat { background: #1a2840; border-color: #243450; }
+[data-theme="dark"] .impact-stat-num { color: #e2eaf5; }
+[data-theme="dark"] .impact-stat-lbl { color: #7a8fa8; }
+
+/* Role card student (homepage) */
+[data-theme="dark"] .role-card.student { background: #1a2840; border-color: #243450; }
+[data-theme="dark"] .role-card.student h3 { color: #e2eaf5; }
+[data-theme="dark"] .role-card.student p  { color: #7a8fa8; }
+[data-theme="dark"] .role-card.student .role-list li { color: #c8d8ec; }
+[data-theme="dark"] .role-card.student .role-list li i { color: #6ba3e8; }
+[data-theme="dark"] .role-card.student .role-btn { background: #1e3a5f; color: #e2eaf5; }
+
+/* ── About page ── */
+[data-theme="dark"] .feature-card { background: #1a2840; border-color: #243450; }
+[data-theme="dark"] .feature-card h3 { color: #e2eaf5; }
+[data-theme="dark"] .mission-point h4 { color: #e2eaf5; }
+
+/* ── Sustainability page ── */
+[data-theme="dark"] .fact-card  { background: #1a2840; border-color: #243450; }
+[data-theme="dark"] .fact-card h4 { color: #e2eaf5; }
+[data-theme="dark"] .fact-number { color: #4ade80; }
+[data-theme="dark"] .goal-banner { background: #1a2840; border-color: #243450; }
+[data-theme="dark"] .goal-bar-wrap { background: #243450; }
+[data-theme="dark"] .goal-pct-row { color: #7a8fa8; }
+[data-theme="dark"] .pct-current  { color: #4ade80; }
+
+/* What we track grid pills */
+[data-theme="dark"] .section > .inner [style*="background:var(--surface)"] { background: #1a2840 !important; border-color: #243450 !important; }
+
+/* ── Services page ── */
+[data-theme="dark"] .svc-card  { background: #1a2840; border-color: #243450; }
+[data-theme="dark"] .svc-card h3 { color: #e2eaf5; }
+[data-theme="dark"] .svc-card.featured { border-color: rgba(243,208,20,0.5); }
+[data-theme="dark"] .feature-mock { background: #131f2e; border-color: #243450; }
+[data-theme="dark"] .mock-stat  { background: #1f3252; border-color: #243450; }
+[data-theme="dark"] .mock-stat-num { color: #e2eaf5; }
+[data-theme="dark"] .mock-stat-lbl { color: #7a8fa8; }
+[data-theme="dark"] .mock-bar-wrap { background: #243450; }
+[data-theme="dark"] .mock-title { color: #7a8fa8; }
+
+/* Role tab */
+[data-theme="dark"] .role-tab { background: #1a2840; border-color: #243450; color: #7a8fa8; }
+[data-theme="dark"] .role-tab.active, [data-theme="dark"] .role-tab:hover { background: var(--navy); color: var(--gold); border-color: var(--navy); }
+
+/* Access table */
+[data-theme="dark"] .access-table td { color: #c8d8ec; border-color: #243450; }
+[data-theme="dark"] .access-table tbody tr:hover td { background: #1f3252; }
+
+/* ── Contact page ── */
+[data-theme="dark"] .form-card  { background: #1a2840; border-color: #243450; }
+[data-theme="dark"] .form-card h2 { color: #e2eaf5; }
+[data-theme="dark"] .form-card .subtitle { color: #7a8fa8; }
+[data-theme="dark"] .info-card  { background: #1a2840; border-color: #243450; }
+[data-theme="dark"] .info-card h4 { color: #a8c0d8; }
+[data-theme="dark"] .info-card p, [data-theme="dark"] .info-card a { color: #7a8fa8; }
+[data-theme="dark"] .info-card a { color: #6ba3e8; }
+[data-theme="dark"] .hours-day  { color: #c8d8ec; }
+[data-theme="dark"] .hours-time { color: #7a8fa8; }
+[data-theme="dark"] .faq-item  { background: #1a2840; border-color: #243450; }
+[data-theme="dark"] .faq-q     { color: #e2eaf5; }
+[data-theme="dark"] .faq-q:hover { background: #1f3252; }
+[data-theme="dark"] .faq-a     { border-color: #243450; color: #7a8fa8; }
+
+/* Form fields */
+[data-theme="dark"] .field label { color: #a8c0d8; }
+[data-theme="dark"] .field input,
+[data-theme="dark"] .field select,
+[data-theme="dark"] .field textarea {
+  background: #131f2e; border-color: #243450; color: #e2eaf5;
+}
+[data-theme="dark"] .field input::placeholder,
+[data-theme="dark"] .field textarea::placeholder { color: #455a75; }
+[data-theme="dark"] .field input:focus,
+[data-theme="dark"] .field select:focus,
+[data-theme="dark"] .field textarea:focus {
+  border-color: #6ba3e8; background: #1a2840;
+  box-shadow: 0 0 0 3px rgba(107,163,232,0.12);
+}
+[data-theme="dark"] .btn-reset-form { border-color: #243450; color: #7a8fa8; }
+[data-theme="dark"] .btn-reset-form:hover { border-color: #6ba3e8; color: #e2eaf5; }
+
+/* ── Steps (about page) ── */
+[data-theme="dark"] .step p { color: #7a8fa8; }
+[data-theme="dark"] .steps::before { background: linear-gradient(90deg, #f3d014, #253448); }
+
+/* ── Sec-sub muted text ── */
+[data-theme="dark"] .sec-sub { color: #7a8fa8; }
+
+/* ── Split layout text ── */
+[data-theme="dark"] .split-ic-item h4 { color: #e2eaf5; }
+[data-theme="dark"] .split-ic-item p  { color: #7a8fa8; }
+[data-theme="dark"] .pf-item p        { color: rgba(255,255,255,0.62); }
+
+/* ── Hero card metrics (homepage) ── */
+[data-theme="dark"] .hero-metric { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.07); }
+
+/* ── Scrollbar (dark) ── */
+[data-theme="dark"] ::-webkit-scrollbar { width: 8px; }
+[data-theme="dark"] ::-webkit-scrollbar-track { background: #0e1521; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #243450; border-radius: 4px; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #344f72; }

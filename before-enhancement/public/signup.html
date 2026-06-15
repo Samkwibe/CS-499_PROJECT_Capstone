@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - SNHU Food Waste</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('assets/images/SETA.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+    .signup-container {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      padding: 30px;
+      border-radius: 20px;
+      width: 440px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      text-align: center;
+    }
+    h2 {
+      font-size: 26px;
+      color: #f3d014;
+      margin-bottom: 14px;
+    }
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.25);
+      color: #fff;
+      font-size: 15px;
+    }
+    .input-field:focus {
+      border-color: #f3d014;
+      outline: none;
+    }
+    .role-selection {
+      text-align: left;
+      margin: 10px 0;
+      color: #eee;
+      font-size: 14px;
+    }
+    .signup-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(to right, #082241, #f3d014);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 16px;
+      margin-top: 14px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .signup-btn:hover {
+      background: linear-gradient(to right, #06192d, #e6c800);
+      transform: scale(1.03);
+    }
+    .status {
+      font-size: 14px;
+      margin-top: 10px;
+      color: #00ffcc;
+    }
+    a {
+      color: #00aaff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <h2>🚀 Create Your Account</h2>
+    <input id="nameInput" type="text" class="input-field" placeholder="Full Name" />
+    <input id="emailInput" type="email" class="input-field" placeholder="Email" />
+    <input id="passwordInput" type="password" class="input-field" placeholder="Password" />
+    <input id="confirmPasswordInput" type="password" class="input-field" placeholder="Confirm Password" />
+
+    <div class="role-selection">
+      <label><input type="radio" name="role" value="student" checked> 🎓 Student</label>
+      <label style="margin-left: 15px;"><input type="radio" name="role" value="staff"> 🧑‍💼 Staff</label>
+    </div>
+
+    <button id="signupBtn" class="signup-btn">✅ Sign Up</button>
+    <p class="status" id="status"></p>
+    <p>Already registered? <a href="login.html">Log in here</a></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCM598ds463x-UZUd4nsnMnZ9er4n6fgy8",
+      authDomain: "munchies-snhu-food-waste-46555.firebaseapp.com",
+      projectId: "munchies-snhu-food-waste-46555",
+      storageBucket: "munchies-snhu-food-waste-46555.firebasestorage.app",
+      messagingSenderId: "287560600222",
+      appId: "1:287560600222:web:97441f10c596fe18ed098f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const signupBtn = document.getElementById('signupBtn');
+    const statusText = document.getElementById('status');
+
+    signupBtn.addEventListener('click', async () => {
+      const name = document.getElementById('nameInput').value.trim();
+      const email = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const confirm = document.getElementById('confirmPasswordInput').value;
+      const role = document.querySelector('input[name="role"]:checked').value;
+
+      statusText.textContent = "";
+
+      if (!name || !email || !password || !confirm) {
+        statusText.textContent = "⚠️ Please fill out all fields.";
+        return;
+      }
+
+      if (password !== confirm) {
+        statusText.textContent = "⚠️ Passwords do not match.";
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        await setDoc(doc(db, "users", user.uid), {
+          name,
+          email,
+          role,
+          createdAt: serverTimestamp(),
+        });
+
+        statusText.textContent = "✅ Signup successful! Redirecting...";
+        setTimeout(() => {
+          window.location.href = role === 'staff' ? 'settings-staff.html' : 'settings-student.html';
+        }, 1500);
+      } catch (error) {
+        statusText.textContent = "❌ " + error.message;
+      }
+    });
+  </script>
+</body>
+</html>

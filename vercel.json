@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "name": "munchies-snhu-food-waste",
+  "installCommand": "npm install",
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30,
+      "includeFiles": "snhu-foodwaste-backend/**"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.js"
+    }
+  ]
+}

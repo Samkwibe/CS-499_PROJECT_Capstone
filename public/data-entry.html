@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Food Waste Input - MunchiesSNHU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body class="dashboard-shell role-staff">
+  <header class="topbar">
+    <div class="brand-lockup">
+      <img src="assets/images/snhu-logo.png" alt="SNHU" class="topbar-logo" />
+      <div class="brand-label">
+        <span class="brand-label-top">MunchiesSNHU</span>
+        <span class="brand-label-main">Data Input</span>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="staff-dashboard.html">Dashboard</a></li>
+        <li><a href="data-entry.html">Food Waste Input</a></li>
+        <li><a href="staff-import.html">Bulk Import</a></li>
+        <li><a href="staff-report.html">Reports</a></li>
+        <li><a href="settings-staff.html">Settings</a></li>
+        <li><a href="login.html" data-logout>Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page-wrap">
+    <section class="hero-panel">
+      <div>
+        <div class="eyebrow">Staff Data Operations</div>
+        <h1>Food Waste Input</h1>
+        <p>Record food waste, sensor readings, and compost activity for campus reporting and pickup priority scoring.</p>
+      </div>
+      <div class="status-card">
+        <span class="metric-label">Staff Workflow</span>
+        <strong>Live Records</strong>
+        <p>Saved entries appear immediately in dashboards and reports.</p>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <div class="chart-card-header">
+        <h2><i class="fas fa-pen-to-square" style="color:var(--snhu-gold);margin-right:0.45rem;"></i>Log Food Waste Entry</h2>
+        <span class="chart-subtitle" id="formModeLabel">New entry</span>
+      </div>
+
+      <!-- Quick stats strip -->
+      <div class="entry-stats-strip" id="entryStatsStrip">
+        <span class="entry-stat-pill"><i class="fas fa-database"></i> Total records: <strong id="statTotal">--</strong></span>
+        <span class="entry-stat-pill"><i class="fas fa-eye"></i> Published: <strong id="statPublished">--</strong></span>
+        <span class="entry-stat-pill"><i class="fas fa-file-pen"></i> Drafts: <strong id="statDrafts">--</strong></span>
+        <span class="entry-stat-pill"><i class="fas fa-seedling"></i> Avg compost: <strong id="statAvgCompost">--</strong></span>
+      </div>
+
+      <p style="color: var(--text-muted); margin: 0 0 1.1rem; font-size: 0.85rem; border-left: 3px solid var(--snhu-gold); padding-left: 0.75rem;">
+        Fields marked <span style="color:var(--danger); font-weight:800;">*</span> are required. All sensor readings are captured at time of collection.
+      </p>
+
+      <form id="foodWasteForm">
+
+        <!-- ── Section 1: Waste Details ── -->
+        <div class="form-section-header">
+          <i class="fas fa-box-archive"></i>
+          Waste Details
+        </div>
+
+        <div class="form-group">
+          <label for="foodType" class="form-label-icon"><i class="fas fa-utensils"></i> Food Type / Source <span style="color:var(--danger)">*</span></label>
+          <div class="field-wrap">
+            <i class="fas fa-bowl-food field-icon"></i>
+            <input type="text" id="foodType" placeholder="e.g., Leftover pasta, kitchen scraps" required />
+          </div>
+          <span class="field-msg" id="msgFoodType"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="wasteWeight" class="form-label-icon"><i class="fas fa-weight-hanging"></i> Waste Weight (lbs) <span style="color:var(--danger)">*</span></label>
+          <div class="field-wrap">
+            <i class="fas fa-scale-balanced field-icon"></i>
+            <input type="number" id="wasteWeight" step="0.1" min="0" placeholder="0.0" required />
+          </div>
+          <span class="field-msg" id="msgWasteWeight"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="wasteDate" class="form-label-icon"><i class="fas fa-calendar-days"></i> Date <span style="color:var(--danger)">*</span></label>
+          <div class="field-wrap">
+            <i class="fas fa-calendar field-icon"></i>
+            <input type="date" id="wasteDate" required />
+          </div>
+          <span class="field-msg" id="msgWasteDate"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="wasteLocation" class="form-label-icon"><i class="fas fa-location-dot"></i> Location <span style="color:var(--danger)">*</span></label>
+          <div class="field-wrap">
+            <i class="fas fa-building field-icon"></i>
+            <input type="text" id="wasteLocation" placeholder="e.g., Dining Hall #1" required />
+          </div>
+          <span class="field-msg" id="msgWasteLocation"></span>
+        </div>
+
+        <div class="form-group form-full">
+          <label for="wasteNotes" class="form-label-icon"><i class="fas fa-note-sticky"></i> Notes <span style="color:var(--text-muted);font-weight:500;">(optional)</span></label>
+          <div class="field-wrap">
+            <i class="fas fa-pen field-icon" style="top:0.9rem;align-self:flex-start;"></i>
+            <textarea id="wasteNotes" rows="2" placeholder="Additional context, unusual conditions, or observations…"></textarea>
+          </div>
+          <span class="field-msg" id="msgWasteNotes"></span>
+        </div>
+
+        <!-- ── Section 2: Sensor Readings ── -->
+        <div class="form-section-header">
+          <i class="fas fa-microchip"></i>
+          Sensor Readings
+        </div>
+
+        <div class="sensor-grid">
+          <div class="form-group">
+            <label for="temperature" class="form-label-icon"><i class="fas fa-temperature-half"></i> Temperature (°F) <span style="color:var(--danger)">*</span></label>
+            <div class="field-wrap">
+              <i class="fas fa-thermometer field-icon"></i>
+              <input type="number" id="temperature" step="0.1" min="32" max="212" placeholder="32 – 212" required />
+            </div>
+            <span class="field-msg" id="msgTemperature"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="relativeHumidity" class="form-label-icon"><i class="fas fa-droplet"></i> Humidity (%) <span style="color:var(--danger)">*</span></label>
+            <div class="field-wrap">
+              <i class="fas fa-droplet field-icon"></i>
+              <input type="number" id="relativeHumidity" step="1" min="0" max="100" placeholder="0 – 100" required />
+            </div>
+            <span class="field-msg" id="msgRelativeHumidity"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="phLevel" class="form-label-icon"><i class="fas fa-flask"></i> pH Level <span style="color:var(--danger)">*</span></label>
+            <div class="field-wrap">
+              <i class="fas fa-flask field-icon"></i>
+              <input type="number" id="phLevel" step="0.1" min="0" max="14" placeholder="0 – 14" required />
+            </div>
+            <span class="field-msg" id="msgPhLevel"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="naturalGas" class="form-label-icon"><i class="fas fa-wind"></i> Gas Reading (ppm) <span style="color:var(--danger)">*</span></label>
+            <div class="field-wrap">
+              <i class="fas fa-cloud field-icon"></i>
+              <input type="number" id="naturalGas" step="0.1" min="0" placeholder="ppm" required />
+            </div>
+            <span class="field-msg" id="msgNaturalGas"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="binFullness" class="form-label-icon"><i class="fas fa-trash-can"></i> Bin Fullness (%) <span style="color:var(--danger)">*</span></label>
+            <div class="field-wrap">
+              <i class="fas fa-gauge field-icon"></i>
+              <input type="number" id="binFullness" step="1" min="0" max="100" placeholder="0 – 100" required />
+            </div>
+            <span class="field-msg" id="msgBinFullness"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="compostWeight" class="form-label-icon"><i class="fas fa-seedling"></i> Compost Weight (lbs) <span style="color:var(--danger)">*</span></label>
+            <div class="field-wrap">
+              <i class="fas fa-leaf field-icon"></i>
+              <input type="number" id="compostWeight" step="0.1" min="0" placeholder="0.0" required />
+            </div>
+            <span class="field-msg" id="msgCompostWeight"></span>
+          </div>
+        </div>
+
+        <!-- ── Status feedback and actions ── -->
+        <div id="formStatus" class="form-status" role="alert" aria-live="polite"></div>
+
+        <div class="button-row form-actions">
+          <button type="button" class="btn" id="addBtn" onclick="addFoodWaste()">
+            <i class="fas fa-plus"></i> Add Entry
+          </button>
+          <button type="button" class="btn-secondary" id="updateBtn" onclick="updateFoodWaste()" disabled>
+            <i class="fas fa-pen"></i> Update Selected
+          </button>
+          <button type="button" class="btn-secondary" onclick="clearForm()">
+            <i class="fas fa-xmark"></i> Clear
+          </button>
+          <button type="button" class="btn-secondary" onclick="retrieveFoodWaste()">
+            <i class="fas fa-rotate-right"></i> Refresh
+          </button>
+          <button type="button" class="btn-import" onclick="document.getElementById('csvImportInput').click()">
+            <i class="fas fa-file-import"></i> Import CSV
+          </button>
+          <input type="file" id="csvImportInput" accept=".csv" style="display:none" onchange="importCSV(this)" />
+        </div>
+      </form>
+    </section>
+
+    <section class="section-card table-card">
+      <div class="chart-card-header">
+        <h2><i class="fas fa-table-list" style="color:var(--snhu-gold);margin-right:0.45rem;"></i>All Waste Entries</h2>
+        <span class="chart-subtitle" id="tableCountLabel">Loading...</span>
+      </div>
+      <div class="table-search-wrap">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="text" class="table-search-input" id="entrySearch"
+          placeholder="Search location, food type, published/draft…"
+          oninput="applyEntryFilter(this.value)" autocomplete="off" />
+        <span class="table-search-count" id="entrySearchCount"></span>
+        <button class="table-search-clear" id="entrySearchClear"
+          onclick="document.getElementById('entrySearch').value='';applyEntryFilter('')" aria-label="Clear search">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="table-wrap" style="overflow-x:auto;">
+        <table class="professional-table" id="foodWasteTable">
+          <thead>
+            <tr>
+              <th style="width:2rem;"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)" title="Select all" /></th>
+              <th class="sort-th" data-sort="foodType" onclick="setSort('foodType')">Food Type</th>
+              <th class="sort-th" data-sort="weight" onclick="setSort('weight')">Weight</th>
+              <th class="sort-th" data-sort="date" onclick="setSort('date')">Date</th>
+              <th class="sort-th" data-sort="location" onclick="setSort('location')">Location</th>
+              <th class="sort-th" data-sort="temperature" onclick="setSort('temperature')">Temp</th>
+              <th class="sort-th" data-sort="humidity" onclick="setSort('humidity')">Humidity</th>
+              <th class="sort-th" data-sort="pH" onclick="setSort('pH')">pH</th>
+              <th>Gas</th>
+              <th class="sort-th" data-sort="binFullness" onclick="setSort('binFullness')">Fullness</th>
+              <th class="sort-th" data-sort="compostWeight" onclick="setSort('compostWeight')">Compost</th>
+              <th class="sort-th" data-sort="published" onclick="setSort('published')">Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="foodWasteBody">
+            <tr><td colspan="13" class="empty-state">Loading entries...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-bar" id="paginationBar"></div>
+    </section>
+  </main>
+
+  <!-- Floating bulk action bar -->
+  <div class="bulk-bar" id="bulkBar">
+    <span class="bulk-bar-count" id="bulkCount">0 selected</span>
+    <button class="bulk-btn" onclick="bulkSetPublished(true)"><i class="fas fa-eye"></i> Publish</button>
+    <button class="bulk-btn" onclick="bulkSetPublished(false)"><i class="fas fa-eye-slash"></i> Unpublish</button>
+    <button class="bulk-btn bulk-btn-danger" onclick="bulkDelete()"><i class="fas fa-trash"></i> Delete</button>
+    <button class="bulk-btn bulk-btn-close" onclick="clearSelection()" title="Clear selection"><i class="fas fa-xmark"></i></button>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    window.MunchiesAuth.requireAuth(['staff', 'admin']);
+    window.MunchiesAuth.setupLogoutLinks();
+
+    const foodWasteApiUrl = '/api/waste';
+    let editingFoodWasteId = null;
+    let currentFoodWasteEntries = [];
+    let currentSort = { col: null, dir: 'asc' };
+    let currentPage = 1;
+    let pageSize = 25;
+    let selectedIds = new Set();
+
+    function getAuthHeaders() { return window.MunchiesAuth.getAuthHeaders(); }
+
+    // ── Inline status message (replaces alert()) ──────────────────────────────
+    function showStatus(message, type = 'success') {
+      const el = document.getElementById('formStatus');
+      el.textContent = message;
+      el.className = `form-status is-${type}`;
+      // Auto-hide success messages after 5 seconds.
+      if (type === 'success') {
+        setTimeout(() => { el.className = 'form-status'; }, 5000);
+      }
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function hideStatus() {
+      document.getElementById('formStatus').className = 'form-status';
+    }
+
+    // ── Per-field inline validation ───────────────────────────────────────────
+    function setFieldState(inputId, msgId, state, message) {
+      const input = document.getElementById(inputId);
+      const msg = document.getElementById(msgId);
+      const group = input?.closest('.form-group');
+      if (!group || !msg) return;
+      group.classList.remove('is-valid', 'is-error');
+      if (state) group.classList.add(state);
+      msg.textContent = message;
+    }
+
+    function validateNumberField(inputId, msgId, options = {}) {
+      const { required = true, min, max, label = 'This field' } = options;
+      const raw = document.getElementById(inputId).value.trim();
+
+      if (!raw) {
+        if (required) {
+          setFieldState(inputId, msgId, 'is-error', `${label} is required`);
+          return false;
+        }
+        setFieldState(inputId, msgId, null, '');
+        return true;
+      }
+
+      const value = Number(raw);
+      if (!Number.isFinite(value)) {
+        setFieldState(inputId, msgId, 'is-error', `${label} must be a valid number`);
+        return false;
+      }
+      if (min !== undefined && value < min) {
+        setFieldState(inputId, msgId, 'is-error', `${label} must be at least ${min}`);
+        return false;
+      }
+      if (max !== undefined && value > max) {
+        setFieldState(inputId, msgId, 'is-error', `${label} must be at most ${max}`);
+        return false;
+      }
+
+      setFieldState(inputId, msgId, 'is-valid', '✓ Looks good');
+      return true;
+    }
+
+    function validateTextField(inputId, msgId, label = 'This field') {
+      const raw = document.getElementById(inputId).value.trim();
+      if (!raw) {
+        setFieldState(inputId, msgId, 'is-error', `${label} is required`);
+        return false;
+      }
+      setFieldState(inputId, msgId, 'is-valid', '✓ Looks good');
+      return true;
+    }
+
+    function clearFieldState(inputId, msgId) {
+      const input = document.getElementById(inputId);
+      const group = input?.closest('.form-group');
+      const msg = document.getElementById(msgId);
+      group?.classList.remove('is-valid', 'is-error');
+      if (msg) msg.textContent = '';
+    }
+
+    // Attach live blur validation to each field.
+    function attachValidation() {
+      const textFields = [
+        { id: 'foodType',     msg: 'msgFoodType',     label: 'Food type' },
+        { id: 'wasteDate',    msg: 'msgWasteDate',    label: 'Date' },
+        { id: 'wasteLocation',msg: 'msgWasteLocation',label: 'Location' }
+      ];
+      textFields.forEach(({ id, msg, label }) => {
+        document.getElementById(id)?.addEventListener('blur', () => validateTextField(id, msg, label));
+        document.getElementById(id)?.addEventListener('input', () => clearFieldState(id, msg));
+      });
+
+      const numFields = [
+        { id: 'wasteWeight',      msg: 'msgWasteWeight',      label: 'Waste weight', min: 0 },
+        { id: 'temperature',      msg: 'msgTemperature',      label: 'Temperature',  min: 32, max: 212 },
+        { id: 'relativeHumidity', msg: 'msgRelativeHumidity', label: 'Humidity',     min: 0,  max: 100 },
+        { id: 'phLevel',          msg: 'msgPhLevel',          label: 'pH level',     min: 0,  max: 14 },
+        { id: 'naturalGas',       msg: 'msgNaturalGas',       label: 'Natural gas',  min: 0 },
+        { id: 'binFullness',      msg: 'msgBinFullness',      label: 'Bin fullness', min: 0,  max: 100 },
+        { id: 'compostWeight',    msg: 'msgCompostWeight',    label: 'Compost weight', min: 0 }
+      ];
+      numFields.forEach(({ id, msg, label, min, max }) => {
+        document.getElementById(id)?.addEventListener('blur', () =>
+          validateNumberField(id, msg, { label, min, max })
+        );
+        document.getElementById(id)?.addEventListener('input', () => clearFieldState(id, msg));
+      });
+    }
+
+    // ── Safe number reader ────────────────────────────────────────────────────
+    function readNumber(elementId, options = {}) {
+      const { required = false, min, max, label = 'This field' } = options;
+      const raw = document.getElementById(elementId).value.trim();
+      if (!raw) {
+        if (required) throw new Error(`${label} is required`);
+        return undefined;
+      }
+      const value = Number(raw);
+      if (!Number.isFinite(value)) throw new Error(`${label} must be a valid number`);
+      if (min !== undefined && value < min) throw new Error(`${label} must be at least ${min}`);
+      if (max !== undefined && value > max) throw new Error(`${label} must be at most ${max}`);
+      return value;
+    }
+
+    // ── Build form payload ────────────────────────────────────────────────────
+    function buildFoodWastePayload() {
+      return {
+        foodType:      document.getElementById('foodType').value.trim(),
+        weight:        readNumber('wasteWeight',      { required: true, min: 0, label: 'Waste weight' }),
+        date:          document.getElementById('wasteDate').value,
+        location:      document.getElementById('wasteLocation').value.trim(),
+        notes:         document.getElementById('wasteNotes').value.trim(),
+        temperature:   readNumber('temperature',      { required: true, min: 32, max: 212, label: 'Temperature' }),
+        humidity:      readNumber('relativeHumidity', { required: true, min: 0, max: 100, label: 'Relative humidity' }),
+        pH:            readNumber('phLevel',          { required: true, min: 0, max: 14,  label: 'pH level' }),
+        gas:           readNumber('naturalGas',       { required: true, min: 0,           label: 'Natural gas' }),
+        binFullness:   readNumber('binFullness',      { required: true, min: 0, max: 100, label: 'Bin fullness' }),
+        compostWeight: readNumber('compostWeight',    { required: true, min: 0,           label: 'Compost weight' })
+      };
+    }
+
+    function validatePayload(data) {
+      if (!data.foodType)  throw new Error('Food type is required');
+      if (!data.date)      throw new Error('Date is required');
+      if (!data.location)  throw new Error('Location is required');
+    }
+
+    function getPayloadOrNull() {
+      try {
+        const data = buildFoodWastePayload();
+        validatePayload(data);
+        return data;
+      } catch (error) {
+        showStatus(error.message, 'error');
+        return null;
+      }
+    }
+
+    // ── CRUD operations ───────────────────────────────────────────────────────
+    async function addFoodWaste() {
+      const data = getPayloadOrNull();
+      if (!data) return;
+
+      try {
+        const response = await fetch(foodWasteApiUrl, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Failed to add entry');
+
+        showStatus('Entry saved successfully! The table has been refreshed.', 'success');
+        clearForm();
+        retrieveFoodWaste();
+      } catch (error) {
+        console.error('Error adding food waste data:', error);
+        showStatus('Error: ' + error.message, 'error');
+      }
+    }
+
+    async function retrieveFoodWaste() {
+      try {
+        const response = await fetch(`${foodWasteApiUrl}/all`, { headers: getAuthHeaders() });
+        const dataEntries = await response.json();
+        if (!response.ok) throw new Error(dataEntries.message || 'Failed to retrieve data');
+
+        currentFoodWasteEntries = dataEntries;
+        const label = document.getElementById('tableCountLabel');
+        if (label) label.textContent = `${dataEntries.length} entr${dataEntries.length === 1 ? 'y' : 'ies'}`;
+
+        // Update stats strip
+        const published = dataEntries.filter(e => e.published).length;
+        const drafts = dataEntries.length - published;
+        const avgCompost = dataEntries.length
+          ? (dataEntries.reduce((s, e) => s + (e.compostWeight || 0), 0) / dataEntries.length).toFixed(1)
+          : '0.0';
+        const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        setEl('statTotal', dataEntries.length);
+        setEl('statPublished', published);
+        setEl('statDrafts', drafts);
+        setEl('statAvgCompost', avgCompost + ' lbs');
+
+        const searchEl = document.getElementById('entrySearch');
+        const currentQuery = searchEl ? searchEl.value : '';
+
+        if (!dataEntries.length) {
+          document.getElementById('foodWasteBody').innerHTML =
+            '<tr><td colspan="12" class="empty-state">No entries yet. Use the form above to add the first record.</td></tr>';
+          return;
+        }
+
+        applyEntryFilter(currentQuery);
+      } catch (error) {
+        console.error('Error retrieving data:', error);
+        document.getElementById('foodWasteBody').innerHTML =
+          `<tr><td colspan="12" class="error-state">${error.message}</td></tr>`;
+      }
+    }
+
+    // ── Sorting ───────────────────────────────────────────────────────────────
+    function setSort(col) {
+      if (currentSort.col === col) {
+        currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort = { col, dir: 'asc' };
+      }
+      document.querySelectorAll('.sort-th').forEach(th => {
+        th.classList.remove('sort-asc', 'sort-desc');
+        if (th.dataset.sort === col) th.classList.add(currentSort.dir === 'asc' ? 'sort-asc' : 'sort-desc');
+      });
+      currentPage = 1;
+      applyEntryFilter(document.getElementById('entrySearch')?.value || '');
+    }
+
+    function sortEntries(entries) {
+      if (!currentSort.col) return entries;
+      return [...entries].sort((a, b) => {
+        let av = a[currentSort.col], bv = b[currentSort.col];
+        if (av == null) av = '';
+        if (bv == null) bv = '';
+        if (typeof av === 'string') av = av.toLowerCase();
+        if (typeof bv === 'string') bv = bv.toLowerCase();
+        if (av < bv) return currentSort.dir === 'asc' ? -1 : 1;
+        if (av > bv) return currentSort.dir === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    // ── Pagination ────────────────────────────────────────────────────────────
+    function gotoPage(p) {
+      currentPage = p;
+      applyEntryFilter(document.getElementById('entrySearch')?.value || '');
+    }
+
+    function setPageSize(val) {
+      pageSize = val === 'Infinity' ? Infinity : parseInt(val, 10);
+      currentPage = 1;
+      applyEntryFilter(document.getElementById('entrySearch')?.value || '');
+    }
+
+    function renderPaginationBar(total, pages) {
+      const bar = document.getElementById('paginationBar');
+      if (!bar) return;
+      const sizeOpts = [10, 25, 50].map(n =>
+        `<option value="${n}" ${pageSize === n ? 'selected' : ''}>${n} / page</option>`
+      ).join('') + `<option value="Infinity" ${pageSize === Infinity ? 'selected' : ''}>All</option>`;
+
+      let pageNums = '';
+      if (pages > 1) {
+        const lo = Math.max(1, currentPage - 2), hi = Math.min(pages, currentPage + 2);
+        if (lo > 1) pageNums += `<button class="page-btn" onclick="gotoPage(1)">1</button>${lo > 2 ? '<span style="padding:0 0.2rem;color:var(--text-muted)">…</span>' : ''}`;
+        for (let p = lo; p <= hi; p++) {
+          pageNums += `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="gotoPage(${p})">${p}</button>`;
+        }
+        if (hi < pages) pageNums += `${hi < pages - 1 ? '<span style="padding:0 0.2rem;color:var(--text-muted)">…</span>' : ''}<button class="page-btn" onclick="gotoPage(${pages})">${pages}</button>`;
+      }
+
+      bar.innerHTML = `
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:var(--text-muted);">
+          <span>${total} entr${total === 1 ? 'y' : 'ies'}</span>
+          <select class="page-size-select" onchange="setPageSize(this.value)">${sizeOpts}</select>
+        </div>
+        <div class="pagination-buttons">
+          <button class="page-btn" onclick="gotoPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''}>‹ Prev</button>
+          ${pageNums}
+          <button class="page-btn" onclick="gotoPage(${currentPage + 1})" ${currentPage >= pages ? 'disabled' : ''}>Next ›</button>
+        </div>`;
+    }
+
+    // ── Bulk select ───────────────────────────────────────────────────────────
+    function toggleSelect(id, checked) {
+      checked ? selectedIds.add(id) : selectedIds.delete(id);
+      const all = document.getElementById('selectAll');
+      if (all) {
+        all.indeterminate = selectedIds.size > 0 && selectedIds.size < currentFoodWasteEntries.length;
+        all.checked = selectedIds.size > 0 && selectedIds.size === currentFoodWasteEntries.length;
+      }
+      updateBulkBar();
+    }
+
+    function toggleSelectAll(checked) {
+      currentFoodWasteEntries.forEach(e => checked ? selectedIds.add(e._id) : selectedIds.delete(e._id));
+      document.querySelectorAll('.row-check').forEach(cb => { cb.checked = checked; });
+      updateBulkBar();
+    }
+
+    function clearSelection() {
+      selectedIds.clear();
+      document.querySelectorAll('.row-check').forEach(cb => { cb.checked = false; });
+      const all = document.getElementById('selectAll');
+      if (all) { all.checked = false; all.indeterminate = false; }
+      updateBulkBar();
+    }
+
+    function updateBulkBar() {
+      const bar = document.getElementById('bulkBar');
+      if (!bar) return;
+      bar.classList.toggle('visible', selectedIds.size > 0);
+      const el = document.getElementById('bulkCount');
+      if (el) el.textContent = `${selectedIds.size} selected`;
+    }
+
+    async function bulkSetPublished(published) {
+      const ids = [...selectedIds];
+      if (!ids.length) return;
+      let done = 0;
+      for (const id of ids) {
+        try {
+          const r = await fetch(`${foodWasteApiUrl}/${id}/publish`, {
+            method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify({ published })
+          });
+          if (r.ok) done++;
+        } catch { /* skip */ }
+      }
+      showStatus(`${done} of ${ids.length} ${published ? 'published' : 'unpublished'}.`, 'success');
+      clearSelection();
+      retrieveFoodWaste();
+    }
+
+    async function bulkDelete() {
+      const ids = [...selectedIds];
+      if (!ids.length) return;
+      if (!confirm(`Delete ${ids.length} selected entr${ids.length > 1 ? 'ies' : 'y'}? This cannot be undone.`)) return;
+      let done = 0;
+      for (const id of ids) {
+        try {
+          const r = await fetch(`${foodWasteApiUrl}/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+          if (r.ok) done++;
+        } catch { /* skip */ }
+      }
+      showStatus(`${done} of ${ids.length} deleted.`, done === ids.length ? 'success' : 'error');
+      clearSelection();
+      retrieveFoodWaste();
+    }
+
+    // ── CSV Import ────────────────────────────────────────────────────────────
+    function parseCSV(text) {
+      const rows = [];
+      let row = [], field = '', inQ = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (inQ) {
+          if (ch === '"' && text[i + 1] === '"') { field += '"'; i++; }
+          else if (ch === '"') inQ = false;
+          else field += ch;
+        } else {
+          if (ch === '"') inQ = true;
+          else if (ch === ',') { row.push(field); field = ''; }
+          else if (ch === '\n' || (ch === '\r' && text[i + 1] === '\n')) {
+            if (ch === '\r') i++;
+            row.push(field); field = '';
+            if (row.some(c => c)) rows.push(row);
+            row = [];
+          } else field += ch;
+        }
+      }
+      if (row.length) { row.push(field); if (row.some(c => c)) rows.push(row); }
+      return rows;
+    }
+
+    function importCSV(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const rows = parseCSV(e.target.result);
+        if (rows.length < 2) { showStatus('CSV is empty or has no data rows.', 'error'); return; }
+        const headers = rows[0].map(h => h.trim().toLowerCase().replace(/\s+/g, ''));
+        const dataRows = rows.slice(1);
+        let imported = 0, failed = 0;
+        showStatus(`Importing ${dataRows.length} rows…`, 'success');
+        for (const row of dataRows) {
+          const get = (...keys) => { for (const k of keys) { const i = headers.indexOf(k); if (i >= 0) return (row[i] || '').trim(); } return ''; };
+          const payload = {
+            foodType:      get('foodtype', 'food_type', 'food type'),
+            weight:        parseFloat(get('weight', 'wasteweight', 'waste weight')) || 0,
+            date:          get('date') || new Date().toISOString().slice(0, 10),
+            location:      get('location'),
+            notes:         get('notes'),
+            temperature:   parseFloat(get('temperature', 'temp')) || 70,
+            humidity:      parseFloat(get('humidity')) || 50,
+            pH:            parseFloat(get('ph', 'phlevel', 'ph level')) || 7,
+            gas:           parseFloat(get('gas', 'naturalgas', 'natural gas')) || 0,
+            binFullness:   parseFloat(get('binfullness', 'bin fullness', 'fullness')) || 50,
+            compostWeight: parseFloat(get('compostweight', 'compost weight')) || 0
+          };
+          if (!payload.foodType || !payload.location) { failed++; continue; }
+          try {
+            const r = await fetch(foodWasteApiUrl, {
+              method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(payload)
+            });
+            r.ok ? imported++ : failed++;
+          } catch { failed++; }
+        }
+        showStatus(`Import complete: ${imported} added${failed ? `, ${failed} skipped` : ''}.`, imported > 0 ? 'success' : 'error');
+        input.value = '';
+        retrieveFoodWaste();
+      };
+      reader.readAsText(file);
+    }
+
+    // ── Render table rows (with pagination + sort + checkboxes) ───────────────
+    function renderEntryRows(entries) {
+      const tbody = document.getElementById('foodWasteBody');
+      const sorted = sortEntries(entries);
+      const total = sorted.length;
+      const ps = pageSize === Infinity ? total : pageSize;
+      const pages = Math.max(1, Math.ceil(total / ps));
+      currentPage = Math.max(1, Math.min(currentPage, pages));
+      const slice = pageSize === Infinity ? sorted : sorted.slice((currentPage - 1) * ps, currentPage * ps);
+
+      if (!slice.length) {
+        tbody.innerHTML = `<tr><td colspan="13" class="empty-state">No matching entries.</td></tr>`;
+        renderPaginationBar(total, pages);
+        return;
+      }
+
+      tbody.innerHTML = slice.map(entry => `
+        <tr>
+          <td><input type="checkbox" class="row-check" data-id="${entry._id}" ${selectedIds.has(entry._id) ? 'checked' : ''} onchange="toggleSelect('${entry._id}', this.checked)" /></td>
+          <td>${entry.foodType || ''}</td>
+          <td>${entry.weight != null ? entry.weight + ' lbs' : ''}</td>
+          <td>${entry.date ? new Date(entry.date).toLocaleDateString() : ''}</td>
+          <td>${entry.location || ''}</td>
+          <td>${entry.temperature != null ? entry.temperature + ' °F' : ''}</td>
+          <td>${entry.humidity != null ? entry.humidity + '%' : ''}</td>
+          <td>${entry.pH != null ? entry.pH : ''}</td>
+          <td>${entry.gas != null ? entry.gas + ' ppm' : ''}</td>
+          <td>
+            <span class="fullness-chip fullness-${entry.binFullness >= 75 ? 'high' : entry.binFullness >= 50 ? 'medium' : 'low'}">
+              ${entry.binFullness != null ? entry.binFullness + '%' : '--'}
+            </span>
+          </td>
+          <td>${entry.compostWeight != null ? entry.compostWeight + ' lbs' : ''}</td>
+          <td>
+            <span class="badge ${entry.published ? 'badge-low' : 'badge-medium'}">
+              ${entry.published ? 'Published' : 'Draft'}
+            </span>
+          </td>
+          <td style="white-space:nowrap">
+            <button class="btn-action btn-edit" onclick="populateFoodWasteForm('${entry._id}')"><i class="fas fa-pen"></i> Edit</button>
+            <button class="btn-action btn-delete" onclick="deleteFoodWaste('${entry._id}')"><i class="fas fa-trash"></i></button>
+            ${entry.published
+              ? `<button class="btn-action btn-unpublish" onclick="setPublished('${entry._id}', false)"><i class="fas fa-eye-slash"></i></button>`
+              : `<button class="btn-action btn-publish" onclick="setPublished('${entry._id}', true)"><i class="fas fa-eye"></i></button>`}
+          </td>
+        </tr>`).join('');
+
+      renderPaginationBar(total, pages);
+    }
+
+    function applyEntryFilter(query) {
+      const q = query.trim().toLowerCase();
+      const clearBtn = document.getElementById('entrySearchClear');
+      const countEl = document.getElementById('entrySearchCount');
+      clearBtn.classList.toggle('visible', q.length > 0);
+
+      const filtered = q
+        ? currentFoodWasteEntries.filter(e =>
+            (e.foodType || '').toLowerCase().includes(q) ||
+            (e.location || '').toLowerCase().includes(q) ||
+            (e.published ? 'published' : 'draft').includes(q) ||
+            (e.date ? new Date(e.date).toLocaleDateString() : '').includes(q)
+          )
+        : currentFoodWasteEntries;
+
+      countEl.textContent = q ? `${filtered.length} of ${currentFoodWasteEntries.length}` : '';
+      renderEntryRows(filtered);
+    }
+
+    function populateFoodWasteForm(entryId) {
+      const entry = currentFoodWasteEntries.find(item => item._id === entryId);
+      if (!entry) return;
+
+      editingFoodWasteId = entry._id;
+      document.getElementById('foodType').value       = entry.foodType || '';
+      document.getElementById('wasteWeight').value    = entry.weight ?? '';
+      document.getElementById('wasteDate').value      = entry.date ? entry.date.slice(0, 10) : '';
+      document.getElementById('wasteLocation').value  = entry.location || '';
+      document.getElementById('wasteNotes').value     = entry.notes || '';
+      document.getElementById('temperature').value    = entry.temperature ?? '';
+      document.getElementById('relativeHumidity').value = entry.humidity ?? '';
+      document.getElementById('phLevel').value        = entry.pH ?? '';
+      document.getElementById('naturalGas').value     = entry.gas ?? '';
+      document.getElementById('binFullness').value    = entry.binFullness ?? '';
+      document.getElementById('compostWeight').value  = entry.compostWeight ?? '';
+
+      // Switch UI to edit mode.
+      document.getElementById('formModeLabel').textContent = `Editing entry: ${entry.location || entry._id}`;
+      document.getElementById('updateBtn').disabled = false;
+      document.getElementById('addBtn').disabled = true;
+      hideStatus();
+
+      // Scroll back to the form.
+      document.getElementById('foodWasteForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    async function updateFoodWaste() {
+      if (!editingFoodWasteId) {
+        showStatus('Select an entry to edit first by clicking the Edit button in the table.', 'error');
+        return;
+      }
+
+      const data = getPayloadOrNull();
+      if (!data) return;
+
+      try {
+        const response = await fetch(`${foodWasteApiUrl}/${editingFoodWasteId}`, {
+          method: 'PUT',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Failed to update entry');
+
+        showStatus('Entry updated successfully!', 'success');
+        clearForm();
+        retrieveFoodWaste();
+      } catch (error) {
+        console.error('Error updating food waste data:', error);
+        showStatus('Error: ' + error.message, 'error');
+      }
+    }
+
+    async function setPublished(entryId, published) {
+      try {
+        const response = await fetch(`${foodWasteApiUrl}/${entryId}/publish`, {
+          method: 'PUT',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ published })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Failed to update publish status');
+        retrieveFoodWaste();
+      } catch (error) {
+        console.error('Error updating publish status:', error);
+        showStatus('Error: ' + error.message, 'error');
+      }
+    }
+
+    async function deleteFoodWaste(entryId) {
+      if (!confirm('Delete this food waste entry? This cannot be undone.')) return;
+      try {
+        const response = await fetch(`${foodWasteApiUrl}/${entryId}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders()
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Failed to delete entry');
+        retrieveFoodWaste();
+      } catch (error) {
+        console.error('Error deleting food waste data:', error);
+        showStatus('Error: ' + error.message, 'error');
+      }
+    }
+
+    function clearForm() {
+      document.getElementById('foodWasteForm').reset();
+      editingFoodWasteId = null;
+      document.getElementById('formModeLabel').textContent = 'New entry';
+      document.getElementById('updateBtn').disabled = true;
+      document.getElementById('addBtn').disabled = false;
+      // Clear all validation states.
+      document.querySelectorAll('.form-group').forEach(group => {
+        group.classList.remove('is-valid', 'is-error');
+      });
+      document.querySelectorAll('.field-msg').forEach(msg => {
+        msg.textContent = '';
+      });
+      hideStatus();
+    }
+
+    // Auto-set today's date and load table on page load.
+    window.addEventListener('DOMContentLoaded', () => {
+      const dateField = document.getElementById('wasteDate');
+      if (dateField && !dateField.value) {
+        dateField.value = new Date().toISOString().slice(0, 10);
+      }
+      attachValidation();
+      retrieveFoodWaste();
+    });
+
+    // Auto-refresh every 2 hours so table stays current without manual refresh.
+    setInterval(retrieveFoodWaste, 2 * 60 * 60 * 1000);
+  </script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

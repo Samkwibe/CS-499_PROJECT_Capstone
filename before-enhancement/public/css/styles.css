@@ -1,0 +1,117 @@
+/* Global Styling */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #333;
+  }
+  
+  /* Background Video */
+  #background-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+  }
+  
+  /* Navigation Bar Styling */
+  .navbar {
+    background-color: #082241; /* SNHU Navy Blue */
+    color: #F3D014; /* SNHU Gold */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+  }
+  
+  .navbar-logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: #F3D014; /* SNHU Gold */
+  }
+  
+  .navbar-links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+  }
+  
+  .navbar-links li {
+    margin-left: 25px;
+  }
+  
+  .navbar-links li a {
+    color: #F3D014; /* SNHU Gold */
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease;
+  }
+  
+  .navbar-links li a:hover {
+    color: #FFD700; /* Lighter shade of gold for hover effect */
+  }
+  
+  .login-btn {
+    border: 2px solid #F3D014; /* SNHU Gold */
+    border-radius: 5px;
+    padding: 5px 15px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .login-btn:hover {
+    background-color: #F3D014; /* SNHU Gold */
+    color: #082241; /* SNHU Navy Blue */
+  }
+  
+  /* Welcome Content (Centered) */
+  .welcome-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #F3D014; /* SNHU Gold */
+    text-align: center;
+  }
+  
+  .welcome-content h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
+  
+  .get-started-btn {
+    padding: 10px 20px;
+    background-color: #F3D014; /* SNHU Gold */
+    color: #082241; /* SNHU Navy Blue */
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 20px;
+    display: inline-block;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .get-started-btn:hover {
+    background-color: #FFD700; /* Lighter shade of gold */
+    color: #082241; /* SNHU Navy Blue */
+  }
+  
+  /* Image Gallery at Bottom */
+  .image-gallery {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    margin-top: 70vh; /* Adjust depending on your preference */
+  }
+  
+  .image-gallery img {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+  }
+  

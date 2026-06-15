@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Admin Dashboard - Food Waste Processing</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #f4f4f4, #e9ecef);
+    }
+    header {
+      background-color: #082241;
+      color: #fff;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #f3d014;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+    nav ul li a {
+      color: #f3d014;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+    .dashboard-content {
+      padding: 40px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .dashboard-content h1 {
+      color: #082241;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .admin-section {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      margin-bottom: 40px;
+    }
+    .admin-section h2 {
+      color: #082241;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      color: #555;
+      margin-bottom: 5px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .btn {
+      background: #f3d014;
+      color: #082241;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      margin-right: 10px;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      overflow-x: auto;
+      display: block;
+    }
+    .data-table th,
+    .data-table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    .data-table th {
+      background-color: #082241;
+      color: #f3d014;
+    }
+    .notification {
+      background: #ffcccc;
+      border: 1px solid #ff6666;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      color: #a00;
+    }
+    footer {
+      background: #082241;
+      color: #f3d014;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Office of Sustainability</div>
+    <nav>
+      <ul>
+        <li><a href="staff-dashboard.html">Dashboard</a></li>
+        <li><a href="data-entry.html">Food Waste Input</a></li>
+        <li><a href="staff-report.html">Reports</a></li>
+        <li><a href="settings.html">Settings</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="dashboard-content">
+    <h1>Admin Dashboard - Food Waste Processing</h1>
+
+    <!-- Food Waste Data Management Section -->
+    <div class="admin-section">
+      <h2>Manage Food Waste Data</h2>
+      <form id="foodWasteForm">
+        <!-- Existing Fields -->
+        <div class="form-group">
+          <label for="foodType">Food Type / Source</label>
+          <input
+            type="text"
+            id="foodType"
+            placeholder="e.g., Leftover pasta, kitchen scraps"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="wasteWeight">Waste Weight (lbs)</label>
+          <input
+            type="number"
+            id="wasteWeight"
+            step="0.1"
+            min="0"
+            placeholder="Enter weight"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="wasteDate">Date</label>
+          <input type="date" id="wasteDate" required />
+        </div>
+        <div class="form-group">
+          <label for="wasteLocation">Location</label>
+          <input
+            type="text"
+            id="wasteLocation"
+            placeholder="e.g., Dining Hall #1"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="wasteNotes">Notes</label>
+          <textarea id="wasteNotes" placeholder="Additional notes..."></textarea>
+        </div>
+
+        <!-- NEW FIELDS -->
+        <div class="form-group">
+          <label for="temperature">Temperature (°F)</label>
+          <input
+            type="number"
+            id="temperature"
+            step="0.1"
+            min="32"
+            max="212"
+            placeholder="Enter temperature"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="relativeHumidity">Relative Humidity (%)</label>
+          <input
+            type="number"
+            id="relativeHumidity"
+            step="1"
+            min="0"
+            max="100"
+            placeholder="Enter humidity"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="phLevel">pH Level</label>
+          <input
+            type="number"
+            id="phLevel"
+            step="0.1"
+            min="0"
+            max="14"
+            placeholder="Enter pH"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="naturalGas">Natural Gas (ppm)</label>
+          <input
+            type="number"
+            id="naturalGas"
+            step="0.1"
+            min="0"
+            placeholder="Enter gas reading"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="binFullness">Bin Fullness (%)</label>
+          <input
+            type="number"
+            id="binFullness"
+            step="1"
+            min="0"
+            max="100"
+            placeholder="Enter bin fullness"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="compostWeight">Compost Weight (lbs)</label>
+          <input
+            type="number"
+            id="compostWeight"
+            step="0.1"
+            min="0"
+            placeholder="Enter compost weight"
+            required
+          />
+        </div>
+
+        <button type="button" class="btn" onclick="addFoodWaste()">
+          Add Data
+        </button>
+        <button type="button" class="btn" onclick="updateFoodWaste()">
+          Update Data
+        </button>
+      </form>
+
+      <button class="btn" style="margin-top: 20px;" onclick="retrieveFoodWaste()">
+        Retrieve Data
+      </button>
+      <table class="data-table" id="foodWasteTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Food Type/Source</th>
+            <th>Weight (lbs)</th>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Temperature</th>
+            <th>Rel. Humidity</th>
+            <th>pH</th>
+            <th>Natural Gas</th>
+            <th>Bin Fullness</th>
+            <th>Compost Weight</th>
+            <th>Notes</th>
+            <th>Published?</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Food waste data rows populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    🔄 Data auto-refreshes every 2 hours | SNHU Food Waster Tracker (Admin)
+  </footer>
+
+  <script>
+    // ================== Food Waste Data Functions ==================
+    const foodWasteApiUrl = '/api/waste'; // Adjust to your actual endpoint
+
+    async function addFoodWaste() {
+      const data = {
+        foodType: document.getElementById('foodType').value,
+        wasteWeight: parseFloat(document.getElementById('wasteWeight').value),
+        wasteDate: document.getElementById('wasteDate').value,
+        wasteLocation: document.getElementById('wasteLocation').value,
+        wasteNotes: document.getElementById('wasteNotes').value,
+        temperature: parseFloat(document.getElementById('temperature').value),
+        relativeHumidity: parseFloat(document.getElementById('relativeHumidity').value),
+        phLevel: parseFloat(document.getElementById('phLevel').value),
+        naturalGas: parseFloat(document.getElementById('naturalGas').value),
+        binFullness: parseFloat(document.getElementById('binFullness').value),
+        compostWeight: parseFloat(document.getElementById('compostWeight').value),
+      };
+
+      try {
+        const response = await fetch(foodWasteApiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Failed to add data');
+        alert('Food waste data added successfully!');
+        document.getElementById('foodWasteForm').reset(); // Reset form
+        retrieveFoodWaste();
+      } catch (error) {
+        console.error('Error adding food waste data:', error);
+        alert('Error adding data: ' + error.message);
+      }
+    }
+
+    async function retrieveFoodWaste() {
+      try {
+        const response = await fetch(foodWasteApiUrl);
+        const dataEntries = await response.json();
+        if (!response.ok) throw new Error(dataEntries.message || 'Failed to retrieve data');
+
+        const tbody = document
+          .getElementById('foodWasteTable')
+          .querySelector('tbody');
+        tbody.innerHTML = '';
+
+        dataEntries.forEach((entry) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${entry._id || 'N/A'}</td>
+            <td>${entry.foodType}</td>
+            <td>${entry.wasteWeight} lbs</td>
+            <td>${entry.wasteDate}</td>
+            <td>${entry.wasteLocation}</td>
+            <td>${entry.temperature ?? ''} °F</td>
+            <td>${entry.relativeHumidity ?? ''} %</td>
+            <td>${entry.phLevel ?? ''}</td>
+            <td>${entry.naturalGas ?? ''} ppm</td>
+            <td>${entry.binFullness ?? ''} %</td>
+            <td>${entry.compostWeight ?? ''} lbs</td>
+            <td>${entry.wasteNotes ?? ''}</td>
+            <td>${entry.published ? 'Yes' : 'No'}</td>
+            <td>
+              <button class="btn" onclick="populateFoodWasteForm(${JSON.stringify(entry)})">Edit</button>
+              <button class="btn" onclick="deleteFoodWaste('${entry._id}')">Delete</button>
+              ${
+                entry.published
+                ? `<button class="btn" onclick="unpublishFoodWaste('${entry._id}')">Unpublish</button>`
+                : `<button class="btn" onclick="publishFoodWaste('${entry._id}')">Publish</button>`
+              }
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Error retrieving data:', error);
+        alert('Error retrieving data: ' + error.message);
+      }
+    }
+
+    // Auto-refresh every 2 hours
+    setInterval(retrieveFoodWaste, 2 * 60 * 60 * 1000);
+
+    window.onload = () => {
+      retrieveFoodWaste();
+    };
+  </script>
+</body>
+</html>

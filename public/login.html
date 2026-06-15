@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - MunchiesSNHU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body class="auth-shell">
+  <section class="auth-marketing">
+    <img src="assets/images/snhu-logo.png" alt="Southern New Hampshire University" class="auth-marketing-logo" />
+    <div class="eyebrow">MunchiesSNHU Food Waste Tracker</div>
+    <h1>Campus food waste tracking made simple.</h1>
+    <p>Sign in to view your dashboard, record food waste activity, and support better sustainability decisions across campus.</p>
+
+    <div class="auth-stat-row">
+      <div class="auth-stat">
+        <strong>Live</strong>
+        <span>Waste entries</span>
+      </div>
+      <div class="auth-stat">
+        <strong>Smart</strong>
+        <span>Pickup insights</span>
+      </div>
+      <div class="auth-stat">
+        <strong>Clean</strong>
+        <span>Staff reports</span>
+      </div>
+    </div>
+
+    <div class="auth-feature-list">
+      <div class="auth-feature">
+        <strong>Campus Waste Tracking</strong>
+        <p>Record food waste activity and help teams understand where waste is happening most often.</p>
+      </div>
+      <div class="auth-feature">
+        <strong>Sustainability Reports</strong>
+        <p>Review trends, compost progress, and bin activity in a cleaner staff dashboard.</p>
+      </div>
+    </div>
+  </section>
+
+  <main class="auth-card-wrap">
+    <section class="auth-card">
+      <div class="auth-logo-wrap">
+        <img src="assets/images/snhulogo1.png" alt="Southern New Hampshire University" class="auth-logo" />
+      </div>
+      <div class="eyebrow">Welcome Back</div>
+      <h2>Log in</h2>
+      <p>Use your account to continue to the right dashboard for your role.</p>
+
+      <div class="auth-field">
+        <label for="emailInput">Email address</label>
+        <input id="emailInput" type="email" autocomplete="email" placeholder="name@snhu.edu" />
+      </div>
+
+      <div class="auth-field">
+        <label for="passwordInput">Password</label>
+        <div class="password-wrap">
+          <input id="passwordInput" type="password" autocomplete="current-password" placeholder="Enter your password" />
+          <button type="button" class="password-toggle" aria-label="Show password" onclick="togglePassword('passwordInput', this)">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn auth-submit" id="loginBtn">Log in securely</button>
+
+      <div class="divider">or continue with</div>
+      <div class="sso-grid">
+        <button type="button" class="sso-button sso-google" onclick="showSsoMessage('Google')">
+          <i class="fa-brands fa-google"></i> Google
+        </button>
+        <button type="button" class="sso-button sso-microsoft" onclick="showSsoMessage('Microsoft')">
+          <i class="fa-brands fa-microsoft"></i> Microsoft
+        </button>
+        <button type="button" class="sso-button sso-apple" onclick="showSsoMessage('Apple')">
+          <i class="fa-brands fa-apple"></i> Apple
+        </button>
+      </div>
+
+      <span class="link-button" onclick="showResetPrompt()">Forgot password?</span>
+
+      <p class="status-message" id="statusMsg" aria-live="polite"></p>
+      <p class="auth-switch">New user? <a href="signup.html">Create an account</a></p>
+    </section>
+  </main>
+
+  <script>
+    const loginBtn = document.getElementById('loginBtn');
+    const statusMsg = document.getElementById('statusMsg');
+
+    loginBtn.addEventListener('click', async () => {
+      const email = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+
+      statusMsg.textContent = 'Checking credentials...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Server error');
+
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('currentUser', JSON.stringify({
+          id: data._id,
+          name: data.name,
+          email: data.email,
+          role: data.role
+        }));
+
+        statusMsg.textContent = 'Login successful. Redirecting...';
+        setTimeout(() => {
+          window.location.href = data.role === 'staff' || data.role === 'admin'
+            ? 'staff-dashboard.html'
+            : 'settings-student.html';
+        }, 700);
+      } catch (err) {
+        statusMsg.textContent = 'Error: ' + err.message;
+      }
+    });
+
+    function showResetPrompt() {
+      statusMsg.textContent = 'Password reset is not enabled yet. Please contact an administrator.';
+    }
+
+    function showSsoMessage(provider) {
+      statusMsg.textContent = `${provider} sign-in is not enabled yet. Please use your email and password.`;
+    }
+
+    function togglePassword(inputId, button) {
+      const input = document.getElementById(inputId);
+      const icon = button.querySelector('i');
+      const isHidden = input.type === 'password';
+
+      input.type = isHidden ? 'text' : 'password';
+      button.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+      icon.className = isHidden ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+    }
+  </script>
+</body>
+</html>

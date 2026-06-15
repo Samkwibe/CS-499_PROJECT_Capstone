@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Dashboard - SNHU Food Waste Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/chartTheme.js"></script>
+  <script src="js/dashboardEnhancements.js"></script>
+</head>
+<body class="dashboard-shell role-student">
+  <header class="topbar">
+    <div class="brand-lockup">
+      <img src="assets/images/snhu-logo.png" alt="SNHU" class="topbar-logo" />
+      <div class="brand-label">
+        <span class="brand-label-top">MunchiesSNHU</span>
+        <span class="brand-label-main">Student Dashboard</span>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="student-dashboard.html">Dashboard</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="settings-student.html">Settings</a></li>
+        <li><a href="login.html" data-logout>Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page-wrap">
+    <section class="hero-panel">
+      <div>
+        <div class="eyebrow">Campus Sustainability Insights</div>
+        <h1>Your Food Waste Learning Hub</h1>
+        <p>Explore published campus waste data, compost impact, and practical ways to reduce waste in dining halls.</p>
+      </div>
+      <div class="status-card">
+        <span class="metric-label">Welcome</span>
+        <strong id="studentName">Student</strong>
+        <p id="studentRole">Role: student</p>
+      </div>
+    </section>
+
+    <div class="dashboard-toolbar">
+      <div class="live-status">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span id="liveStatusText">Published data</span>
+      </div>
+      <span class="last-updated" id="lastUpdated">Updated —</span>
+      <button type="button" class="btn-ghost" id="refreshDashboard">
+        <i class="fas fa-rotate-right"></i> Refresh
+      </button>
+      <button type="button" class="btn-ghost" id="themeToggle" aria-pressed="false">
+        <i class="fas fa-moon"></i> Dark
+      </button>
+    </div>
+
+    <section class="metric-grid" aria-label="Published campus metrics">
+      <article class="metric-card metric-card-enhanced">
+        <div class="metric-icon"><i class="fas fa-leaf"></i></div>
+        <span class="metric-label">Published Waste</span>
+        <div class="metric-value" id="publishedWaste">--</div>
+        <div class="metric-spark-wrap"><canvas class="metric-sparkline" id="sparkStudentWaste" aria-hidden="true"></canvas></div>
+      </article>
+      <article class="metric-card metric-card-enhanced">
+        <div class="metric-icon"><i class="fas fa-recycle"></i></div>
+        <span class="metric-label">Compost Diverted</span>
+        <div class="metric-value" id="publishedCompost">--</div>
+        <div class="metric-spark-wrap"><canvas class="metric-sparkline" id="sparkStudentCompost" aria-hidden="true"></canvas></div>
+      </article>
+      <article class="metric-card metric-card-enhanced">
+        <div class="metric-icon"><i class="fas fa-location-dot"></i></div>
+        <span class="metric-label">Campus Locations</span>
+        <div class="metric-value" id="locationCount">--</div>
+        <div class="metric-spark-wrap"><canvas class="metric-sparkline" id="sparkStudentLocations" aria-hidden="true"></canvas></div>
+      </article>
+      <article class="metric-card metric-card-enhanced">
+        <div class="metric-icon"><i class="fas fa-clipboard-list"></i></div>
+        <span class="metric-label">Published Entries</span>
+        <div class="metric-value" id="publishedCount">--</div>
+        <div class="metric-spark-wrap"><canvas class="metric-sparkline" id="sparkStudentEntries" aria-hidden="true"></canvas></div>
+      </article>
+    </section>
+
+    <section class="dashboard-analytics-grid student-charts-grid">
+      <article class="section-card chart-card analytics-main-chart">
+        <div class="chart-card-header">
+          <h2>Published Waste Trend</h2>
+          <span class="chart-subtitle" id="locationChartLabel">Over time</span>
+        </div>
+        <div class="chart-stat-row" aria-label="Published chart statistics">
+          <div class="chart-stat">
+            <span>Total waste</span>
+            <strong id="studentChartWaste">--</strong>
+          </div>
+          <div class="chart-stat">
+            <span>Compost</span>
+            <strong id="studentChartCompost">--</strong>
+          </div>
+          <div class="chart-stat">
+            <span>Locations</span>
+            <strong id="studentChartLocations">--</strong>
+          </div>
+        </div>
+        <div class="chart-panel chart-panel-line">
+          <canvas id="studentTrendChart" aria-label="Published waste trend line chart"></canvas>
+        </div>
+      </article>
+
+      <aside class="section-card analytics-priority">
+        <div class="chart-card-header">
+          <h2>How to Read This Data</h2>
+          <span class="chart-subtitle">Quick guide</span>
+        </div>
+        <ul class="tip-list">
+          <li>Only entries published by staff appear on this dashboard.</li>
+          <li>Higher bin fullness means pickup may be needed sooner.</li>
+          <li>Compost weight shows how much waste was diverted from landfill.</li>
+          <li>Compare locations to see where reduction efforts can help most.</li>
+        </ul>
+      </aside>
+
+      <div class="mini-charts-row">
+        <article class="section-card chart-card analytics-mini-chart">
+          <div class="chart-card-header">
+            <h2>By Location</h2>
+            <span class="chart-subtitle">Weight ranking</span>
+          </div>
+          <div class="chart-panel chart-panel-mini">
+            <canvas id="locationChart" aria-label="Waste by location bar chart"></canvas>
+          </div>
+        </article>
+
+        <article class="section-card chart-card analytics-mini-chart">
+          <div class="chart-card-header">
+            <h2>Distribution</h2>
+            <span class="chart-subtitle">Share by site</span>
+          </div>
+          <div class="chart-panel chart-panel-mini">
+            <canvas id="distributionChart" aria-label="Waste distribution doughnut chart"></canvas>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="insight-grid" aria-label="Sustainability insights">
+      <article class="insight-card">
+        <h3><i class="fas fa-utensils"></i> Reduce Plate Waste</h3>
+        <p>Take smaller portions first and go back for seconds only when needed.</p>
+      </article>
+      <article class="insight-card">
+        <h3><i class="fas fa-trash-can"></i> Sort Correctly</h3>
+        <p>Keep compostable items separate from trash to improve diversion rates.</p>
+      </article>
+      <article class="insight-card">
+        <h3><i class="fas fa-graduation-cap"></i> Share Findings</h3>
+        <p>Use this dashboard in class projects to discuss campus sustainability trends.</p>
+      </article>
+    </section>
+
+    <div class="impact-grid" aria-label="Sustainability impact">
+      <div class="impact-section-header">
+        <i class="fas fa-earth-americas"></i> Campus Sustainability Impact
+      </div>
+      <article class="section-card impact-card">
+        <div class="impact-icon"><i class="fas fa-tree"></i></div>
+        <div class="impact-value" id="impactTrees">--</div>
+        <div class="impact-label">Trees Equivalent</div>
+        <div class="impact-desc">Annual CO&#8322; absorption equivalent from campus composting</div>
+      </article>
+      <article class="section-card impact-card">
+        <div class="impact-icon"><i class="fas fa-car-side"></i></div>
+        <div class="impact-value" id="impactMiles">--</div>
+        <div class="impact-label">Miles Saved</div>
+        <div class="impact-desc">Car emissions avoided by diverting food to compost</div>
+      </article>
+      <article class="section-card impact-card">
+        <div class="impact-icon"><i class="fas fa-bolt-lightning"></i></div>
+        <div class="impact-value" id="impactKwh">--</div>
+        <div class="impact-label">kWh Equivalent</div>
+        <div class="impact-desc">Energy-equivalent saved by keeping organics out of landfills</div>
+      </article>
+    </div>
+
+    <section class="section-card tips-card" aria-label="Green tips">
+      <div class="chart-card-header">
+        <h2><i class="fas fa-lightbulb"></i> Green Tips</h2>
+        <span class="chart-subtitle">Campus sustainability advice</span>
+      </div>
+      <blockquote class="tip-slide" id="tipText">Loading tip…</blockquote>
+      <div class="tip-controls">
+        <button class="tip-nav-btn" onclick="moveTip(-1)"><i class="fas fa-chevron-left"></i> Prev</button>
+        <span class="tip-counter" id="tipCounter">1 / 6</span>
+        <button class="tip-nav-btn" onclick="moveTip(1)">Next <i class="fas fa-chevron-right"></i></button>
+      </div>
+    </section>
+
+    <!-- Waste Reduction Pledge -->
+    <section class="section-card pledge-card" aria-label="Waste reduction pledge">
+      <div class="chart-card-header">
+        <h2><i class="fas fa-hand-fist" style="color:var(--snhu-gold);margin-right:0.4rem;"></i>My Waste Reduction Pledge</h2>
+        <span class="chart-subtitle">Commit to a diversion target</span>
+      </div>
+      <p style="font-size:0.84rem;color:var(--text-muted);margin:0 0 0.25rem;">Choose a personal campus sustainability pledge — your goal appears on every visit.</p>
+      <div class="pledge-goal-row" id="pledgeRow">
+        <button class="pledge-goal-btn" data-goal="10" onclick="setPledge(10)">Reduce 10%</button>
+        <button class="pledge-goal-btn" data-goal="20" onclick="setPledge(20)">Reduce 20%</button>
+        <button class="pledge-goal-btn" data-goal="30" onclick="setPledge(30)">Reduce 30%</button>
+        <button class="pledge-goal-btn" data-goal="50" onclick="setPledge(50)">Reduce 50%</button>
+      </div>
+      <div class="pledge-progress-wrap"><div class="pledge-progress-fill" id="pledgeFill" style="width:0%"></div></div>
+      <div class="pledge-status" id="pledgeStatus">Select a pledge above to get started.</div>
+    </section>
+
+    <!-- Campus Leaderboard -->
+    <section class="section-card" style="padding:1.25rem 1.5rem;margin-bottom:0.75rem;" aria-label="Campus leaderboard">
+      <div class="chart-card-header">
+        <h2><i class="fas fa-ranking-star" style="color:var(--snhu-gold);margin-right:0.4rem;"></i>Campus Leaderboard</h2>
+        <span class="chart-subtitle">Best compost diversion by location</span>
+      </div>
+      <ul class="leaderboard-list" id="leaderboardList">
+        <li style="color:var(--text-muted);font-size:0.82rem;padding:0.5rem 0;">Loading leaderboard…</li>
+      </ul>
+    </section>
+
+    <!-- Student Feedback Form -->
+    <section class="section-card feedback-card" aria-label="Send feedback">
+      <div class="chart-card-header">
+        <h2><i class="fas fa-comments" style="color:var(--snhu-gold);margin-right:0.4rem;"></i>Send Feedback to Dining Staff</h2>
+        <span class="chart-subtitle">Your voice shapes campus sustainability</span>
+      </div>
+      <div class="feedback-toast" id="feedbackToast">
+        <i class="fas fa-circle-check"></i> Thank you! Your feedback has been recorded.
+      </div>
+      <div class="feedback-form" id="feedbackFormEl">
+        <select class="feedback-select" id="feedbackCategory">
+          <option value="">Choose a category…</option>
+          <option value="Portion Sizes">Portion Sizes</option>
+          <option value="Compost Bins">Compost Bin Access</option>
+          <option value="Dining Hall">Dining Hall Menu</option>
+          <option value="Pickup Timing">Bin Pickup Timing</option>
+          <option value="Other">Other</option>
+        </select>
+        <textarea class="feedback-textarea" id="feedbackMessage" rows="3" maxlength="400"
+          placeholder="Share your suggestion or observation (max 400 chars)…"
+          oninput="document.getElementById('feedbackCharCount').textContent = this.value.length + ' / 400'"></textarea>
+        <div class="feedback-footer">
+          <span class="feedback-char" id="feedbackCharCount">0 / 400</span>
+          <button class="btn-feedback-submit" onclick="submitFeedback()">
+            <i class="fas fa-paper-plane"></i> Submit
+          </button>
+        </div>
+      </div>
+      <div class="feedback-log" id="feedbackLog"></div>
+    </section>
+
+    <section class="section-card table-card">
+      <h2>Recent Published Entries</h2>
+      <div class="table-wrap">
+        <table class="professional-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Location</th>
+              <th>Food Type</th>
+              <th>Weight</th>
+              <th>Compost</th>
+              <th>Bin Fullness</th>
+            </tr>
+          </thead>
+          <tbody id="publishedRows">
+            <tr><td colspan="6">Loading published entries...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>
+    const user = window.MunchiesAuth.requireAuth(['student']);
+    window.MunchiesAuth.setupLogoutLinks();
+
+    if (user) {
+      document.getElementById('studentName').textContent = user.name || 'Student';
+      document.getElementById('studentRole').textContent = `Role: ${user.role}`;
+    }
+
+    const formatPounds = value => `${Number(value || 0).toFixed(1)} lbs`;
+    const formatPercent = value => `${Math.round(value || 0)}%`;
+    const formatDate = value => {
+      if (!value) return '—';
+      return new Date(value).toLocaleDateString();
+    };
+
+    let locationChart;
+    let distributionChart;
+    let studentTrendChart;
+    let sparkStudentWaste;
+    let sparkStudentCompost;
+    let sparkStudentLocations;
+    let sparkStudentEntries;
+    let cachedStudentSummary = null;
+    let cachedStudentEntryCount = 0;
+
+    function destroyStudentCharts() {
+      [
+        locationChart,
+        distributionChart,
+        studentTrendChart,
+        sparkStudentWaste,
+        sparkStudentCompost,
+        sparkStudentLocations,
+        sparkStudentEntries
+      ].forEach(chart => chart?.destroy());
+      locationChart = null;
+      distributionChart = null;
+      studentTrendChart = null;
+      sparkStudentWaste = null;
+      sparkStudentCompost = null;
+      sparkStudentLocations = null;
+      sparkStudentEntries = null;
+    }
+
+    function rerenderStudentFromCache() {
+      if (!cachedStudentSummary) return;
+      renderMetrics(cachedStudentSummary, cachedStudentEntryCount);
+      renderCharts(cachedStudentSummary, cachedStudentEntryCount);
+    }
+
+    document.addEventListener('dashboard-theme-change', () => {
+      destroyStudentCharts();
+      rerenderStudentFromCache();
+    });
+
+    function summarizeEntries(entries) {
+      const totalWaste = entries.reduce((sum, entry) => sum + (entry.weight || 0), 0);
+      const totalCompost = entries.reduce((sum, entry) => sum + (entry.compostWeight || 0), 0);
+      const locations = new Set(entries.map(entry => entry.location).filter(Boolean));
+
+      const byLocation = {};
+      const byDate = {};
+      entries.forEach(entry => {
+        const locationKey = entry.location || 'Unknown';
+        byLocation[locationKey] = (byLocation[locationKey] || 0) + (entry.weight || 0);
+
+        const dateKey = entry.date
+          ? new Date(entry.date).toISOString().slice(0, 10)
+          : 'Unknown';
+        if (!byDate[dateKey]) {
+          byDate[dateKey] = { totalWaste: 0, totalCompost: 0 };
+        }
+        const waste = entry.weight || 0;
+        byDate[dateKey].totalWaste += waste;
+        byDate[dateKey].totalCompost += Math.min(entry.compostWeight || 0, waste);
+      });
+
+      const dailyTrend = Object.keys(byDate)
+        .filter(key => key !== 'Unknown')
+        .sort()
+        .map(key => ({ _id: key, ...byDate[key] }));
+
+      return { totalWaste, totalCompost, locations: locations.size, byLocation, dailyTrend };
+    }
+
+    function renderMetrics(summary, entryCount) {
+      window.DashboardUX.animateCounter(document.getElementById('publishedWaste'), {
+        target: summary.totalWaste,
+        formatter: value => formatPounds(value)
+      });
+      window.DashboardUX.animateCounter(document.getElementById('publishedCompost'), {
+        target: summary.totalCompost,
+        formatter: value => formatPounds(value)
+      });
+      window.DashboardUX.animateCounter(document.getElementById('locationCount'), {
+        target: summary.locations,
+        formatter: value => Math.round(value)
+      });
+      window.DashboardUX.animateCounter(document.getElementById('publishedCount'), {
+        target: entryCount,
+        formatter: value => Math.round(value)
+      });
+
+      const wasteSeries = (summary.dailyTrend || []).map(day => day.totalWaste || 0);
+      const compostSeries = (summary.dailyTrend || []).map(day => day.totalCompost || 0);
+
+      if (sparkStudentWaste) window.MunchiesCharts.updateSparkline(sparkStudentWaste, wasteSeries);
+      else sparkStudentWaste = window.MunchiesCharts.buildSparkline(document.getElementById('sparkStudentWaste'), wasteSeries, 'student');
+
+      if (sparkStudentCompost) window.MunchiesCharts.updateSparkline(sparkStudentCompost, compostSeries);
+      else sparkStudentCompost = window.MunchiesCharts.buildSparkline(document.getElementById('sparkStudentCompost'), compostSeries, 'student');
+
+      // Locations sparkline: one data point per day showing unique location count.
+      const locationCountSeries = (summary.dailyTrend || []).map(() => summary.locations || 0);
+      if (sparkStudentLocations) window.MunchiesCharts.updateSparkline(sparkStudentLocations, locationCountSeries);
+      else sparkStudentLocations = window.MunchiesCharts.buildSparkline(document.getElementById('sparkStudentLocations'), locationCountSeries, 'student');
+
+      if (sparkStudentEntries) window.MunchiesCharts.updateSparkline(sparkStudentEntries, wasteSeries);
+      else sparkStudentEntries = window.MunchiesCharts.buildSparkline(document.getElementById('sparkStudentEntries'), wasteSeries, 'student');
+
+      window.DashboardUX.pulseMetricCards();
+    }
+
+    function renderCharts(summary, entryCount) {
+      const labels = Object.keys(summary.byLocation);
+      const values = labels.map(label => summary.byLocation[label]);
+      const chartLabel = document.getElementById('locationChartLabel');
+      const dailyTrend = summary.dailyTrend || [];
+
+      document.getElementById('studentChartWaste').textContent = formatPounds(summary.totalWaste);
+      document.getElementById('studentChartCompost').textContent = formatPounds(summary.totalCompost);
+      document.getElementById('studentChartLocations').textContent = summary.locations;
+
+      if (chartLabel) {
+        chartLabel.textContent = dailyTrend.length
+          ? `${dailyTrend.length} day${dailyTrend.length === 1 ? '' : 's'} · ${entryCount} entries`
+          : 'No published chart data yet';
+      }
+
+      if (studentTrendChart) {
+        window.MunchiesCharts.updateStaffTrendChart(studentTrendChart, dailyTrend);
+      } else {
+        studentTrendChart = window.MunchiesCharts.buildStaffTrendChart(
+          document.getElementById('studentTrendChart'),
+          dailyTrend,
+          'student'
+        );
+      }
+
+      if (locationChart) {
+        window.MunchiesCharts.updateLocationBarChart(locationChart, labels, values, 'student');
+      } else {
+        locationChart = window.MunchiesCharts.buildLocationBarChart(
+          document.getElementById('locationChart'),
+          labels,
+          values,
+          'student'
+        );
+      }
+
+      if (distributionChart) {
+        window.MunchiesCharts.updateDistributionDoughnut(distributionChart, labels, values);
+      } else {
+        distributionChart = window.MunchiesCharts.buildDistributionDoughnut(
+          document.getElementById('distributionChart'),
+          labels,
+          values,
+          'student'
+        );
+      }
+    }
+
+    function renderTable(entries) {
+      const rows = document.getElementById('publishedRows');
+
+      if (!entries.length) {
+        rows.innerHTML = '<tr><td colspan="6">No published entries yet. Check back after staff publishes campus data.</td></tr>';
+        return;
+      }
+
+      rows.innerHTML = entries.slice(0, 12).map(entry => {
+        const fullness = Math.round(entry.binFullness || 0);
+        const fullnessClass = fullness >= 75 ? 'high' : fullness >= 50 ? 'medium' : 'low';
+        return `
+        <tr>
+          <td>${formatDate(entry.date)}</td>
+          <td>${entry.location || 'Unknown'}</td>
+          <td>${entry.foodType || '—'}</td>
+          <td>${formatPounds(entry.weight)}</td>
+          <td>${formatPounds(entry.compostWeight)}</td>
+          <td><span class="fullness-chip fullness-${fullnessClass}">${formatPercent(fullness)}</span></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderImpact(summary) {
+      const compost = Math.min(summary.totalCompost || 0, summary.totalWaste || 0);
+      const co2 = compost * 0.25;
+      const trees = (co2 / 48).toFixed(1);
+      const miles = Math.round(co2 * 1.04);
+      const kwh = Math.round(co2 * 1.09);
+      document.getElementById('impactTrees').textContent = trees;
+      document.getElementById('impactMiles').textContent = miles;
+      document.getElementById('impactKwh').textContent = kwh;
+    }
+
+    const TIPS = [
+      'Take only what you need at the dining hall. Studies show students waste up to 33% of food they over-serve themselves.',
+      'Use the compost bins on campus — food scraps in compost divert methane-producing waste from landfills and return nutrients to soil.',
+      'Check the dining hall menu ahead of time. Planning your meal reduces impulse choices that often end up as waste.',
+      'Even 0.5 lbs of composted food saves roughly 1 mile of equivalent car emissions. Every bit counts.',
+      'Share the sustainability dashboard with classmates. Awareness is the first step toward reducing campus food waste.',
+      'Report overfull bins to staff through the portal. Timely pickups reduce odor, pests, and overflow waste.'
+    ];
+    let currentTip = 0;
+
+    function showTip(index) {
+      const el = document.getElementById('tipText');
+      const counter = document.getElementById('tipCounter');
+      if (!el) return;
+      el.textContent = TIPS[index];
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+      if (counter) counter.textContent = `${index + 1} / ${TIPS.length}`;
+    }
+
+    function moveTip(dir) {
+      currentTip = (currentTip + dir + TIPS.length) % TIPS.length;
+      showTip(currentTip);
+    }
+
+    showTip(0);
+
+    async function loadStudentDashboard() {
+      const response = await fetch('/api/waste');
+      const entries = await response.json();
+      if (!response.ok) throw new Error(entries.message || 'Unable to load published data');
+
+      const summary = summarizeEntries(entries);
+      cachedStudentSummary = summary;
+      cachedStudentEntryCount = entries.length;
+      renderMetrics(summary, entries.length);
+      renderCharts(summary, entries.length);
+      renderTable(entries);
+      renderImpact(summary);
+      renderLeaderboard(entries);
+      updatePledgeUI(localStorage.getItem(PLEDGE_KEY));
+      document.getElementById('lastUpdated').textContent = `Updated ${new Date().toLocaleTimeString()}`;
+    }
+
+    // ── Pledge ───────────────────────────────────────────────────────────────
+    const PLEDGE_KEY = 'munchies-pledge-goal';
+
+    function setPledge(goal) {
+      localStorage.setItem(PLEDGE_KEY, goal);
+      updatePledgeUI(goal);
+    }
+
+    function updatePledgeUI(goal) {
+      document.querySelectorAll('.pledge-goal-btn').forEach(btn => {
+        btn.classList.toggle('pledged', Number(btn.dataset.goal) === Number(goal));
+      });
+      if (!goal) {
+        document.getElementById('pledgeStatus').innerHTML = 'Select a pledge above to get started.';
+        document.getElementById('pledgeFill').style.width = '0%';
+        return;
+      }
+      const divRate = cachedStudentSummary
+        ? (() => {
+            const w = cachedStudentSummary.totalWaste || 0, c = cachedStudentSummary.totalCompost || 0;
+            return w > 0 ? Math.min(100, Math.round((Math.min(c, w) / w) * 100)) : 0;
+          })()
+        : 0;
+      const pct = Math.min(100, Math.round((divRate / goal) * 100));
+      document.getElementById('pledgeFill').style.width = `${pct}%`;
+      const status = document.getElementById('pledgeStatus');
+      if (pct >= 100) {
+        status.innerHTML = `<strong style="color:var(--success)">🎉 Pledge met!</strong> Campus is divesting ${divRate}% — you've hit your ${goal}% goal.`;
+      } else {
+        status.innerHTML = `Campus diversion is currently <strong>${divRate}%</strong> — ${pct}% of your ${goal}% pledge target.`;
+      }
+    }
+
+    function initPledge() {
+      const saved = localStorage.getItem(PLEDGE_KEY);
+      if (saved) updatePledgeUI(Number(saved));
+    }
+
+    // ── Leaderboard ───────────────────────────────────────────────────────────
+    function renderLeaderboard(entries) {
+      const byLoc = {};
+      entries.forEach(e => {
+        const loc = e.location || 'Unknown';
+        if (!byLoc[loc]) byLoc[loc] = { waste: 0, compost: 0 };
+        byLoc[loc].waste += e.weight || 0;
+        byLoc[loc].compost += Math.min(e.compostWeight || 0, e.weight || 0);
+      });
+
+      const ranked = Object.entries(byLoc)
+        .map(([loc, d]) => ({
+          loc,
+          rate: d.waste > 0 ? Math.min(100, Math.round((d.compost / d.waste) * 100)) : 0,
+          lbs: d.compost
+        }))
+        .filter(r => r.lbs > 0)
+        .sort((a, b) => b.rate - a.rate)
+        .slice(0, 5);
+
+      const list = document.getElementById('leaderboardList');
+      if (!list) return;
+      if (!ranked.length) {
+        list.innerHTML = '<li style="color:var(--text-muted);font-size:0.82rem;padding:0.4rem 0;">No data yet — check back after entries are published.</li>';
+        return;
+      }
+      const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+      list.innerHTML = ranked.map((r, i) => {
+        const rateClass = r.rate >= 50 ? 'rate-high' : r.rate >= 25 ? 'rate-mid' : 'rate-low';
+        return `<li class="leaderboard-row">
+          <span class="leaderboard-medal">${medals[i] || (i + 1)}</span>
+          <div>
+            <div class="leaderboard-loc">${r.loc}</div>
+            <div class="leaderboard-sub">${r.lbs.toFixed(1)} lbs composted</div>
+          </div>
+          <span class="leaderboard-rate ${rateClass}">${r.rate}% diverted</span>
+        </li>`;
+      }).join('');
+    }
+
+    // ── Feedback form ─────────────────────────────────────────────────────────
+    const FEEDBACK_KEY = 'munchies-student-feedback';
+
+    function submitFeedback() {
+      const cat = document.getElementById('feedbackCategory').value;
+      const msg = document.getElementById('feedbackMessage').value.trim();
+      if (!cat) { alert('Please choose a category.'); return; }
+      if (!msg) { alert('Please enter a message before submitting.'); return; }
+
+      const record = { category: cat, message: msg, date: new Date().toLocaleDateString() };
+      const existing = JSON.parse(localStorage.getItem(FEEDBACK_KEY) || '[]');
+      existing.unshift(record);
+      localStorage.setItem(FEEDBACK_KEY, JSON.stringify(existing.slice(0, 10)));
+
+      document.getElementById('feedbackToast').classList.add('show');
+      document.getElementById('feedbackCategory').value = '';
+      document.getElementById('feedbackMessage').value = '';
+      document.getElementById('feedbackCharCount').textContent = '0 / 400';
+      setTimeout(() => document.getElementById('feedbackToast').classList.remove('show'), 4000);
+      renderFeedbackLog();
+    }
+
+    function renderFeedbackLog() {
+      const log = document.getElementById('feedbackLog');
+      if (!log) return;
+      const items = JSON.parse(localStorage.getItem(FEEDBACK_KEY) || '[]');
+      if (!items.length) { log.innerHTML = ''; return; }
+      log.innerHTML = items.slice(0, 3).map(item => `
+        <div class="feedback-log-item">
+          <strong>${item.category} <span class="feedback-log-date">${item.date}</span></strong>
+          ${item.message}
+        </div>`).join('');
+    }
+
+    window.DashboardUX.setupToolbar({ onRefresh: loadStudentDashboard });
+
+    loadStudentDashboard().catch(error => {
+      document.getElementById('publishedRows').innerHTML =
+        `<tr><td colspan="6" class="error-state">${error.message}</td></tr>`;
+    });
+    setInterval(loadStudentDashboard, 2 * 60 * 60 * 1000);
+
+    initPledge();
+    renderFeedbackLog();
+  </script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

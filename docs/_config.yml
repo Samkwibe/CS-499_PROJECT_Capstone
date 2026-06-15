@@ -1,0 +1,18 @@
+title: "CS-499 ePortfolio — Samuel Raymond"
+description: "Computer Science Capstone ePortfolio showcasing software design, algorithms, and database enhancements to the MunchiesSNHU Food Waste Tracker."
+theme: minima
+
+minima:
+  skin: dark
+
+header_pages:
+  - code-review.md
+  - enhancement-one.md
+  - enhancement-two.md
+  - enhancement-three.md
+
+author:
+  name: "Samuel Raymond"
+
+plugins:
+  - jekyll-feed

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Dashboard - SNHU Food Waste Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/chartTheme.js"></script>
+  <script src="js/dashboardEnhancements.js"></script>
+</head>
+<body class="dashboard-shell role-staff">
+  <header class="topbar">
+    <div class="brand-lockup">
+      <img src="assets/images/snhu-logo.png" alt="SNHU" class="topbar-logo" />
+      <div class="brand-label">
+        <span class="brand-label-top">MunchiesSNHU</span>
+        <span class="brand-label-main">Staff Dashboard</span>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="staff-dashboard.html">Dashboard</a></li>
+        <li><a href="data-entry.html">Data Input</a></li>
+        <li><a href="staff-import.html">Bulk Import</a></li>
+        <li><a href="staff-report.html">Reports</a></li>
+        <li><a href="settings-staff.html">Settings</a></li>
+        <li><a href="login.html" data-logout>Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page-wrap">
+    <section class="hero-panel">
+      <div>
+        <div class="eyebrow">Campus Sustainability Operations</div>
+        <h1>Food Waste Command Center</h1>
+        <p>Monitor waste trends, compost diversion, and high-priority pickup locations across campus.</p>
+        <div class="ops-strip" aria-label="Operations status">
+          <span class="ops-pill">Live campus data</span>
+          <span class="ops-pill">Priority scoring enabled</span>
+          <span class="ops-pill">Staff-only analytics</span>
+        </div>
+      </div>
+      <div class="status-card">
+        <span class="metric-label">Signed in as</span>
+        <strong id="staffName">Staff</strong>
+        <p id="staffRole">Role: staff</p>
+      </div>
+    </section>
+
+    <div class="alert-banner" id="criticalAlertBanner" style="display:none" role="alert" aria-live="assertive">
+      <div class="alert-banner-content">
+        <i class="fas fa-triangle-exclamation"></i>
+        <div>
+          <div id="alertBannerText"></div>
+          <div class="alert-banner-locations" id="alertBannerLocations"></div>
+        </div>
+      </div>
+      <button class="alert-dismiss" onclick="this.closest('.alert-banner').style.display='none'" aria-label="Dismiss alert">
+        <i class="fas fa-xmark"></i>
+      </button>
+    </div>
+
+    <section class="quick-actions" aria-label="Staff shortcuts">
+      <a class="action-card" href="data-entry.html">
+        <strong>Log new waste entry</strong>
+        <span>Capture weight, sensors, and compost data.</span>
+      </a>
+      <a class="action-card" href="staff-report.html">
+        <strong>Review reports</strong>
+        <span>Export summaries for sustainability planning.</span>
+      </a>
+      <a class="action-card" href="settings-staff.html">
+        <strong>Account settings</strong>
+        <span>Manage your staff profile and preferences.</span>
+      </a>
+    </section>
+
+    <div class="dashboard-toolbar">
+      <div class="live-status">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span id="liveStatusText">Live data</span>
+      </div>
+      <span class="last-updated" id="lastUpdated">Updated —</span>
+      <button type="button" class="btn-ghost" id="refreshDashboard">
+        <i class="fas fa-rotate-right"></i> Refresh
+      </button>
+      <button type="button" class="btn-ghost" id="themeToggle" aria-pressed="false">
+        <i class="fas fa-moon"></i> Dark
+      </button>
+    </div>
+
+    <section class="metric-grid" aria-label="Food waste metrics">
+      <article class="metric-card metric-card-enhanced">
+        <div class="metric-icon"><i class="fas fa-weight-hanging"></i></div>
+        <span class="metric-label">Total Waste</span>
+        <div class="metric-value" id="totalWaste">--</div>
+        <div class="delta-wrap" id="deltaWaste"></div>
+        <div class="metric-spark-wrap"><canvas class="metric-sparkline" id="sparkWaste" aria-hidden="true"></canvas></div>
+      </article>
+      <article class="metric-card metric-card-enhanced">
+        <div class="metric-icon"><i class="fas fa-seedling"></i></div>
+        <span class="metric-label">Compost Diverted</span>
+        <div class="metric-value" id="compostWeight">--</div>
+        <div class="delta-wrap" id="deltaCompost"></div>
+        <div class="metric-spark-wrap"><canvas class="metric-sparkline" id="sparkCompost" aria-hidden="true"></canvas></div>
+      </article>
+      <article class="metric-card metric-card-enhanced">
+        <div class="metric-icon"><i class="fas fa-chart-pie"></i></div>
+        <span class="metric-label">Diversion Rate</span>
+        <div class="metric-value" id="compostRate">--</div>
+        <div class="delta-wrap" id="deltaRate"></div>
+        <div class="metric-spark-wrap"><canvas class="metric-sparkline" id="sparkDiversion" aria-hidden="true"></canvas></div>
+      </article>
+      <article class="metric-card metric-card-enhanced">
+        <div class="metric-icon"><i class="fas fa-database"></i></div>
+        <span class="metric-label">Entries Logged</span>
+        <div class="metric-value" id="entryCount">--</div>
+        <div class="delta-wrap" id="deltaEntries"></div>
+        <div class="metric-spark-wrap"><canvas class="metric-sparkline" id="sparkEntries" aria-hidden="true"></canvas></div>
+      </article>
+    </section>
+
+    <section class="gauge-grid" aria-label="Performance gauges">
+      <article class="section-card gauge-card">
+        <div class="chart-panel gauge-panel"><canvas id="gaugeDiversion" aria-label="Diversion gauge"></canvas></div>
+        <span class="gauge-label">Diversion</span>
+      </article>
+      <article class="section-card gauge-card">
+        <div class="chart-panel gauge-panel"><canvas id="gaugeFullness" aria-label="Bin fullness gauge"></canvas></div>
+        <span class="gauge-label">Bin Fullness</span>
+      </article>
+      <article class="section-card gauge-card">
+        <div class="chart-panel gauge-panel"><canvas id="gaugeHumidity" aria-label="Humidity gauge"></canvas></div>
+        <span class="gauge-label">Humidity</span>
+      </article>
+      <article class="section-card gauge-card">
+        <div class="chart-panel gauge-panel"><canvas id="gaugePh" aria-label="pH gauge"></canvas></div>
+        <span class="gauge-label">pH Level</span>
+      </article>
+    </section>
+
+    <section class="goal-grid" aria-label="Goal tracking">
+      <article class="section-card goal-card">
+        <div class="goal-card-header">
+          <div class="goal-card-title"><i class="fas fa-bullseye"></i> Diversion Goal</div>
+          <span class="goal-target-badge">Target: 50%</span>
+        </div>
+        <div class="goal-current" id="goalDivValue">--</div>
+        <div class="goal-bar-wrap"><div class="goal-bar-fill" id="goalDivFill" style="width:0%"></div></div>
+        <div class="goal-footnote" id="goalDivNote">Compost vs total waste</div>
+      </article>
+      <article class="section-card goal-card">
+        <div class="goal-card-header">
+          <div class="goal-card-title"><i class="fas fa-clipboard-check"></i> Entries Logged</div>
+          <span class="goal-target-badge">Target: 20</span>
+        </div>
+        <div class="goal-current" id="goalEntriesValue">--</div>
+        <div class="goal-bar-wrap"><div class="goal-bar-fill" id="goalEntriesFill" style="width:0%"></div></div>
+        <div class="goal-footnote" id="goalEntriesNote">Total waste records in system</div>
+      </article>
+      <article class="section-card goal-card">
+        <div class="goal-card-header">
+          <div class="goal-card-title"><i class="fas fa-leaf"></i> Compost Impact</div>
+          <span class="goal-target-badge">CO&#8322; Saved</span>
+        </div>
+        <div class="goal-current" id="goalImpactValue">--</div>
+        <div class="goal-bar-wrap"><div class="goal-bar-fill" id="goalImpactFill" style="width:0%"></div></div>
+        <div class="goal-footnote" id="goalImpactNote">Estimated lbs CO&#8322; avoided from landfill</div>
+      </article>
+    </section>
+
+    <section class="dashboard-analytics-grid">
+      <article class="section-card chart-card analytics-main-chart">
+        <div class="chart-card-header">
+          <h2>Waste &amp; Compost Trend</h2>
+          <span class="chart-subtitle" id="trendRangeLabel">14-day performance</span>
+        </div>
+        <div class="chart-stat-row" aria-label="Chart summary statistics">
+          <div class="chart-stat">
+            <span>Total waste</span>
+            <strong id="chartStatWaste">--</strong>
+          </div>
+          <div class="chart-stat">
+            <span>Compost diverted</span>
+            <strong id="chartStatCompost">--</strong>
+          </div>
+          <div class="chart-stat">
+            <span>Diversion rate</span>
+            <strong id="chartStatRate">--</strong>
+          </div>
+        </div>
+        <div class="chart-panel chart-panel-line">
+          <canvas id="wasteTrendChart" aria-label="Waste and compost line chart"></canvas>
+        </div>
+      </article>
+
+      <aside class="section-card analytics-priority">
+        <div class="chart-card-header">
+          <h2>Pickup Priority</h2>
+          <span class="chart-subtitle">Top risks</span>
+        </div>
+        <div id="priorityList" class="priority-list priority-fill">
+          <div class="empty-state">Loading priority recommendations...</div>
+        </div>
+      </aside>
+
+      <div class="mini-charts-row">
+        <article class="section-card chart-card analytics-mini-chart">
+          <div class="chart-card-header">
+            <h2>Diversion Split</h2>
+            <span class="chart-subtitle">Compost vs remaining</span>
+          </div>
+          <div class="chart-panel chart-panel-mini">
+            <canvas id="diversionChart" aria-label="Compost diversion doughnut chart"></canvas>
+          </div>
+        </article>
+        <article class="section-card chart-card analytics-mini-chart">
+          <div class="chart-card-header">
+            <h2>Sensor Averages</h2>
+            <span class="chart-subtitle">Campus readings</span>
+          </div>
+          <div class="chart-panel chart-panel-mini">
+            <canvas id="sensorRadarChart" aria-label="Sensor averages radar chart"></canvas>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-card table-card">
+      <div class="chart-card-header">
+        <h2>Top Locations By Waste</h2>
+        <span class="chart-subtitle">Ranked with visual bars</span>
+      </div>
+      <div class="chart-panel table-chart-panel">
+        <canvas id="locationBarChart" aria-label="Location waste ranking chart"></canvas>
+      </div>
+      <div class="table-wrap">
+        <table class="professional-table">
+          <thead>
+            <tr>
+              <th>Location</th>
+              <th>Total Waste</th>
+              <th>Compost</th>
+              <th>Avg. Fullness</th>
+              <th>Entries</th>
+            </tr>
+          </thead>
+          <tbody id="locationRows">
+            <tr><td colspan="5">Loading location summary...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="activity-grid" aria-label="Recent activity and weekly snapshot">
+      <article class="section-card">
+        <div class="chart-card-header">
+          <h2><i class="fas fa-clock-rotate-left"></i> Recent Activity</h2>
+          <span class="chart-subtitle">Latest waste entries logged</span>
+        </div>
+        <ul class="activity-feed" id="activityFeed">
+          <li class="activity-item">
+            <div class="activity-icon"><i class="fas fa-spinner fa-spin"></i></div>
+            <div class="activity-body"><div class="activity-title">Loading activity...</div></div>
+          </li>
+        </ul>
+      </article>
+      <article class="section-card">
+        <div class="chart-card-header">
+          <h2><i class="fas fa-chart-simple"></i> Last 7 Days</h2>
+          <span class="chart-subtitle">Quick snapshot</span>
+        </div>
+        <div class="weekly-stats-grid">
+          <div class="weekly-stat">
+            <span class="weekly-stat-value" id="weeklyEntries">--</span>
+            <span class="weekly-stat-label">Entries</span>
+          </div>
+          <div class="weekly-stat">
+            <span class="weekly-stat-value" id="weeklyLocations">--</span>
+            <span class="weekly-stat-label">Locations</span>
+          </div>
+          <div class="weekly-stat">
+            <span class="weekly-stat-value" id="weeklyPublished">--</span>
+            <span class="weekly-stat-label">Published</span>
+          </div>
+          <div class="weekly-stat">
+            <span class="weekly-stat-value" id="weeklyAvgFullness">--</span>
+            <span class="weekly-stat-label">Avg Fullness</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+      <article class="section-card" style="padding:1.25rem 1.4rem;">
+        <div class="chart-card-header">
+          <h2><i class="fas fa-fire" style="color:var(--snhu-gold);margin-right:0.4rem;font-size:0.9rem;"></i>Waste by Location</h2>
+          <span class="chart-subtitle">Highest producers</span>
+        </div>
+        <ul class="heatmap-list" id="heatmapList">
+          <li style="color:var(--text-muted);font-size:0.82rem;">Loading…</li>
+        </ul>
+      </article>
+      <article class="section-card" style="padding:1.25rem 1.4rem;">
+        <div class="chart-card-header">
+          <h2><i class="fas fa-calendar-week" style="color:var(--snhu-gold);margin-right:0.4rem;font-size:0.9rem;"></i>Weekly Performance</h2>
+          <span class="chart-subtitle">Best &amp; worst diversion weeks</span>
+        </div>
+        <div class="best-worst-grid">
+          <div class="bw-card best" id="bestWeekCard"><span style="color:var(--text-muted);font-size:0.8rem;">Loading…</span></div>
+          <div class="bw-card worst" id="worstWeekCard"><span style="color:var(--text-muted);font-size:0.8rem;">Loading…</span></div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>
+    const user = window.MunchiesAuth.requireAuth(['staff', 'admin']);
+    window.MunchiesAuth.setupLogoutLinks();
+
+    if (user) {
+      document.getElementById('staffName').textContent = user.name || 'Staff';
+      document.getElementById('staffRole').textContent = `Role: ${user.role}`;
+    }
+
+    const formatPounds = value => `${Number(value || 0).toFixed(1)} lbs`;
+    const formatPercent = value => `${Math.round(value || 0)}%`;
+
+    let wasteTrendChart;
+    let diversionChart;
+    let sensorRadarChart;
+    let locationBarChart;
+    let gaugeDiversion;
+    let gaugeFullness;
+    let gaugeHumidity;
+    let gaugePh;
+    let sparkWaste;
+    let sparkCompost;
+    let sparkDiversion;
+    let sparkEntries;
+    let cachedSummary = null;
+    let cachedPriorities = null;
+
+    function destroyAllCharts() {
+      [
+        wasteTrendChart,
+        diversionChart,
+        sensorRadarChart,
+        locationBarChart,
+        gaugeDiversion,
+        gaugeFullness,
+        gaugeHumidity,
+        gaugePh,
+        sparkWaste,
+        sparkCompost,
+        sparkDiversion,
+        sparkEntries
+      ].forEach(chart => chart?.destroy());
+      wasteTrendChart = null;
+      diversionChart = null;
+      sensorRadarChart = null;
+      locationBarChart = null;
+      gaugeDiversion = null;
+      gaugeFullness = null;
+      gaugeHumidity = null;
+      gaugePh = null;
+      sparkWaste = null;
+      sparkCompost = null;
+      sparkDiversion = null;
+      sparkEntries = null;
+    }
+
+    function rerenderFromCache() {
+      if (!cachedSummary) return;
+      renderMetrics(cachedSummary);
+      renderCharts(cachedSummary);
+      renderLocations(cachedSummary);
+      renderPriority(cachedPriorities || []);
+    }
+
+    document.addEventListener('dashboard-theme-change', () => {
+      destroyAllCharts();
+      rerenderFromCache();
+    });
+
+    function badgeClass(level) {
+      return `badge badge-${String(level || 'low').toLowerCase()}`;
+    }
+
+    async function fetchJson(url) {
+      const response = await fetch(url, { headers: window.MunchiesAuth.getAuthHeaders() });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Unable to load dashboard data');
+      return data;
+    }
+
+    function trendValues(dailyTrend, field) {
+      return (dailyTrend || []).map(day => day[field] || 0);
+    }
+
+    function renderMetrics(summary) {
+      const totalWaste = summary.totalWaste || 0;
+      const totalCompost = Math.min(summary.totalCompost || 0, totalWaste);
+      const diversionRate = totalWaste > 0
+        ? Math.min(100, Math.round((totalCompost / totalWaste) * 100))
+        : 0;
+      const dailyTrend = summary.dailyTrend || [];
+
+      window.DashboardUX.animateCounter(document.getElementById('totalWaste'), {
+        target: totalWaste,
+        formatter: value => formatPounds(value)
+      });
+      window.DashboardUX.animateCounter(document.getElementById('compostWeight'), {
+        target: totalCompost,
+        formatter: value => formatPounds(value)
+      });
+      window.DashboardUX.animateCounter(document.getElementById('compostRate'), {
+        target: diversionRate,
+        formatter: value => `${Math.round(value)}%`
+      });
+      window.DashboardUX.animateCounter(document.getElementById('entryCount'), {
+        target: summary.entryCount || 0,
+        formatter: value => Math.round(value)
+      });
+
+      const wasteSeries = trendValues(dailyTrend, 'totalWaste');
+      const compostSeries = trendValues(dailyTrend, 'totalCompost').map((value, index) =>
+        Math.min(value, wasteSeries[index] || value)
+      );
+      const diversionSeries = wasteSeries.map((waste, index) =>
+        waste > 0 ? Math.min(100, Math.round((compostSeries[index] / waste) * 100)) : 0
+      );
+
+      if (sparkWaste) window.MunchiesCharts.updateSparkline(sparkWaste, wasteSeries);
+      else sparkWaste = window.MunchiesCharts.buildSparkline(document.getElementById('sparkWaste'), wasteSeries, 'staff');
+
+      if (sparkCompost) window.MunchiesCharts.updateSparkline(sparkCompost, compostSeries);
+      else sparkCompost = window.MunchiesCharts.buildSparkline(document.getElementById('sparkCompost'), compostSeries, 'staff');
+
+      if (sparkDiversion) window.MunchiesCharts.updateSparkline(sparkDiversion, diversionSeries);
+      else sparkDiversion = window.MunchiesCharts.buildSparkline(document.getElementById('sparkDiversion'), diversionSeries, 'staff');
+
+      const entrySeries = dailyTrend.map(day => day.entryCount || 0);
+      if (sparkEntries) window.MunchiesCharts.updateSparkline(sparkEntries, entrySeries);
+      else sparkEntries = window.MunchiesCharts.buildSparkline(document.getElementById('sparkEntries'), entrySeries, 'staff');
+
+      const phPercent = ((summary.averagePH || 0) / 14) * 100;
+      if (gaugeDiversion) window.MunchiesCharts.updateGaugeChart(gaugeDiversion, diversionRate, 'Diverted');
+      else gaugeDiversion = window.MunchiesCharts.buildGaugeChart(document.getElementById('gaugeDiversion'), diversionRate, 'staff', 'Diverted');
+
+      if (gaugeFullness) window.MunchiesCharts.updateGaugeChart(gaugeFullness, summary.averageBinFullness, 'Full');
+      else gaugeFullness = window.MunchiesCharts.buildGaugeChart(document.getElementById('gaugeFullness'), summary.averageBinFullness, 'staff', 'Full');
+
+      if (gaugeHumidity) window.MunchiesCharts.updateGaugeChart(gaugeHumidity, summary.averageHumidity, 'Humidity');
+      else gaugeHumidity = window.MunchiesCharts.buildGaugeChart(document.getElementById('gaugeHumidity'), summary.averageHumidity, 'staff', 'Humidity');
+
+      if (gaugePh) window.MunchiesCharts.updateGaugeChart(gaugePh, phPercent, 'pH');
+      else gaugePh = window.MunchiesCharts.buildGaugeChart(document.getElementById('gaugePh'), phPercent, 'staff', 'pH');
+
+      window.DashboardUX.pulseMetricCards();
+    }
+
+    function renderCharts(summary) {
+      const dailyTrend = summary.dailyTrend || [];
+      const rangeLabel = document.getElementById('trendRangeLabel');
+      const totalWaste = summary.totalWaste || 0;
+      const totalCompost = Math.min(summary.totalCompost || 0, totalWaste);
+      const remaining = Math.max(totalWaste - totalCompost, 0);
+      const diversionRate = totalWaste > 0
+        ? Math.min(100, Math.round((totalCompost / totalWaste) * 100))
+        : 0;
+
+      document.getElementById('chartStatWaste').textContent = formatPounds(totalWaste);
+      document.getElementById('chartStatCompost').textContent = formatPounds(totalCompost);
+      document.getElementById('chartStatRate').textContent = formatPercent(diversionRate);
+
+      if (rangeLabel) {
+        rangeLabel.textContent = dailyTrend.length
+          ? `${dailyTrend.length} day${dailyTrend.length === 1 ? '' : 's'} tracked`
+          : 'Waiting for entries';
+      }
+
+      if (wasteTrendChart) window.MunchiesCharts.updateStaffTrendChart(wasteTrendChart, dailyTrend);
+      else wasteTrendChart = window.MunchiesCharts.buildStaffTrendChart(document.getElementById('wasteTrendChart'), dailyTrend);
+
+      if (diversionChart) window.MunchiesCharts.updateDiversionDoughnut(diversionChart, totalCompost, remaining);
+      else diversionChart = window.MunchiesCharts.buildDiversionDoughnut(document.getElementById('diversionChart'), totalCompost, remaining, 'staff');
+
+      const sensorData = {
+        binFullness: summary.averageBinFullness,
+        humidity: summary.averageHumidity,
+        pH: summary.averagePH
+      };
+
+      if (sensorRadarChart) window.MunchiesCharts.updateSensorRadar(sensorRadarChart, sensorData);
+      else sensorRadarChart = window.MunchiesCharts.buildSensorRadar(document.getElementById('sensorRadarChart'), sensorData, 'staff');
+    }
+
+    function renderLocations(summary) {
+      const locations = summary.byLocation || [];
+      window.DashboardUX.renderLocationTable(
+        document.getElementById('locationRows'),
+        locations,
+        formatPounds,
+        formatPercent
+      );
+
+      const labels = locations.map(item => item._id || 'Unknown').slice(0, 8);
+      const values = locations.map(item => item.totalWaste || 0).slice(0, 8);
+
+      if (locationBarChart) window.MunchiesCharts.updateLocationBarChart(locationBarChart, labels, values, 'staff');
+      else locationBarChart = window.MunchiesCharts.buildLocationBarChart(document.getElementById('locationBarChart'), labels, values, 'staff');
+    }
+
+    function renderPriority(entries) {
+      window.DashboardUX.renderPriorityList(
+        document.getElementById('priorityList'),
+        entries,
+        formatPounds,
+        badgeClass
+      );
+    }
+
+    function renderAlertBanner(priorities) {
+      const banner = document.getElementById('criticalAlertBanner');
+      const critical = priorities.filter(p => p.priorityLevel === 'Critical');
+      const high = priorities.filter(p => p.priorityLevel === 'High');
+
+      if (critical.length > 0) {
+        banner.className = 'alert-banner alert-critical';
+        banner.style.display = '';
+        document.getElementById('alertBannerText').textContent =
+          `${critical.length} bin${critical.length > 1 ? 's' : ''} at CRITICAL capacity — immediate pickup required.`;
+        document.getElementById('alertBannerLocations').textContent =
+          critical.slice(0, 4).map(p => p.location || 'Unknown').join(' · ');
+      } else if (high.length > 0) {
+        banner.className = 'alert-banner alert-high';
+        banner.style.display = '';
+        document.getElementById('alertBannerText').textContent =
+          `${high.length} location${high.length > 1 ? 's' : ''} at HIGH priority — schedule pickup soon.`;
+        document.getElementById('alertBannerLocations').textContent =
+          high.slice(0, 4).map(p => p.location || 'Unknown').join(' · ');
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
+    function renderGoals(summary) {
+      const totalWaste = summary.totalWaste || 0;
+      const totalCompost = Math.min(summary.totalCompost || 0, totalWaste);
+      const divRate = totalWaste > 0 ? Math.min(100, Math.round((totalCompost / totalWaste) * 100)) : 0;
+      const entriesCount = summary.entryCount || 0;
+      const co2Saved = Math.round(totalCompost * 0.25);
+
+      document.getElementById('goalDivValue').textContent = `${divRate}%`;
+      const divFill = document.getElementById('goalDivFill');
+      divFill.style.width = `${Math.min(100, (divRate / 50) * 100)}%`;
+      divFill.className = `goal-bar-fill ${divRate >= 50 ? 'on-track' : divRate >= 30 ? 'warning' : 'behind'}`;
+      document.getElementById('goalDivNote').textContent =
+        divRate >= 50 ? 'Goal met!' : `${50 - divRate}% away from 50% target`;
+
+      document.getElementById('goalEntriesValue').textContent = entriesCount;
+      const entrFill = document.getElementById('goalEntriesFill');
+      entrFill.style.width = `${Math.min(100, (entriesCount / 20) * 100)}%`;
+      entrFill.className = `goal-bar-fill ${entriesCount >= 20 ? 'on-track' : entriesCount >= 10 ? 'warning' : 'behind'}`;
+      document.getElementById('goalEntriesNote').textContent =
+        entriesCount >= 20 ? 'Goal met!' : `${20 - entriesCount} more needed to reach target`;
+
+      document.getElementById('goalImpactValue').textContent = `${co2Saved} lbs`;
+      const impactPct = Math.min(100, (totalCompost / 50) * 100);
+      const impFill = document.getElementById('goalImpactFill');
+      impFill.style.width = `${impactPct}%`;
+      impFill.className = `goal-bar-fill ${impactPct >= 100 ? 'on-track' : impactPct >= 50 ? 'warning' : 'behind'}`;
+      document.getElementById('goalImpactNote').textContent =
+        `From ${formatPounds(totalCompost)} composted`;
+    }
+
+    function renderActivity(entries) {
+      const feed = document.getElementById('activityFeed');
+      const recent = [...entries].slice(0, 8);
+
+      if (!recent.length) {
+        feed.innerHTML = '<li class="activity-item"><div class="activity-body"><div class="activity-title">No entries logged yet.</div></div></li>';
+      } else {
+        feed.innerHTML = recent.map(entry => {
+          const isPublished = entry.published;
+          const icon = isPublished ? 'fa-circle-check' : 'fa-box-archive';
+          const iconCls = isPublished ? 'published' : '';
+          const d = new Date(entry.date || entry.createdAt || Date.now());
+          const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+          return `
+            <li class="activity-item">
+              <div class="activity-icon ${iconCls}"><i class="fas ${icon}"></i></div>
+              <div class="activity-body">
+                <div class="activity-title">${entry.foodType || 'Food waste'} &middot; ${entry.location || 'Unknown location'}</div>
+                <div class="activity-meta">${formatPounds(entry.weight)} &middot; ${isPublished ? 'Published' : 'Draft'}</div>
+              </div>
+              <span class="activity-time">${dateStr}</span>
+            </li>`;
+        }).join('');
+      }
+
+      const now = Date.now();
+      const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
+      const thisWeek = entries.filter(e => new Date(e.date || e.createdAt || 0) >= weekAgo);
+      const uniqueLoc = new Set(thisWeek.map(e => e.location).filter(Boolean));
+      const published = thisWeek.filter(e => e.published);
+      const avgFull = thisWeek.length
+        ? Math.round(thisWeek.reduce((s, e) => s + (e.binFullness || 0), 0) / thisWeek.length)
+        : 0;
+
+      document.getElementById('weeklyEntries').textContent = thisWeek.length;
+      document.getElementById('weeklyLocations').textContent = uniqueLoc.size;
+      document.getElementById('weeklyPublished').textContent = published.length;
+      document.getElementById('weeklyAvgFullness').textContent = `${avgFull}%`;
+    }
+
+    function renderDeltas(allEntries) {
+      const now = Date.now();
+      const weekMs = 7 * 24 * 60 * 60 * 1000;
+      const thisWeek = allEntries.filter(e => new Date(e.date || e.createdAt || 0) >= now - weekMs);
+      const lastWeek = allEntries.filter(e => {
+        const d = new Date(e.date || e.createdAt || 0).getTime();
+        return d >= now - 2 * weekMs && d < now - weekMs;
+      });
+      const sum = (arr, key) => arr.reduce((s, e) => s + (e[key] || 0), 0);
+      const divRate = arr => {
+        const w = sum(arr, 'weight'), c = sum(arr, 'compostWeight');
+        return w > 0 ? Math.min(100, Math.round((Math.min(c, w) / w) * 100)) : 0;
+      };
+
+      function setBadge(id, curr, prev, lowerIsBetter = false) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (!prev) { el.innerHTML = ''; return; }
+        const pct = Math.round(((curr - prev) / prev) * 100);
+        if (pct === 0) { el.innerHTML = `<span class="delta-badge delta-same">— no change</span>`; return; }
+        const up = pct > 0;
+        const better = lowerIsBetter ? !up : up;
+        const icon = up ? '▲' : '▼';
+        el.innerHTML = `<span class="delta-badge ${better ? 'delta-better' : 'delta-worse'}">${icon} ${Math.abs(pct)}% vs last week</span>`;
+      }
+
+      setBadge('deltaWaste',   sum(thisWeek, 'weight'),       sum(lastWeek, 'weight'),       true);
+      setBadge('deltaCompost', sum(thisWeek, 'compostWeight'), sum(lastWeek, 'compostWeight'), false);
+      setBadge('deltaRate',    divRate(thisWeek),              divRate(lastWeek),              false);
+      setBadge('deltaEntries', thisWeek.length,                lastWeek.length,               false);
+    }
+
+    function renderHeatmap(allEntries) {
+      const byLoc = {};
+      allEntries.forEach(e => {
+        const loc = e.location || 'Unknown';
+        if (!byLoc[loc]) byLoc[loc] = { waste: 0, compost: 0 };
+        byLoc[loc].waste += e.weight || 0;
+        byLoc[loc].compost += Math.min(e.compostWeight || 0, e.weight || 0);
+      });
+      const sorted = Object.entries(byLoc)
+        .map(([loc, d]) => ({ loc, waste: d.waste }))
+        .sort((a, b) => b.waste - a.waste)
+        .slice(0, 6);
+
+      const list = document.getElementById('heatmapList');
+      if (!list) return;
+      if (!sorted.length) { list.innerHTML = '<li style="color:var(--text-muted);font-size:0.82rem;">No data yet.</li>'; return; }
+      const maxWaste = sorted[0].waste || 1;
+      const ranks = ['🥇', '🥈', '🥉'];
+      list.innerHTML = sorted.map((item, i) => {
+        const pct = Math.round((item.waste / maxWaste) * 100);
+        return `<li class="heatmap-row">
+          <span class="heatmap-loc">${ranks[i] ? `<span class="heatmap-rank-badge heatmap-rank-${i + 1}">#${i + 1}</span>` : ''}${item.loc}</span>
+          <div class="heatmap-bar-wrap"><div class="heatmap-bar" style="width:${pct}%"></div></div>
+          <span class="heatmap-val">${item.waste.toFixed(1)} lbs</span>
+        </li>`;
+      }).join('');
+    }
+
+    function renderBestWorst(allEntries) {
+      const byWeek = {};
+      allEntries.forEach(e => {
+        const d = new Date(e.date || e.createdAt || 0);
+        const startOfYear = new Date(d.getFullYear(), 0, 1);
+        const wk = Math.ceil(((d - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
+        const key = `${d.getFullYear()}-W${String(wk).padStart(2, '0')}`;
+        if (!byWeek[key]) byWeek[key] = { waste: 0, compost: 0, count: 0 };
+        byWeek[key].waste += e.weight || 0;
+        byWeek[key].compost += Math.min(e.compostWeight || 0, e.weight || 0);
+        byWeek[key].count++;
+      });
+
+      const weeks = Object.entries(byWeek).map(([wk, d]) => ({
+        wk,
+        rate: d.waste > 0 ? Math.min(100, Math.round((d.compost / d.waste) * 100)) : 0,
+        count: d.count
+      })).filter(w => w.count >= 1);
+
+      const bestEl = document.getElementById('bestWeekCard');
+      const worstEl = document.getElementById('worstWeekCard');
+      if (!bestEl || !worstEl || !weeks.length) return;
+
+      const best = [...weeks].sort((a, b) => b.rate - a.rate)[0];
+      const worst = [...weeks].sort((a, b) => a.rate - b.rate)[0];
+
+      bestEl.innerHTML = `<div class="bw-label"><i class="fas fa-trophy"></i> Best Week</div>
+        <div class="bw-value">${best.rate}%</div>
+        <div class="bw-week">${best.wk}</div>
+        <div class="bw-entries">${best.count} entr${best.count === 1 ? 'y' : 'ies'}</div>`;
+
+      worstEl.innerHTML = `<div class="bw-label"><i class="fas fa-triangle-exclamation"></i> Needs Improvement</div>
+        <div class="bw-value">${worst.rate}%</div>
+        <div class="bw-week">${worst.wk}</div>
+        <div class="bw-entries">${worst.count} entr${worst.count === 1 ? 'y' : 'ies'}</div>`;
+    }
+
+    async function loadDashboard() {
+      const [summary, priorities, allEntries] = await Promise.all([
+        fetchJson('/api/waste/reports/summary'),
+        fetchJson('/api/waste/priority'),
+        fetchJson('/api/waste/all')
+      ]);
+      cachedSummary = summary;
+      cachedPriorities = priorities;
+      renderMetrics(summary);
+      renderCharts(summary);
+      renderLocations(summary);
+      renderPriority(priorities);
+      renderGoals(summary);
+      renderActivity(allEntries);
+      renderAlertBanner(priorities);
+      renderDeltas(allEntries);
+      renderHeatmap(allEntries);
+      renderBestWorst(allEntries);
+      document.getElementById('lastUpdated').textContent = `Updated ${new Date().toLocaleTimeString()}`;
+    }
+
+    window.DashboardUX.setupToolbar({ onRefresh: loadDashboard });
+
+    loadDashboard().catch(error => {
+      document.getElementById('priorityList').innerHTML = `<div class="error-state">${error.message}</div>`;
+    });
+    setInterval(loadDashboard, 2 * 60 * 60 * 1000);
+  </script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

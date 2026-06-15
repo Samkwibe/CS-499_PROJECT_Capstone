@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SNHU Food Waster Dashboard - Student</title>
+
+  <!-- Roboto Font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Font Awesome Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <!-- AOS (Animate On Scroll) CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css"
+  />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Local / Inline Styles -->
+  <style>
+    :root {
+      --primary-bg: #f4f4f4;
+      --secondary-bg: #ffffff;
+      --primary-color: #082241;
+      --accent-color: #f3d014;
+      --text-color: #555;
+      --transition-speed: 0.3s;
+    }
+
+    /* Dark Mode Variables */
+    body.dark-mode {
+      --primary-bg: #181818;
+      --secondary-bg: #2a2a2a;
+      --primary-color: #ffffff;
+      --accent-color: #f3d014;
+      --text-color: #cccccc;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: var(--primary-bg);
+      color: var(--text-color);
+      transition: background var(--transition-speed) ease,
+                  color var(--transition-speed) ease;
+    }
+
+    header {
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background var(--transition-speed) ease;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0; padding: 0;
+    }
+    nav ul li a {
+      color: var(--accent-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+
+    /* Notification Bell */
+    .notification-bell {
+      margin-right: 20px;
+      cursor: pointer;
+      position: relative;
+    }
+    .notification-bell .fa-bell {
+      font-size: 18px;
+      color: var(--accent-color);
+    }
+    .notification-count {
+      position: absolute;
+      top: -5px; right: -5px;
+      background: red; color: #fff;
+      font-size: 12px; padding: 2px 6px;
+      border-radius: 50%;
+    }
+
+    /* Dark Mode Toggle Switch */
+    .toggle-wrapper {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .dark-mode-toggle {
+      width: 50px; height: 26px;
+      background: #aaa; border-radius: 50px;
+      position: relative; cursor: pointer;
+      transition: background var(--transition-speed) ease;
+    }
+    .dark-mode-toggle::before {
+      content: "";
+      position: absolute; top: 2px; left: 2px;
+      width: 22px; height: 22px;
+      background: #fff; border-radius: 50%;
+      transition: transform var(--transition-speed) ease;
+    }
+    .dark-mode-toggle.active {
+      background: #555;
+    }
+    .dark-mode-toggle.active::before {
+      transform: translateX(24px);
+    }
+
+    .dashboard-content {
+      padding: 40px;
+    }
+    .dashboard-content h1 {
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      transition: color var(--transition-speed) ease;
+    }
+    body.dark-mode .dashboard-content h1 {
+      color: var(--accent-color);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .card {
+      background-color: var(--secondary-bg);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform var(--transition-speed) ease,
+                  background var(--transition-speed) ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card h3 {
+      margin-top: 0;
+      color: var(--primary-color);
+      transition: color var(--transition-speed) ease;
+    }
+    body.dark-mode .card h3 {
+      color: var(--accent-color);
+    }
+    .card p {
+      color: var(--text-color);
+    }
+
+    /* Tip of the Day Card */
+    .tip-card {
+      background-color: var(--secondary-bg);
+      border-left: 6px solid var(--accent-color);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: background var(--transition-speed) ease;
+    }
+    .tip-card h4 {
+      margin: 0 0 8px;
+      color: var(--primary-color);
+      transition: color var(--transition-speed) ease;
+    }
+    body.dark-mode .tip-card h4 {
+      color: var(--accent-color);
+    }
+    .tip-card p {
+      margin: 0;
+      color: var(--text-color);
+    }
+
+    /* Progress Ring */
+    .progress-ring {
+      width: 80px; height: 80px;
+      position: relative; margin: 10px 0;
+    }
+    .progress-ring svg {
+      transform: rotate(-90deg);
+      width: 80px; height: 80px;
+    }
+    .progress-ring circle {
+      fill: none;
+      stroke-width: 8; stroke-linecap: round;
+    }
+    .progress-ring-text {
+      position: absolute; top: 0; left: 0;
+      width: 80px; height: 80px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; color: var(--primary-color);
+      transition: color var(--transition-speed) ease;
+    }
+    body.dark-mode .progress-ring-text {
+      color: var(--accent-color);
+    }
+
+    /* Chart Section */
+    .chart-section {
+      background-color: var(--secondary-bg);
+      padding: 40px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+      transition: background var(--transition-speed) ease;
+    }
+    .chart-section h3 {
+      margin-bottom: 20px;
+      color: var(--primary-color);
+      transition: color var(--transition-speed) ease;
+    }
+    body.dark-mode .chart-section h3 {
+      color: var(--accent-color);
+    }
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    .chart-box { text-align: center; }
+    .chart-box canvas {
+      max-width: 100%; height: 250px !important;
+    }
+    .chart-caption {
+      margin-top: 10px; font-size: 14px; color: var(--primary-color);
+      transition: color var(--transition-speed) ease;
+    }
+    body.dark-mode .chart-caption {
+      color: var(--accent-color);
+    }
+
+    /* Chatbot */
+    #chatbot-toggle {
+      position: fixed; bottom: 30px; right: 30px;
+      background: var(--accent-color); color: var(--primary-color);
+      border: none; border-radius: 50%;
+      width: 50px; height: 50px;
+      font-size: 24px; cursor: pointer;
+      z-index: 9999; transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+    }
+    #chatbot-toggle:hover {
+      filter: brightness(0.9);
+    }
+
+    #chatbot-box {
+      position: fixed; bottom: 90px; right: 30px;
+      width: 300px; max-height: 400px;
+      background: var(--secondary-bg);
+      border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: none; flex-direction: column; z-index: 9998;
+      overflow: hidden; transition: background var(--transition-speed) ease;
+    }
+    #chatbot-header {
+      background: var(--primary-color); color: #fff;
+      padding: 10px; font-weight: bold; text-align: center;
+    }
+    #chatbot-messages {
+      padding: 10px; flex: 1; overflow-y: auto;
+      font-size: 14px; height: 260px;
+    }
+    #chatbot-input {
+      display: flex; border-top: 1px solid #ccc;
+    }
+    #chatbot-input input {
+      flex: 1; padding: 10px; border: none;
+      border-bottom-left-radius: 10px;
+      outline: none; background-color: var(--secondary-bg);
+      color: var(--text-color);
+    }
+    #chatbot-input button {
+      padding: 10px; background: var(--accent-color);
+      border: none; color: var(--primary-color);
+      font-weight: bold; border-bottom-right-radius: 10px;
+      cursor: pointer;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--primary-color);
+      color: var(--accent-color);
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      transition: background var(--transition-speed) ease;
+    }
+
+    /* “Mini Report” Section at Bottom */
+    .report-section {
+      background: var(--secondary-bg);
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin-bottom: 40px;
+      transition: background var(--transition-speed) ease;
+    }
+    .report-section h2 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+    body.dark-mode .report-section h2 {
+      color: var(--accent-color);
+    }
+    .report-section p,
+    .report-section ul,
+    .report-section ol {
+      color: var(--text-color);
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    .report-section ul,
+    .report-section ol {
+      padding-left: 18px;
+    }
+    .report-section h2,
+    .report-section p {
+      transition: color var(--transition-speed) ease;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header data-aos="fade-down">
+    <div class="logo">SNHU Dashboard</div>
+    <nav>
+      <ul>
+        <!-- Student only: no "Reports" item -->
+        <li class="notification-bell" title="Notifications">
+          <i class="fa-solid fa-bell"></i>
+          <span class="notification-count">3</span>
+        </li>
+        <li><a href="student-dashboard.html">Dashboard</a></li>
+        <li><a href="settings-student.html">Settings</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </nav>
+    <div class="toggle-wrapper">
+      <span style="color: var(--accent-color); font-weight: 500;">Dark Mode</span>
+      <div class="dark-mode-toggle" id="darkModeToggle"></div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="dashboard-content">
+    <h1 data-aos="fade-right" data-aos-delay="100">Welcome Back, Student!</h1>
+
+    <!-- Tip of the Day -->
+    <div class="tip-card" data-aos="fade-up" data-aos-delay="200">
+      <h4>Sustainability Tip of the Day</h4>
+      <p id="tipText">Loading tip...</p>
+    </div>
+
+    <!-- Cards Row -->
+    <div class="cards">
+      <!-- Card 1: Current Waste Level -->
+      <div class="card" data-aos="zoom-in" data-aos-delay="200">
+        <h3>Current Waste Level</h3>
+        <p>Weight: <strong>12.5 lbs</strong></p>
+        <p>Humidity: <strong>67%</strong></p>
+        <p>pH Level: <strong>6.2</strong></p>
+        <!-- Progress Ring for Fullness -->
+        <p>Fullness</p>
+        <div class="progress-ring">
+          <svg>
+            <circle class="bg" cx="40" cy="40" r="30" stroke="lightgray"></circle>
+            <circle
+              class="progress"
+              cx="40" cy="40" r="30"
+              stroke="#f3d014"
+              stroke-dasharray="188.4"
+              stroke-dashoffset="0"
+            ></circle>
+          </svg>
+          <div class="progress-ring-text" id="fullnessPercentage">0%</div>
+        </div>
+      </div>
+
+      <!-- Card 2: Recent Entry -->
+      <div class="card" data-aos="zoom-in" data-aos-delay="300">
+        <h3>Recent Entry</h3>
+        <p>Date: <strong>March 25, 2025</strong></p>
+        <p>Location: <strong>Bin B - Student Center</strong></p>
+        <p>Status: <strong>Normal operation</strong></p>
+      </div>
+
+      <!-- Card 3: Feedback -->
+      <div class="card" data-aos="zoom-in" data-aos-delay="400">
+        <h3>Submit Feedback</h3>
+        <textarea
+          rows="4"
+          placeholder="Leave your thoughts here..."
+          style="width: 100%; padding: 10px; border-radius: 6px;"
+        ></textarea>
+        <button
+          style="
+            margin-top: 10px;
+            background: var(--accent-color);
+            color: var(--primary-color);
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+          "
+        >
+          Send
+        </button>
+      </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="chart-section" data-aos="fade-up" data-aos-delay="300">
+      <h3>Dashboard Metrics</h3>
+      <div class="charts-row">
+        <div class="chart-box">
+          <canvas id="wasteChart"></canvas>
+          <div class="chart-caption">Waste Trend (Last 7 Days) - Weight in lbs</div>
+        </div>
+        <div class="chart-box">
+          <canvas id="sensorChart"></canvas>
+          <div class="chart-caption">Sensor Readings - Humidity, pH, Fullness</div>
+        </div>
+        <div class="chart-box">
+          <canvas id="energyChart"></canvas>
+          <div class="chart-caption">Energy Consumption - Distribution (%)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- “Weekly Food Waste Report” Section at the bottom -->
+    <div class="report-section" data-aos="fade-up" data-aos-delay="400">
+      <h2>Weekly Food Waste Overview</h2>
+      <p>
+        This mini-report shows your waste trends over the past week, helping us
+        identify areas for improvement across campus. Good job so far!
+      </p>
+      <ul>
+        <li><strong>Total Waste:</strong> 12.5 lbs</li>
+        <li><strong>Average Daily Waste:</strong> 1.79 lbs</li>
+        <li><strong>Reduction from Last Week:</strong> 8%</li>
+      </ul>
+    </div>
+
+    <div class="report-section" data-aos="fade-up" data-aos-delay="500">
+      <h2>Interactive Weekly Chart</h2>
+      <canvas id="reportWasteChart" style="margin-top: 20px;"></canvas>
+    </div>
+
+    <div class="report-section" data-aos="fade-up" data-aos-delay="600">
+      <h2>Additional Insights</h2>
+      <p>Here are a few tips to further reduce your waste:</p>
+      <ol>
+        <li>Plan your meals and shopping lists to avoid over-purchasing.</li>
+        <li>Compost organic leftovers when possible.</li>
+        <li>Engage with campus initiatives focused on sustainability.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Chatbot Elements -->
+  <button id="chatbot-toggle">💬</button>
+  <div id="chatbot-box">
+    <div id="chatbot-header">MunchieBot 🤖</div>
+    <div id="chatbot-messages"></div>
+    <div id="chatbot-input">
+      <input type="text" id="chatbot-text" placeholder="Ask me anything..."/>
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer data-aos="fade-up">
+    🔄 Data auto-refreshes every 2 hours | SNHU Food Waster Tracker
+  </footer>
+
+  <!-- AOS (Animate On Scroll) Script -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Main Scripts -->
+  <script>
+    /****************************************
+     *  AOS Init
+     ****************************************/
+    AOS.init({
+      duration: 800,
+      once: true,
+    });
+
+    /****************************************
+     *  Dark Mode Toggle
+     ****************************************/
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    darkModeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      darkModeToggle.classList.toggle('active');
+    });
+
+    /****************************************
+     *  Chatbot Toggle
+     ****************************************/
+    const chatbotToggle = document.getElementById('chatbot-toggle');
+    const chatbotBox = document.getElementById('chatbot-box');
+    const chatbotMessages = document.getElementById('chatbot-messages');
+
+    chatbotToggle.addEventListener('click', () => {
+      chatbotBox.style.display = chatbotBox.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    function sendMessage() {
+      const input = document.getElementById('chatbot-text');
+      const message = input.value.trim();
+      if (!message) return;
+
+      const userMessage = document.createElement('div');
+      userMessage.textContent = `👤 ${message}`;
+      chatbotMessages.appendChild(userMessage);
+
+      const botMessage = document.createElement('div');
+      let response = '🤔 I\'m not sure how to answer that.';
+
+      if (message.toLowerCase().includes('waste'))
+        response = '🗑️ We track waste daily to help reduce it campus-wide!';
+      if (message.toLowerCase().includes('sustainability'))
+        response = '🌱 Sustainability is our mission! Ask us how to get involved.';
+      if (message.toLowerCase().includes('report'))
+        response = '📊 The report is displayed at the bottom of your dashboard!';
+      if (message.toLowerCase().includes('contact'))
+        response = '📬 Reach out to SNHU Sustainability at sustainability@snhu.edu';
+
+      setTimeout(() => {
+        botMessage.textContent = response;
+        chatbotMessages.appendChild(botMessage);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+      }, 600);
+
+      input.value = '';
+    }
+
+    /****************************************
+     *  Chart.js (Existing Dashboard Charts)
+     ****************************************/
+    const ctxWaste = document.getElementById('wasteChart').getContext('2d');
+    new Chart(ctxWaste, {
+      type: 'line',
+      data: {
+        labels: ['Mar 14', 'Mar 15', 'Mar 16', 'Mar 17', 'Mar 18', 'Mar 19', 'Mar 20'],
+        datasets: [{
+          label: 'Weight (lbs)',
+          data: [8.2, 9.5, 10.8, 11.0, 12.1, 11.8, 12.5],
+          backgroundColor: 'rgba(243, 208, 20, 0.2)',
+          borderColor: '#f3d014',
+          borderWidth: 2,
+          tension: 0.3
+        }]
+      },
+      options: {
+        scales: { y: { beginAtZero: true } },
+        plugins: {
+          legend: { labels: { color: '#082241' } }
+        }
+      }
+    });
+
+    const ctxSensor = document.getElementById('sensorChart').getContext('2d');
+    new Chart(ctxSensor, {
+      type: 'bar',
+      data: {
+        labels: ['Humidity', 'pH', 'Fullness'],
+        datasets: [{
+          label: 'Sensor Value',
+          data: [67, 6.2, 75],
+          backgroundColor: ['#00aaff', '#ffaa00', '#66ff66'],
+          borderColor: ['#0088cc', '#cc8800', '#44cc44'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: { y: { beginAtZero: true } },
+        plugins: {
+          legend: { labels: { color: '#082241' } }
+        }
+      }
+    });
+
+    const ctxEnergy = document.getElementById('energyChart').getContext('2d');
+    new Chart(ctxEnergy, {
+      type: 'pie',
+      data: {
+        labels: ['Cooling', 'Lighting', 'Other'],
+        datasets: [{
+          data: [40, 35, 25],
+          backgroundColor: ['#66ff66', '#ff6666', '#66ccff'],
+          borderColor: ['#55aa55', '#cc4444', '#5599cc'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { labels: { color: '#082241' } }
+        }
+      }
+    });
+
+    /****************************************
+     *  Auto Refresh (Mock)
+     ****************************************/
+    setInterval(() => {
+      console.log("[Auto Refresh] Simulating new data fetch...");
+      // Replace with real logic if needed
+    }, 7200000);
+
+    /****************************************
+     *  Sustainability Tips
+     ****************************************/
+    const tips = [
+      "Turn off lights when leaving a room to save energy!",
+      "Carry a reusable water bottle to reduce plastic waste!",
+      "Eat local produce to support farmers and cut down on transport pollution!",
+      "Consider composting organic waste to enrich the soil!",
+      "Use both sides of your paper or go digital to reduce paper waste!"
+    ];
+    const tipText = document.getElementById('tipText');
+    tipText.textContent = tips[Math.floor(Math.random() * tips.length)];
+
+    /****************************************
+     *  Progress Ring for Fullness
+     ****************************************/
+    const progressCircle = document.querySelector('.progress-ring .progress');
+    const fullnessText = document.getElementById('fullnessPercentage');
+    let fullnessValue = 75; // Example
+    fullnessText.textContent = fullnessValue + '%';
+
+    // Circle circumference ~188.4 for r=30
+    const circumference = 188.4;
+    const offset = circumference - (fullnessValue / 100) * circumference;
+    progressCircle.style.strokeDashoffset = offset;
+
+    /****************************************
+     *  Report Chart (Weekly Food Waste)
+     ****************************************/
+    const ctxReportWaste = document.getElementById('reportWasteChart').getContext('2d');
+    new Chart(ctxReportWaste, {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Daily Waste (lbs)',
+          data: [1.5, 1.8, 1.7, 2.0, 1.6, 1.9, 1.8],
+          backgroundColor: 'rgba(243, 208, 20, 0.2)',
+          borderColor: '#f3d014',
+          borderWidth: 2,
+          tension: 0.3,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          pointBackgroundColor: '#f3d014'
+        }]
+      },
+      options: {
+        responsive: true,
+        interaction: {
+          mode: 'nearest',
+          axis: 'x',
+          intersect: false
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue} lbs`
+            }
+          },
+          legend: {
+            labels: { color: '#082241' }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#082241' },
+            title: { display: true, text: 'Waste (lbs)', color: '#082241' }
+          },
+          x: {
+            ticks: { color: '#082241' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

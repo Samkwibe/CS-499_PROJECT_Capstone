@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings - MunchiesSNHU Student</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="dashboard-shell role-student">
+  <header class="topbar">
+    <div class="brand-lockup">
+      <img src="assets/images/snhu-logo.png" alt="SNHU" class="topbar-logo" />
+      <div class="brand-label">
+        <span class="brand-label-top">MunchiesSNHU</span>
+        <span class="brand-label-main">Settings</span>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="student-dashboard.html">Dashboard</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="settings-student.html">Settings</a></li>
+        <li><a href="login.html" data-logout>Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page-wrap">
+    <section class="hero-panel">
+      <div>
+        <div class="eyebrow">Account Management</div>
+        <h1>Student Settings</h1>
+        <p>Update your profile, manage notification preferences, and customize your dashboard experience.</p>
+      </div>
+      <div class="status-card">
+        <span class="metric-label">Logged in as</span>
+        <strong id="settingsName">—</strong>
+        <p id="settingsRole">Role: student</p>
+      </div>
+    </section>
+
+    <div class="settings-layout">
+
+      <!-- Profile -->
+      <section class="section-card settings-card">
+        <div class="settings-card-header">
+          <i class="fas fa-circle-user"></i>
+          <h2>Profile</h2>
+        </div>
+        <div class="form-group">
+          <label for="studentName">Full Name</label>
+          <input type="text" id="studentName" placeholder="Your full name" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="studentEmail">Email Address</label>
+          <input type="email" id="studentEmail" placeholder="your@student.snhu.edu" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="studentPassword">New Password</label>
+          <input type="password" id="studentPassword" placeholder="Leave blank to keep current" autocomplete="new-password" />
+        </div>
+        <p class="settings-hint">Your name is visible on community feedback posts and sustainability discussion threads.</p>
+        <div id="profileStatus" class="settings-toast" role="alert" aria-live="polite"></div>
+        <button class="btn-save" type="button" onclick="saveSection('profileStatus')">
+          <i class="fas fa-floppy-disk"></i> Save Profile
+        </button>
+      </section>
+
+      <!-- Notifications -->
+      <section class="section-card settings-card">
+        <div class="settings-card-header">
+          <i class="fas fa-bell"></i>
+          <h2>Notifications</h2>
+        </div>
+        <label class="toggle-row">
+          <input type="checkbox" id="emailNotif" class="toggle-input" />
+          <span class="toggle-track"></span>
+          <span class="toggle-label">Email Notifications</span>
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="smsNotif" class="toggle-input" />
+          <span class="toggle-track"></span>
+          <span class="toggle-label">SMS Notifications</span>
+        </label>
+        <p class="settings-hint">Stay informed about new campus waste data, sustainability events, and updates from the dining team.</p>
+        <div id="notifStatus" class="settings-toast" role="alert" aria-live="polite"></div>
+        <button class="btn-save" type="button" onclick="saveSection('notifStatus')">
+          <i class="fas fa-floppy-disk"></i> Save Notifications
+        </button>
+      </section>
+
+      <!-- Display (full width) -->
+      <section class="section-card settings-card settings-card-wide">
+        <div class="settings-card-header">
+          <i class="fas fa-palette"></i>
+          <h2>Display</h2>
+        </div>
+        <label class="toggle-row">
+          <input type="checkbox" id="darkModeToggle" class="toggle-input" onchange="applyTheme(this.checked)" />
+          <span class="toggle-track"></span>
+          <span class="toggle-label">Dark Mode</span>
+        </label>
+        <p class="settings-hint">Your theme preference is saved locally on this device and applies to all dashboard views automatically.</p>
+        <div id="displayStatus" class="settings-toast" role="alert" aria-live="polite"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>
+    const user = window.MunchiesAuth.requireAuth(['student']);
+    window.MunchiesAuth.setupLogoutLinks();
+
+    if (user) {
+      document.getElementById('settingsName').textContent = user.name || '—';
+      document.getElementById('settingsRole').textContent = `Role: ${user.role}`;
+      const nameEl = document.getElementById('studentName');
+      const emailEl = document.getElementById('studentEmail');
+      if (nameEl) nameEl.value = user.name || '';
+      if (emailEl) emailEl.value = user.email || '';
+    }
+
+    const savedTheme = localStorage.getItem('munchies-theme');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark');
+      document.getElementById('darkModeToggle').checked = true;
+    }
+
+    function applyTheme(dark) {
+      document.body.classList.toggle('dark', dark);
+      localStorage.setItem('munchies-theme', dark ? 'dark' : 'light');
+      showToast('displayStatus', 'Theme preference saved.', 'success');
+    }
+
+    function showToast(id, message, type) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = message;
+      el.className = `settings-toast is-${type}`;
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.className = 'settings-toast'; }, 3000);
+    }
+
+    function saveSection(statusId) {
+      showToast(statusId, 'Settings saved.', 'success');
+    }
+  </script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

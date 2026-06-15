@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Reports - SNHU Food Waster Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #f4f4f4, #e9ecef);
+    }
+    header {
+      background-color: #082241;
+      color: #f3d014;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #f3d014;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+    nav ul li a {
+      color: #f3d014;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+    .dashboard-content {
+      padding: 40px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .dashboard-content h1 {
+      color: #082241;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .section {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      margin-bottom: 40px;
+    }
+    .section h2 {
+      color: #082241;
+      margin-bottom: 20px;
+    }
+    /* Chart Styles */
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    .chart-box {
+      text-align: center;
+    }
+    .chart-box canvas {
+      max-width: 100%;
+      height: 250px !important;
+    }
+    .chart-caption {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #082241;
+    }
+    /* Data Table Styles */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .data-table th, .data-table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    .data-table th {
+      background-color: #082241;
+      color: #f3d014;
+    }
+    footer {
+      background: #082241;
+      color: #f3d014;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">SNHU Food Waster Tracker</div>
+    <nav>
+      <ul>
+        <li><a href="staff-dashboard.html">Dashboard</a></li>
+        <li><a href="data-entry.html">Data Input</a></li>
+        <li><a href="staff-report.html">Staff Reports</a></li>
+        <li><a href="settings.html">Settings</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="dashboard-content">
+    <h1>Staff Reports</h1>
+
+    <!-- Overview Section -->
+    <div class="section">
+      <h2>Weekly Food Waste Overview</h2>
+      <p>This report summarizes the food waste trends for the past week. It includes daily waste data, sensor readings, and bin statuses.</p>
+      <ul>
+        <li><strong>Total Waste:</strong> 85 lbs</li>
+        <li><strong>Average Daily Waste:</strong> 12.1 lbs</li>
+        <li><strong>Waste Reduction:</strong> 8% compared to previous week</li>
+      </ul>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="section">
+      <h2>Waste Trend Chart</h2>
+      <div class="charts-row">
+        <div class="chart-box">
+          <canvas id="wasteTrendChart"></canvas>
+          <div class="chart-caption">Daily Waste (lbs) over the past week</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Logs Section -->
+    <div class="section">
+      <h2>Detailed Data Log</h2>
+      <table class="data-table" id="reportDataTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Food Type/Source</th>
+            <th>Weight (lbs)</th>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Temperature (°F)</th>
+            <th>Humidity (%)</th>
+            <th>pH</th>
+            <th>Natural Gas (ppm)</th>
+            <th>Bin Fullness (%)</th>
+            <th>Compost Weight (lbs)</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Data rows will be populated here dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 SNHU Food Waster Tracker | Staff Reports
+  </footer>
+
+  <script>
+    // ====== Initialize Waste Trend Chart ======
+    const ctxTrend = document.getElementById('wasteTrendChart').getContext('2d');
+    const wasteTrendChart = new Chart(ctxTrend, {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Waste (lbs)',
+          data: [10, 12, 11, 13, 12, 14, 13],
+          backgroundColor: 'rgba(243, 208, 20, 0.2)',
+          borderColor: '#f3d014',
+          borderWidth: 2,
+          tension: 0.3,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          pointBackgroundColor: '#f3d014'
+        }]
+      },
+      options: {
+        responsive: true,
+        interaction: {
+          mode: 'nearest',
+          axis: 'x',
+          intersect: false
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: context => `${context.dataset.label}: ${context.formattedValue} lbs`
+            }
+          },
+          legend: {
+            labels: {
+              color: '#082241',
+              font: { size: 14, weight: '500' }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#082241' },
+            title: { display: true, text: 'Waste (lbs)', color: '#082241' }
+          },
+          x: { ticks: { color: '#082241' } }
+        }
+      }
+    });
+
+    // ====== Dummy Data for Report Log (Replace with API call) ======
+    const dummyReportData = [
+      {
+        _id: '1',
+        foodType: 'Leftover pasta',
+        wasteWeight: 12.5,
+        wasteDate: '2025-03-20',
+        wasteLocation: 'Dining Hall #1',
+        temperature: 68,
+        relativeHumidity: 65,
+        phLevel: 6.2,
+        naturalGas: 0.5,
+        binFullness: 75,
+        compostWeight: 5,
+        wasteNotes: 'Normal operation'
+      },
+      {
+        _id: '2',
+        foodType: 'Kitchen scraps',
+        wasteWeight: 10.8,
+        wasteDate: '2025-03-21',
+        wasteLocation: 'Kitchen Area',
+        temperature: 70,
+        relativeHumidity: 68,
+        phLevel: 6.5,
+        naturalGas: 0.6,
+        binFullness: 80,
+        compostWeight: 6,
+        wasteNotes: 'High volume day'
+      }
+    ];
+
+    function populateReportTable(data) {
+      const tbody = document.getElementById('reportDataTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      data.forEach(entry => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${entry._id || 'N/A'}</td>
+          <td>${entry.foodType}</td>
+          <td>${entry.wasteWeight} lbs</td>
+          <td>${entry.wasteDate}</td>
+          <td>${entry.wasteLocation}</td>
+          <td>${entry.temperature} °F</td>
+          <td>${entry.relativeHumidity} %</td>
+          <td>${entry.phLevel}</td>
+          <td>${entry.naturalGas} ppm</td>
+          <td>${entry.binFullness} %</td>
+          <td>${entry.compostWeight} lbs</td>
+          <td>${entry.wasteNotes || ''}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Load dummy data into the report table (replace with API call)
+    window.onload = () => {
+      populateReportTable(dummyReportData);
+    };
+  </script>
+</body>
+</html>
