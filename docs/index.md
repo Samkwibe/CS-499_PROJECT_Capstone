@@ -40,4 +40,4 @@ Throughout the Computer Science program at Southern New Hampshire University, I 
 
 ---
 
-_Repository: [Samkwibe/MunchiesSNHU-Food_waste_Trucker](https://github.com/Samkwibe/MunchiesSNHU-Food_waste_Trucker)_
+_Repository: [Samkwibe/CS-499\_PROJECT\_Capstone](https://github.com/Samkwibe/CS-499_PROJECT_Capstone)_
