@@ -12,9 +12,7 @@ permalink: /code-review/
 
 ## Video
 
-> **[Paste your code review video link here]**
->
-> *(Upload to YouTube or Kaltura, then replace this line with the embedded link or URL)*
+[Watch Code Review on YouTube](https://youtu.be/Gg_uIsLBicY)
 
 ---
 
