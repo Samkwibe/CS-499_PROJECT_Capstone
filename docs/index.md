@@ -5,15 +5,15 @@ title: "Professional Self-Assessment"
 
 # CS-499 Computer Science Capstone ePortfolio
 
-**Samuel Raymond | SNHU Computer Science | June 2026**
+### Samuel Raymond
 
----
+SNHU Computer Science | June 2026
 
 ## Professional Self-Assessment
 
 Throughout the Computer Science program at Southern New Hampshire University, I have grown from a student who could write procedural scripts into an engineer who thinks about systems — how components fit together, how data flows through an application, and how decisions made early in a codebase affect every developer who comes after. The capstone project, the MunchiesSNHU Food Waste Tracker, gave me the opportunity to apply that growth to a real, running application.
 
-**Collaborating in a team environment.** The Food Waste Tracker was structured as a full-stack project with a Node.js/Express backend and a vanilla JavaScript frontend. Working through the enhancement milestones meant treating my own earlier code the way a collaborator would — reading it critically, identifying where the original design made future changes harder, and refactoring without breaking existing behavior. I practiced the discipline of writing student-friendly comments that document *why* decisions were made, not just what the code does, because that is what a real teammate needs to pick up unfamiliar code quickly.
+**Collaborating in a team environment.** The Food Waste Tracker was structured as a full-stack project with a Node.js/Express backend and a vanilla JavaScript frontend. Working through the enhancement milestones meant treating my own earlier code the way a collaborator would — reading it critically, identifying where the original design made future changes harder, and refactoring without breaking existing behavior. I practiced the discipline of writing student-friendly comments that document _why_ decisions were made, not just what the code does, because that is what a real teammate needs to pick up unfamiliar code quickly.
 
 **Communicating with stakeholders.** Each milestone included a written narrative explaining technical decisions to a non-technical audience. I translated concepts like MVC architecture, JWT authentication, and MongoDB aggregation pipelines into plain language connected to business outcomes — reducing food waste, improving bin pickup timing, and giving dining hall staff actionable data. The code review video produced for Milestone One followed the same discipline: speaking to what the original code accomplished and why specific changes would improve security and maintainability.
 
@@ -25,11 +25,11 @@ Throughout the Computer Science program at Southern New Hampshire University, I 
 
 **Summary of enhancements.** The three milestones below demonstrate proficiency across the three Computer Science program outcomes evaluated in CS-499:
 
-| Enhancement | Category | Key Artifact |
-|---|---|---|
-| [Enhancement One](enhancement-one.md) | Software Design & Engineering | MVC refactor, security middleware, consolidated utilities |
-| [Enhancement Two](enhancement-two.md) | Algorithms & Data Structures | Bin priority scoring algorithm, chart update-in-place |
-| [Enhancement Three](enhancement-three.md) | Databases | Schema validation, indexes, aggregation pipelines |
+| Enhancement                               | Category                      | Key Artifact                                              |
+| ----------------------------------------- | ----------------------------- | --------------------------------------------------------- |
+| [Enhancement One](enhancement-one.md)     | Software Design & Engineering | MVC refactor, security middleware, consolidated utilities |
+| [Enhancement Two](enhancement-two.md)     | Algorithms & Data Structures  | Bin priority scoring algorithm, chart update-in-place     |
+| [Enhancement Three](enhancement-three.md) | Databases                     | Schema validation, indexes, aggregation pipelines         |
 
 ---
 
@@ -42,4 +42,4 @@ Throughout the Computer Science program at Southern New Hampshire University, I 
 
 ---
 
-*Repository: [Samkwibe/MunchiesSNHU-Food_waste_Trucker](https://github.com/Samkwibe/MunchiesSNHU-Food_waste_Trucker)*
+_Repository: [Samkwibe/MunchiesSNHU-Food_waste_Trucker](https://github.com/Samkwibe/MunchiesSNHU-Food_waste_Trucker)_
