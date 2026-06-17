@@ -5,9 +5,7 @@ title: "Professional Self-Assessment"
 
 # CS-499 Computer Science Capstone ePortfolio
 
-### Samuel Raymond
-
-SNHU Computer Science | June 2026
+**Samuel Raymond** — SNHU Computer Science — June 2026
 
 ## Professional Self-Assessment
 
