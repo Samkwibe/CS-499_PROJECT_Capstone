@@ -22,7 +22,10 @@ describe('connectDB', () => {
     process.env.MONGODB_URI = 'mongodb://validuri';
     await connectDB();
 
-    expect(connectSpy).toHaveBeenCalledWith('mongodb://validuri', { bufferCommands: false });
+    expect(connectSpy).toHaveBeenCalledWith(
+      'mongodb://validuri',
+      expect.objectContaining({ bufferCommands: false, serverSelectionTimeoutMS: 4000, connectTimeoutMS: 4000 })
+    );
     expect(consoleSpy).toHaveBeenCalledWith('MongoDB connected successfully');
   });
 
