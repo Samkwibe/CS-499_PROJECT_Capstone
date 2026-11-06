@@ -2,10 +2,10 @@
   "name": "munchies-snhu",
   "version": "1.0.0",
   "private": true,
-  "description": "MunchiesSNHU Food Waste Tracker — Vercel + GitHub Pages",
+  "description": "MunchiesSNHU Food Waste Tracker \u2014 Vercel + GitHub Pages",
   "homepage": "https://munchies-snhu-food-waste.vercel.app",
   "engines": {
-    "node": ">=18.0.0"
+    "node": "24.x"
   },
   "scripts": {
     "start": "npm start --prefix snhu-foodwaste-backend",

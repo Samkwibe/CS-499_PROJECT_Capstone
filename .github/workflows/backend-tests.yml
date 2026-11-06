@@ -1,0 +1,26 @@
+name: backend-tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  jest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: snhu-foodwaste-backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: npx jest --ci
+      - name: Root (Vercel function) dependencies install cleanly
+        working-directory: .
+        run: npm ci
