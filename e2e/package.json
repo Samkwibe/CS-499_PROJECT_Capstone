@@ -1,0 +1,12 @@
+{
+  "name": "munchies-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Browser workflow checks (run against a local, isolated database only)",
+  "scripts": {
+    "test": "node workflows.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}
