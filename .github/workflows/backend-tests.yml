@@ -11,6 +11,13 @@ permissions:
 jobs:
   jest:
     runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+    env:
+      MONGODB_TEST_URI: mongodb://127.0.0.1:27017
     defaults:
       run:
         working-directory: snhu-foodwaste-backend
@@ -20,7 +27,8 @@ jobs:
         with:
           node-version: 24
       - run: npm ci
-      - run: npx jest --ci
+      - name: Unit + integration tests (isolated CI database)
+        run: npx jest --ci
       - name: Root (Vercel function) dependencies install cleanly
         working-directory: .
         run: npm ci

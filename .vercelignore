@@ -4,3 +4,7 @@ snhu-foodwaste-backend/node_modules
 **/.env
 **/.DS_Store
 .git
+e2e
+snhu-foodwaste-backend/tests
+snhu-foodwaste-backend/scripts
+docs
