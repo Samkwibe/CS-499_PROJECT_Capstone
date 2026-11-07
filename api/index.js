@@ -6,8 +6,8 @@
  * - Connects to MongoDB (cached across warm invocations) and forwards requests to Express.
  * - Uses plain Node response methods (statusCode/setHeader/end) so it does not depend on
  *   Vercel's optional res.status()/res.json() helpers.
- * - GET /api/health reports whether configuration and the database are OK (names only,
- *   never secret values), which makes production problems easy to diagnose.
+ * - GET /api/health reports only whether the service and database are available; the
+ *   specific configuration problems are written to the server logs, never to the response.
  *
  * dotenv is loaded BEFORE requiring db.js so local runs can read snhu-foodwaste-backend/.env.
  * On Vercel, environment variables come from the project settings.
@@ -42,10 +42,13 @@ async function healthCheck(res, problems) {
     }
   }
   const ok = problems.length === 0 && database === 'connected';
+  if (!ok) {
+    // Details stay in the server logs; the public response only says what is down.
+    console.error('Health check failed:', JSON.stringify({ database, configProblems: problems }));
+  }
   return sendJson(res, ok ? 200 : 503, {
-    status: ok ? 'ok' : 'degraded',
-    database,
-    configProblems: problems
+    status: ok ? 'ok' : 'unavailable',
+    database: database === 'connected' ? 'connected' : 'unavailable'
   });
 }
 

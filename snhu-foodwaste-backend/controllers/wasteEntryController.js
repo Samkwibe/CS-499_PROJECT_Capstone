@@ -131,7 +131,10 @@ const deleteEntry = async (req, res) => {
     // Send a success message.
     return res.json({ message: 'Entry deleted' });
   } catch (err) {
-    return sendError(res, 500, err.message);
+    // An invalid id format is the client's mistake, not a server failure.
+    if (err && err.name === 'CastError') return sendError(res, 404, 'Entry not found');
+    console.error('Delete entry error:', err.message);
+    return sendError(res, 500, 'Failed to delete the entry');
   }
 };
 

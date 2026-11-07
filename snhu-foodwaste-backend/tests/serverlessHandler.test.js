@@ -66,15 +66,17 @@ describe('serverless handler (api/index.js)', () => {
     expect(JSON.stringify(res.body)).not.toMatch(/ENOTFOUND/);
   });
 
-  test('health check reports configuration problems by name only', async () => {
+  test('health check does not reveal configuration details publicly', async () => {
+    const errSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const { server, connectDB } = loadHandler({ env: {} });
     const res = await request(server).get('/api/health');
     expect(res.status).toBe(503);
-    expect(res.body.database).toBe('not_checked');
-    expect(res.body.configProblems).toEqual(
-      expect.arrayContaining(['MONGODB_URI is not set', 'JWT_SECRET is not set'])
-    );
+    expect(res.body).toEqual({ status: 'unavailable', database: 'unavailable' });
+    expect(JSON.stringify(res.body)).not.toMatch(/MONGODB_URI|JWT_SECRET/);
     expect(connectDB).not.toHaveBeenCalled();
+    // ...but the details are logged server-side for the owner.
+    expect(errSpy.mock.calls.flat().join(' ')).toMatch(/MONGODB_URI is not set/);
+    errSpy.mockRestore();
   });
 
   test('health check reports an unreachable database', async () => {
@@ -84,7 +86,7 @@ describe('serverless handler (api/index.js)', () => {
     });
     const res = await request(server).get('/api/health');
     expect(res.status).toBe(503);
-    expect(res.body).toEqual({ status: 'degraded', database: 'unreachable', configProblems: [] });
+    expect(res.body).toEqual({ status: 'unavailable', database: 'unavailable' });
   });
 
   test('health check is 200 when configured and the database connects', async () => {
@@ -93,7 +95,7 @@ describe('serverless handler (api/index.js)', () => {
     });
     const res = await request(server).get('/api/health');
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ status: 'ok', database: 'connected', configProblems: [] });
+    expect(res.body).toEqual({ status: 'ok', database: 'connected' });
   });
 
   test('forwards requests to Express when healthy', async () => {

@@ -59,15 +59,31 @@ app.use(helmet({
 
 // Limit repeated requests to reduce brute-force and spam behavior.
 // If someone tries to hit the API too fast, this will block them temporarily.
-app.use(rateLimit({
+// Behind Vercel's proxy the real client IP is in X-Forwarded-For. Trusting the first proxy
+// hop makes rate limits apply per visitor instead of to everyone at once.
+app.set('trust proxy', 1);
+
+// The limit applies to API calls only. Static pages, CSS and JS must never be throttled,
+// otherwise a visitor clicking through a few pages gets broken (429) scripts.
+app.use('/api', rateLimit({
   // This creates a 15-minute window for counting requests.
   windowMs: 15 * 60 * 1000,
-  // Each IP can make 100 requests per 15-minute window.
-  max: 100,
+  // Each IP can make 300 API requests per 15-minute window.
+  max: 300,
   // Use modern rate-limit response headers so the client knows their limit.
   standardHeaders: true,
   // Do not send older legacy rate-limit headers.
-  legacyHeaders: false
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many requests. Please wait a few minutes and try again.' }
+}));
+
+// Stricter limit for login and registration to slow down password guessing.
+app.use(['/api/auth/login', '/api/auth/register'], rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many sign-in attempts. Please wait 15 minutes and try again.' }
 }));
 
 // Parse incoming JSON request bodies so controllers can read req.body.
@@ -129,6 +145,16 @@ app.use('/api/notifications', require('./routes/notificationRoutes'));
 // Serve the static frontend from the public folder so the app can be tested from one local URL.
 // This means going to localhost:5001 will load the HTML files in the public folder.
 app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// Lightweight health endpoint for the local/standalone server (the Vercel entry point in
+// api/index.js answers /api/health itself). It only reports availability, never config details.
+app.get('/api/health', (req, res) => {
+  const connected = require('mongoose').connection.readyState === 1;
+  res.status(connected ? 200 : 503).json({
+    status: connected ? 'ok' : 'unavailable',
+    database: connected ? 'connected' : 'unavailable'
+  });
+});
 
 // This health-check route confirms that the backend is running.
 // If you visit / in the API directly, you will see this message.

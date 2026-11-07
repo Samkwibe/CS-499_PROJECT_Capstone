@@ -55,7 +55,8 @@ router.get('/priority', protect, authorize('staff', 'admin'), async (req, res) =
     res.json(rankWasteEntries(entries));
   } catch (err) {
     // Return a 500 server error response if priority data cannot be loaded.
-    sendError(res, 500, err.message);
+    console.error('Priority route error:', err.message);
+    sendError(res, 500, 'Failed to load priority data');
   }
 });
 
@@ -204,7 +205,8 @@ router.get('/reports/summary', protect, authorize('staff', 'admin'), async (req,
     });
   } catch (err) {
     // If any of the aggregations fail, return a server error.
-    sendError(res, 500, err.message);
+    console.error('Report summary error:', err.message);
+    sendError(res, 500, 'Failed to build the report summary');
   }
 });
 
@@ -227,7 +229,10 @@ router.put('/:id/publish', protect, authorize('staff', 'admin'), async (req, res
     if (!entry) return sendError(res, 404, 'Entry not found');
 
     // Update the 'published' property of the entry with the true/false value sent from the frontend.
-    entry.published = req.body.published; 
+    if (typeof req.body.published !== 'boolean') {
+      return sendError(res, 400, 'published must be true or false');
+    }
+    entry.published = req.body.published;
     
     // Save the changes back to the database.
     await entry.save();
@@ -235,7 +240,9 @@ router.put('/:id/publish', protect, authorize('staff', 'admin'), async (req, res
     // Send a success message back as JSON.
     res.json({ message: 'Entry updated', entry });
   } catch (err) {
-    sendError(res, 500, err.message);
+    if (err && err.name === 'CastError') return sendError(res, 404, 'Entry not found');
+    console.error('Publish entry error:', err.message);
+    sendError(res, 500, 'Failed to update the entry');
   }
 });
 
