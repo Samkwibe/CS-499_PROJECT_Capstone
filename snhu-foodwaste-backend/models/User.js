@@ -1,5 +1,6 @@
 // Import mongoose to define our database models
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 // Define the blueprint (schema) for a User in the database
 const UserSchema = new mongoose.Schema({
@@ -28,7 +29,13 @@ const UserSchema = new mongoose.Schema({
     // Automatically convert the email to lowercase
     lowercase: true,
     // Use a regular expression to validate that it is formatted like a real email address
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email']
+    trim: true,
+    // validator.isEmail accepts real-world addresses the old regex rejected
+    // (e.g. name+tag@gmail.com, user@company.tech, someone@school.info).
+    validate: {
+      validator: (value) => validator.isEmail(value),
+      message: 'Please provide a valid email'
+    }
   },
   
   // Define the 'password' field

@@ -92,6 +92,12 @@
         </label>
       </div>
 
+      <div class="auth-field" id="staffCodeField" hidden>
+        <label for="staffCodeInput">Staff sign-up code</label>
+        <input id="staffCodeInput" type="password" autocomplete="off" placeholder="Provided by the site administrator" aria-describedby="staffCodeHelp" />
+        <small id="staffCodeHelp">Staff accounts can add and edit campus data, so they need a code from the administrator.</small>
+      </div>
+
       <button id="signupBtn" class="btn auth-submit">Create account</button>
 
       <div class="divider">or sign up with</div>
@@ -115,6 +121,14 @@
   <script>
     const signupBtn = document.getElementById('signupBtn');
     const statusText = document.getElementById('status');
+    const staffCodeField = document.getElementById('staffCodeField');
+
+    // Show the staff code field only when the Staff role is selected.
+    document.querySelectorAll('input[name="role"]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        staffCodeField.hidden = document.querySelector('input[name="role"]:checked').value !== 'staff';
+      });
+    });
 
     signupBtn.addEventListener('click', async () => {
       const name = document.getElementById('nameInput').value.trim();
@@ -122,6 +136,7 @@
       const password = document.getElementById('passwordInput').value;
       const confirm = document.getElementById('confirmPasswordInput').value;
       const role = document.querySelector('input[name="role"]:checked').value;
+      const staffCode = document.getElementById('staffCodeInput').value.trim();
 
       statusText.textContent = '';
 
@@ -130,8 +145,18 @@
         return;
       }
 
+      if (password.length < 8) {
+        statusText.textContent = 'Password must be at least 8 characters.';
+        return;
+      }
+
       if (password !== confirm) {
         statusText.textContent = 'Passwords do not match.';
+        return;
+      }
+
+      if (role === 'staff' && !staffCode) {
+        statusText.textContent = 'Please enter the staff sign-up code, or choose Student.';
         return;
       }
 
@@ -139,7 +164,7 @@
         const response = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password, role })
+          body: JSON.stringify(role === 'staff' ? { name, email, password, role, staffCode } : { name, email, password, role })
         });
 
         const data = await response.json();

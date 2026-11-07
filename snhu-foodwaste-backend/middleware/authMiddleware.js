@@ -38,10 +38,18 @@ const protect = async (req, res, next) => {
       
       // Fetch the user from the database using the ID embedded in the token payload.
       // We exclude the password field from the result for security.
-      req.user = await User.findById(decoded.id).select('-password');
-      
+      req.user = await User.findById(decoded.id).select('-password +isActive');
+
+      // A valid token for a deleted or deactivated account must not grant access.
+      if (!req.user || req.user.isActive === false) {
+        return res.status(401).json({
+          success: false,
+          message: 'Not authorized, account not found or inactive'
+        });
+      }
+
       // Proceed to the next middleware or route handler
-      next();
+      return next();
     } catch (error) {
       // Catch any token verification errors (e.g., expired, invalid signature)
       console.error('Token verification error:', error);
