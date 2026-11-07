@@ -1,48 +1,120 @@
-# MunchiesSNHU Food Waste Tracker
+# MunchiesSNHU — Campus Food Waste Tracker
 
-MunchiesSNHU is a full-stack food waste tracking application for a campus sustainability workflow. The project includes a static HTML/CSS/JavaScript frontend and a Node.js, Express, and MongoDB backend.
+A full-stack web application that helps a university dining and sustainability team **record food waste, publish campus metrics to students, and spot which locations need attention first**. Built as my B.S. Computer Science capstone (CS-499) at Southern New Hampshire University.
 
-## Before vs. after (Enhancement One)
+> **Live demo:** https://munchies-snhu-food-waste.vercel.app — *being restored; the link is listed here once `/api/health` reports `ok`.*
 
-The folder [`before-enhancement/`](before-enhancement/) holds a **frozen copy of the codebase before Software Design & Engineering improvements** (from git commit `0b8c04b`). Compare it side-by-side with the current project root to document changes for your capstone.
+## The problem
 
-See [`before-enhancement/README.md`](before-enhancement/README.md) for a file-by-file comparison table.
+Reducing campus food waste starts with measuring it, but waste data is hard to collect consistently, compare across dining locations, or share with students. MunchiesSNHU gives staff one place to record waste and bin/compost sensor readings, and gives students a public view of the published results.
 
-## Quick start
+## What it does (implemented today)
 
-### Prerequisites
+| Area | Features |
+|---|---|
+| **Accounts** | Email/password sign-up and login (bcrypt-hashed passwords, JWT sessions). Roles: **student**, **staff**, **admin**. Staff sign-up requires an owner-issued code; admins are created manually. |
+| **Staff** | Data entry with field-level validation; edit, delete, publish/unpublish; search, sort, pagination, bulk publish/delete; CSV import; dashboard charts; report summary built with MongoDB aggregation; pickup-priority ranking. |
+| **Students** | Dashboard of **published** campus metrics and charts; settings and notification preferences; feedback form. |
+| **Admin** | List users and remove accounts (cannot delete own account). |
+| **AI assistant** | "MunchiesAI" sustainability chat (Groq or Anthropic). Shows a clear "not configured" message when no API key is set. |
+| **Operations** | `GET /api/health` availability check; rate limiting on the API and stricter limits on login/sign-up. |
 
-- Node.js 18+
-- MongoDB (local or [MongoDB Atlas](https://www.mongodb.com/atlas))
+## Tech stack
 
-### 1. Backend setup
+**Frontend:** HTML, CSS, vanilla JavaScript, Chart.js · **Backend:** Node.js, Express · **Database:** MongoDB Atlas with Mongoose · **Auth:** bcryptjs, JSON Web Tokens · **Security middleware:** Helmet (CSP), express-rate-limit, express-mongo-sanitize, xss-clean · **Testing:** Jest, Supertest, Playwright · **Hosting:** Vercel (one serverless function serves the API; static pages are served by Vercel's CDN) · **CI:** GitHub Actions
+
+## Architecture
+
+```
+Browser (public/*.html + js/)
+   │  fetch('/api/...')  with  Authorization: Bearer <JWT>
+   ▼
+Vercel serverless function  api/index.js
+   │  1. validate configuration (MONGODB_URI, JWT_SECRET)
+   │  2. connect to MongoDB (connection cached across warm invocations, 4 s timeouts)
+   │  3. hand the request to Express
+   ▼
+Express app  snhu-foodwaste-backend/app.js
+   ├─ security middleware: helmet · rate limits · mongo-sanitize · xss-clean
+   ├─ /api/auth   register · login · me · profile
+   ├─ /api/waste  public list · staff CRUD · publish · reports · priority
+   ├─ /api/feedback · /api/tips · /api/notifications · /api/users · /api/staff · /api/chat
+   └─ /api/health
+   ▼
+MongoDB Atlas (collections: users, foodwasteentries, feedbacks)
+```
+
+## Run it locally
+
+Prerequisites: Node.js 24 (20.19+ works), and MongoDB (local or Atlas).
 
 ```bash
 cd snhu-foodwaste-backend
-cp .env.example .env
-# Edit .env: set MONGODB_URI and JWT_SECRET
+cp .env.example .env          # set MONGODB_URI and a 32+ character JWT_SECRET
 npm install
-npm test
-npm start
+npm start                     # http://localhost:5002 (or your PORT)
 ```
 
-The API and frontend are served together (static files from `public/`). Default port is **5002** if set in `.env`, otherwise **5001**.
-
-### 2. Open the app
-
-Visit `http://localhost:5002` (or your `PORT`), then:
-
-- **Register / log in** — unified MongoDB + JWT (`/api/auth/register`, `/api/auth/login`)
-- **Staff** — data entry, dashboard, reports (roles `staff` or `admin`)
-- **Student** — published campus metrics on the student dashboard
-
-### 3. Verify engineering quality
+Optional fictional demo data (two demo accounts + 42 sample entries; never deletes anything):
 
 ```bash
-cd snhu-foodwaste-backend
-npm test          # Jest + Supertest
-npm run lint      # ESLint (optional)
+DEMO_STUDENT_PASSWORD=<choose> DEMO_STAFF_PASSWORD=<choose> node scripts/seed-demo.js --confirm
 ```
+
+## Testing
+
+| Suite | Command | Needs |
+|---|---|---|
+| Unit + API tests (mocked DB) | `cd snhu-foodwaste-backend && npm test` | nothing — runs offline |
+| Integration tests (real MongoDB) | `MONGODB_TEST_URI=mongodb://127.0.0.1:27017 npx jest` | a **local** MongoDB; uses a throwaway `test_*` database and refuses non-local hosts |
+| Browser workflows (Playwright) | `cd e2e && npm install && BASE_URL=http://localhost:5055 npm test` | the app running locally against a local database seeded with demo data |
+
+The integration suite covers registration, login, hashing, role checks, privilege-escalation attempts, CRUD, publishing, reports, feedback, notifications, the AI-assistant fallback, admin actions, and deactivated/deleted accounts. GitHub Actions runs the unit and integration suites on every push and pull request.
+
+## Security notes
+
+- Passwords are hashed with bcrypt; password hashes are never returned by the API.
+- JWTs are signed with `JWT_SECRET`; the server refuses to start with a missing, placeholder, too-short, or previously exposed secret.
+- Users can change only their name, theme, and notification preferences — role, email, and password changes through the profile endpoint are ignored.
+- Staff sign-up requires `STAFF_SIGNUP_CODE`; admin accounts cannot be self-registered.
+- Tokens for deleted or deactivated accounts are rejected.
+- Public error responses are generic; details go to server logs. `/api/health` reveals only availability.
+- Secrets live in environment variables only; `.env` files are git-ignored.
+
+**Known limitations:** sessions last 30 days and logout is client-side (the token is removed from the browser); the in-memory rate limiter is per serverless instance.
+
+## Environment variables
+
+| Variable | Required | Purpose |
+|---|---|---|
+| `MONGODB_URI` | yes | MongoDB connection string (`MONGO_URI` also accepted) |
+| `JWT_SECRET` | yes | 32+ random characters; signs login tokens |
+| `STAFF_SIGNUP_CODE` | no | Enables staff self-registration for people who know the code |
+| `GROQ_API_KEY` / `ANTHROPIC_API_KEY` | no | Enables the AI assistant |
+| `PORT` | no | Local port (default 5001) |
+
+## Deploying on Vercel
+
+1. Vercel project → **Settings → Environment Variables** (Production and Preview): set the variables above. Enter values in the dashboard only.
+2. MongoDB Atlas → **Network Access**: Vercel functions use changing IP addresses, so allow access via the Vercel ↔ Atlas integration or `0.0.0.0/0` with a strong, dedicated database user.
+3. Push a branch → Vercel builds a **Preview**. Check `https://<preview-url>/api/health` returns `{"status":"ok","database":"connected"}` before merging to `main` (production).
+
+## Repository layout
+
+```
+├── api/index.js              # Vercel serverless entry (config check, DB connect, Express)
+├── public/                   # Frontend pages, CSS, JS, images
+├── snhu-foodwaste-backend/   # Express app, models, routes, controllers, tests, scripts
+├── e2e/                      # Playwright browser workflow checks
+├── docs/                     # Capstone ePortfolio (enhancement write-ups, narratives)
+└── before-enhancement/       # Frozen pre-enhancement snapshot (not deployed)
+```
+
+---
+
+## Capstone context
+
+This repository is my CS-499 capstone artifact. The folder [`before-enhancement/`](before-enhancement/) holds a frozen copy of the codebase **before** my enhancements, and [`docs/`](docs/) contains the enhancement write-ups and narratives.
 
 ## Enhancement One: Software Design and Engineering
 
@@ -93,63 +165,3 @@ This enhancement demonstrates software engineering and design by improving modul
 - Jest test suites: auth, protected routes, model validation, waste priority scoring, input sanitization, waste POST API
 - Manual demo: staff login → create entry → dashboard/report → student views published data only
 
-## Repository layout
-
-```
-├── before-enhancement/     # Pre-enhancement snapshot (read-only reference)
-├── public/                 # Frontend static assets and pages
-├── snhu-foodwaste-backend/ # Express API, models, tests
-└── README.md
-```
-
-## Environment variables
-
-Copy `snhu-foodwaste-backend/.env.example` to `.env`. Required:
-
-| Variable | Purpose |
-|----------|---------|
-| `MONGODB_URI` | MongoDB connection string |
-| `JWT_SECRET` | Signs and verifies login tokens |
-| `PORT` | HTTP port (optional, default 5001) |
-
-Never commit `.env` or secrets to git.
-
-## Deploy to Vercel
-
-This project is configured for [Vercel](https://vercel.com) as a single Express serverless function (`api/index.js`) that serves the API and the static frontend.
-
-### 1. Push the repository to GitHub
-
-```bash
-git push origin master
-```
-
-### 2. Import the project on Vercel
-
-1. Go to [vercel.com/new](https://vercel.com/new) and import `Samkwibe/MunchiesSNHU-Food_waste_Trucker`.
-2. **Framework preset:** Other (uses root `vercel.json`).
-3. **Root directory:** `.` (repository root).
-
-### 3. Set environment variables (Project → Settings → Environment Variables)
-
-| Name | Value |
-|------|--------|
-| `MONGODB_URI` | Your MongoDB Atlas connection string |
-| `JWT_SECRET` | Same secret you use locally |
-| `NODE_ENV` | `production` (optional) |
-
-Redeploy after adding variables.
-
-### 4. Deploy from the CLI (optional)
-
-```bash
-npx vercel login
-npx vercel --prod
-```
-
-### Notes
-
-- MongoDB must be reachable from the public internet. In **MongoDB Atlas → Network Access**, allow **`0.0.0.0/0`** (or Vercel’s IPs) so serverless functions can connect.
-- `before-enhancement/` is excluded from deployment via `.vercelignore`.
-- Local development still uses `cd snhu-foodwaste-backend && npm start`.
-- **Production URL:** [https://munchies-snhu-food-waste.vercel.app](https://munchies-snhu-food-waste.vercel.app)
