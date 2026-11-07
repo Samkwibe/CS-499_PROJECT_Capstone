@@ -29,7 +29,7 @@ const getPublishedEntries = async (req, res) => {
     // Look up all entries where 'published' is true. 
     // This makes sure regular students don't see raw or unapproved data.
     // The sort() part orders them from newest to oldest based on creation time.
-    const entries = await FoodWasteEntry.find({ published: true }).sort({ createdAt: -1 });
+    const entries = await FoodWasteEntry.find({ published: true }).select('-submittedBy').sort({ createdAt: -1 });
     // Send the list of entries back to the frontend.
     res.json(entries);
   } catch (err) {

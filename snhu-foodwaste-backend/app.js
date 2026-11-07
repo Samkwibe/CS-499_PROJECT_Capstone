@@ -35,7 +35,14 @@ const app = express();
 
 // Enable cross-origin requests so the frontend pages can call this API.
 // Without this, the browser would block requests coming from different ports or domains.
-app.use(cors());
+// The frontend is served from the same origin, so cross-origin access is only granted to
+// origins listed in CORS_ORIGINS (comma-separated). Same-origin requests are unaffected.
+const allowedOrigins = (process.env.CORS_ORIGINS || '').split(',').map((o) => o.trim()).filter(Boolean);
+app.use(cors({
+  origin: (origin, callback) => callback(null, !origin || allowedOrigins.includes(origin)),
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Add common security headers to every response while allowing the existing frontend assets to load.
 app.use(helmet({
@@ -88,7 +95,8 @@ app.use(['/api/auth/login', '/api/auth/register'], rateLimit({
 
 // Parse incoming JSON request bodies so controllers can read req.body.
 // Without this, we couldn't read the data sent from frontend forms.
-app.use(express.json());
+// Reject oversized JSON bodies (DoS protection). Normal requests are well under 100 KB.
+app.use(express.json({ limit: '100kb' }));
 
 // This cleans up incoming data by removing special characters like $ and .
 // It protects the database from malicious input attacks.
@@ -165,6 +173,16 @@ app.get('/', (req, res) => {
 // This is the final fallback error handler for unexpected Express errors.
 // If something breaks in our code, this stops the server from crashing completely.
 app.use((err, req, res, _next) => {
+  // Client mistakes caught by middleware (bad JSON, body too large, ...) keep their 4xx code
+  // with a short, safe message instead of being reported as server errors.
+  const status = err.status || err.statusCode;
+  if (status >= 400 && status < 500) {
+    const messages = {
+      'entity.too.large': 'Request body is too large',
+      'entity.parse.failed': 'Request body is not valid JSON'
+    };
+    return res.status(status).json({ success: false, message: messages[err.type] || 'Bad request' });
+  }
   // Log the full stack trace for debugging on the server side.
   console.error('Unhandled Exception:', err.stack);
   // Send a safe generic message back to the client.

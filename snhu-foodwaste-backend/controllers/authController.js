@@ -32,6 +32,9 @@ const isValidStaffCode = (provided) => {
 // (role, password, email, isActive, ...) is ignored to prevent privilege escalation.
 const PROFILE_FIELDS = ['name', 'themePreference', 'notificationPreferences'];
 
+// bcrypt hash of a random value, used only to equalise login timing for unknown emails.
+const DUMMY_HASH = bcrypt.hashSync(crypto.randomBytes(16).toString('hex'), 10);
+
 // A helper function to easily send back a standardized error message.
 // This keeps our code clean so we don't have to rewrite this block every time an error happens.
 const sendError = (res, statusCode, message) => res.status(statusCode).json({
@@ -144,8 +147,10 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email: email.toLowerCase().trim() }).select('+password +isActive');
     
     // If no user is found with that email, return an error.
-    // Deactivated accounts are treated the same as unknown accounts.
+    // Deactivated accounts are treated the same as unknown accounts. A dummy bcrypt
+    // comparison keeps the response time similar so attackers cannot tell which emails exist.
     if (!user || user.isActive === false) {
+      await bcrypt.compare(password, DUMMY_HASH);
       return sendError(res, 401, 'Invalid credentials');
     }
 

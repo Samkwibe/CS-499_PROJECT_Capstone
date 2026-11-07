@@ -26,6 +26,32 @@ async function callAnthropic(systemPrompt, messages) {
   return { reply: response.content[0].text, provider: 'anthropic' };
 }
 
+// Limits for client-supplied chat history (protects the AI budget and blocks role spoofing).
+const MAX_CHAT_MESSAGES = 20;
+const MAX_MESSAGE_CHARS = 2000;
+const MAX_TOTAL_CHARS = 12000;
+
+/**
+ * Keeps only well-formed {role: 'user'|'assistant', content: string} messages,
+ * trims history to the most recent MAX_CHAT_MESSAGES, and rejects oversized input.
+ * Clients can never inject 'system' messages. Returns null when the input is unusable.
+ */
+function normalizeChatMessages(raw) {
+  if (!Array.isArray(raw) || raw.length === 0) return null;
+  let msgs = raw
+    .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
+    .map((m) => ({ role: m.role, content: m.content.trim() }))
+    .filter((m) => m.content.length > 0)
+    .slice(-MAX_CHAT_MESSAGES);
+  // Providers expect the conversation to start with a user turn.
+  while (msgs.length && msgs[0].role !== 'user') msgs.shift();
+  if (msgs.length === 0 || msgs[msgs.length - 1].role !== 'user') return null;
+  if (msgs.some((m) => m.content.length > MAX_MESSAGE_CHARS)) return null;
+  if (msgs.reduce((n, m) => n + m.content.length, 0) > MAX_TOTAL_CHARS) return null;
+  return msgs;
+}
+exports.normalizeChatMessages = normalizeChatMessages;
+
 exports.chat = async (req, res) => {
   try {
     const anthropicKey = process.env.ANTHROPIC_API_KEY;
@@ -35,17 +61,19 @@ exports.chat = async (req, res) => {
 
     if (!hasAnthropic && !hasGroq) {
       return res.status(503).json({
-        error: 'AI assistant not configured. Add ANTHROPIC_API_KEY or GROQ_API_KEY to the .env file.'
+        error: 'AI assistant is not configured on this server yet.'
       });
     }
 
-    const { messages } = req.body;
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return res.status(400).json({ error: 'Messages array is required.' });
+    const messages = normalizeChatMessages(req.body && req.body.messages);
+    if (!messages) {
+      return res.status(400).json({ error: 'Messages must be a non-empty list of short user/assistant messages.' });
     }
 
     // ── Pull live campus data ────────────────────────────────────────────────
-    const entries = await FoodWasteEntry.find({}).lean();
+    // Students may only see published data, so the assistant gets the same view they do.
+    const visibleFilter = ['staff', 'admin'].includes(req.user && req.user.role) ? {} : { published: true };
+    const entries = await FoodWasteEntry.find(visibleFilter).lean();
     const now = new Date();
 
     const totalWaste   = entries.reduce((s, e) => s + (e.weight || 0), 0);
@@ -168,7 +196,7 @@ What you know:
   } catch (err) {
     console.error('Chat controller error:', err.message);
     if (err.status === 401) {
-      return res.status(503).json({ error: 'Invalid API key. Check your API keys in the .env file.' });
+      return res.status(503).json({ error: 'AI assistant is temporarily unavailable. Please try again later.' });
     }
     if (err.status === 429) {
       return res.status(429).json({ error: 'AI rate limit reached. Please wait a moment and try again.' });

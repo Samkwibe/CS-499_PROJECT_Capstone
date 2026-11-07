@@ -52,8 +52,14 @@ function formatMongooseError(err) {
   if (err.name === 'ValidationError' && err.errors) {
     return Object.values(err.errors).map(item => item.message).join(' ');
   }
-
-  return err.message;
+  // Our own sanitizer errors carry a safe, user-facing message and a status code.
+  if (err.statusCode) {
+    return err.message;
+  }
+  if (err.name === 'CastError') {
+    return 'Invalid value or id';
+  }
+  return 'The request could not be processed';
 }
 
 module.exports = {

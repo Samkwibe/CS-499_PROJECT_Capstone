@@ -34,7 +34,8 @@ const protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
       
       // Verify the token signature using the secret key from environment variables
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      // Only accept HS256 tokens signed with our secret (blocks algorithm-confusion tricks).
+      const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
       
       // Fetch the user from the database using the ID embedded in the token payload.
       // We exclude the password field from the result for security.
