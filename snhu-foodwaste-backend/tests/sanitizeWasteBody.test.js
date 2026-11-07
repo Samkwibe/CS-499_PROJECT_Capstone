@@ -59,7 +59,13 @@ describe('formatMongooseError', () => {
     expect(formatMongooseError(err)).toBe('Weight is required pH cannot exceed 14');
   });
 
-  it('returns message for non-validation errors', () => {
-    expect(formatMongooseError(new Error('Database offline'))).toBe('Database offline');
+  it('does not leak internal messages for unexpected errors', () => {
+    expect(formatMongooseError(new Error('Database offline'))).toBe('The request could not be processed');
+  });
+
+  it('keeps safe messages from the sanitizer (errors with a statusCode)', () => {
+    const err = new Error('Weight is required and must be a valid number');
+    err.statusCode = 400;
+    expect(formatMongooseError(err)).toBe('Weight is required and must be a valid number');
   });
 });

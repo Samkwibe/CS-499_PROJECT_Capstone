@@ -22,6 +22,10 @@ const STAFF_CODE = process.env.STAFF_SIGNUP_CODE || 'local-staff-code';
 // Optional: serve Chart.js from a local file when the CDN is unreachable (offline sandboxes).
 const CHART = process.env.CHART_JS_PATH ? fs.readFileSync(process.env.CHART_JS_PATH, 'utf8') : null;
 const results = [];
+// Optional: apply the production CSP (from vercel.json) to every page and count violations.
+const PROD_CSP = process.env.PROD_CSP || null;
+let cspViolations = [];
+
 const check = (name, ok, detail = '') => { results.push({ name, ok: !!ok, detail }); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? '  — ' + detail : ''}`); };
 
 const browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH, args: ['--no-sandbox'] } : {});
@@ -33,7 +37,21 @@ async function newPage(viewport = { width: 1366, height: 900 }) {
     await ctx.route('https://cdn.jsdelivr.net/npm/chart.js*', (r) => r.fulfill({ contentType: 'application/javascript', body: CHART }));
     await ctx.route(/^https:\/\/(fonts|cdnjs)\./, (r) => r.fulfill({ status: 200, contentType: 'text/css', body: '' }));
   }
+  if (PROD_CSP) {
+    await ctx.route(`${B}/**`, async (route) => {
+      try {
+        const r = await route.fetch();
+        const headers = { ...r.headers() };
+        if ((headers['content-type'] || '').includes('text/html')) headers['content-security-policy'] = PROD_CSP;
+        await route.fulfill({ response: r, headers });
+      } catch {
+        // The page or context closed while a request was in flight; nothing to do.
+      }
+    });
+  }
   const page = await ctx.newPage();
+  await page.exposeFunction('__cspViolation', (v) => cspViolations.push(v)).catch(() => {});
+  await page.addInitScript(() => document.addEventListener('securitypolicyviolation', (e) => window.__cspViolation && window.__cspViolation(`${e.violatedDirective} ${e.blockedURI}`)));
   page.errors = [];
   page.on('pageerror', (e) => page.errors.push(e.message));
   page.on('dialog', (d) => d.accept());
@@ -226,6 +244,7 @@ const stamp = Date.now().toString(36);
 }
 
 await browser.close();
+if (PROD_CSP) check('production CSP: no violations across all workflows', cspViolations.length === 0, [...new Set(cspViolations)].slice(0, 5).join(' | '));
 const failed = results.filter((r) => !r.ok);
 console.log(`\n${results.length - failed.length}/${results.length} checks passed`);
 process.exitCode = failed.length ? 1 : 0;
