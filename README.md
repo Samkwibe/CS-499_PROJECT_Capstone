@@ -146,10 +146,46 @@ Redeploy after adding variables.
 npx vercel login
 npx vercel --prod
 ```
+The architecture of the full-stack application is designed to ensure robust functionality, scalability, and ease of maintenance. It is structured to clearly separate concerns between the frontend and backend, optimizing the development and deployment pipeline.
+
+#### Frontend
+
+- **Public Folder**: This is where all static assets and frontend pages are housed. The frontend interacts with the backend API to fetch and present data dynamically, providing a seamless user experience.
+
+#### Backend
+
+- **Express API**: The backend is built using Express, which serves as the primary framework for handling HTTP requests. It is structured to define routes, manage authentication, and interact with the database efficiently.
+
+- **Database Models**: The backend implements Mongoose models to define the schema and structure for the MongoDB collections. These models facilitate the creation, retrieval, updating, and deletion of data in a structured manner.
+
+#### Integration
+
+- **Authentication Middleware**: This component ensures secure authentication and authorization of users through JSON Web Tokens (JWT). It verifies users before granting access to specific routes, thus enhancing application security.
+
+- **Route Management**: Routes are organized according to functionality, with clear separations for public and protected endpoints. This improves maintainability and readability of the codebase.
+
+#### Deployment
+
+- **Serverless Functions with Vercel**: The application is deployed as a serverless function on Vercel, allowing for automatic scaling and optimized performance. The configuration leverages Vercel's features to serve both the backend API and static frontend assets from the same project.
+
+#### Development Environment
+
+- **Local Development**: The application can be run locally using the specified start command, allowing developers to test changes before pushing updates to the production environment.
+
+#### Security Considerations
+
+- **Environment Variables**: Sensitive information, such as database connection strings and JWT secrets, is stored in environment variables. This prevents exposure of sensitive data in the codebase and ensures secure configurations in different environments.
+
+By maintaining this structured approach, the application aims to provide a high level of modularity, making it easier to test, debug, and enhance in the future.
+
+[![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/samkwibe/cs-499_project_capstone?utm_source=readme&utm_medium=badge)
+
+
 
 ### Notes
 
 - MongoDB must be reachable from the public internet. In **MongoDB Atlas → Network Access**, allow **`0.0.0.0/0`** (or Vercel’s IPs) so serverless functions can connect.
 - `before-enhancement/` is excluded from deployment via `.vercelignore`.
 - Local development still uses `cd snhu-foodwaste-backend && npm start`.
-- **Production URL:** [https://munchies-snhu-food-waste.vercel.app](https://munchies-snhu-food-waste.vercel.app)
+- **Production URL:** [https://munchies-snhu-food-waste.vercel.app](https://munchies-snhu-food-waste.vercel.app)### Architecture Overview
+
